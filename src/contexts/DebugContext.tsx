@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import * as React from 'react';
+import { createContext, useContext, useState } from 'react';
 import { STORAGE_KEYS } from '../constants';
 
 interface DebugContextType {

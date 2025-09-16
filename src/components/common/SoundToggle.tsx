@@ -103,50 +103,11 @@ export const SoundToggle: React.FC = () => {
           value={volume}
           onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
           onClick={(e) => e.stopPropagation()}
-          className="w-16 h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer slider mr-3 mx-2"
+          className="w-16 h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer volume-slider mr-3 mx-2"
           style={{
             background: `linear-gradient(to right, #f97316 0%, #f97316 ${volume * 100}%, rgba(255,255,255,0.2) ${volume * 100}%, rgba(255,255,255,0.2) 100%)`
           }}
         />
-        <style jsx>{`
-          .slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #f97316;
-            cursor: grab;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          }
-          .slider::-webkit-slider-thumb:active {
-            cursor: grabbing;
-            transform: scale(1.1);
-          }
-          .slider::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #f97316;
-            cursor: grab;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          }
-          .slider::-moz-range-thumb:active {
-            cursor: grabbing;
-            transform: scale(1.1);
-          }
-        `}</style>
-        <style jsx>{`
-          .slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #f97316;
-            cursor: pointer;
-          }
-        `}</style>
         </div>
       </div>
     </button>
