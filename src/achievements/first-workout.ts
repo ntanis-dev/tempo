@@ -1,4 +1,4 @@
-import { Achievement } from '../types/achievements';
+import { Achievement, AchievementData, WorkoutSessionData } from '../types/achievements';
 import { WorkoutState } from '../types';
 
 export interface AchievementDefinition {
@@ -11,10 +11,10 @@ export interface AchievementDefinition {
   maxProgress?: number;
   
   // Logic functions
-  checkUnlock: (workout: WorkoutState, data: any) => boolean;
-  calculateProgress?: (data: any) => number;
-  getSessionProgress?: (workoutData: any) => string;
-  hasSessionProgress?: (workoutData: any) => boolean;
+  checkUnlock: (workout: WorkoutState, data: AchievementData) => boolean;
+  calculateProgress?: (data: AchievementData) => number;
+  getSessionProgress?: (workoutData: WorkoutSessionData) => string;
+  hasSessionProgress?: (workoutData: WorkoutSessionData) => boolean;
 }
 
 export const firstWorkoutAchievement: AchievementDefinition = {
@@ -25,10 +25,10 @@ export const firstWorkoutAchievement: AchievementDefinition = {
   category: 'milestone',
   rarity: 'common',
   
-  checkUnlock: (workout: WorkoutState, data: any) => {
+  checkUnlock: (workout: WorkoutState, data: AchievementData) => {
     return true; // Always unlocks on first completed workout
   },
   
-  hasSessionProgress: (workoutData: any) => true,
-  getSessionProgress: (workoutData: any) => '+ First workout!'
+  hasSessionProgress: (workoutData: WorkoutSessionData) => true,
+  getSessionProgress: (workoutData: WorkoutSessionData) => '+ First workout!'
 };

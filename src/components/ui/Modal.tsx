@@ -10,7 +10,7 @@ interface ModalProps {
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export const Modal: React.FC<ModalProps> = ({
+const ModalComponent: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
@@ -87,3 +87,5 @@ export const Modal: React.FC<ModalProps> = ({
     </div>
   );
 };
+
+export const Modal = React.memo(ModalComponent);

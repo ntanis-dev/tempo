@@ -10,7 +10,7 @@ interface ProgressBarProps {
   color?: string;
 }
 
-export const ProgressBar: React.FC<ProgressBarProps> = ({
+const ProgressBarComponent: React.FC<ProgressBarProps> = ({
   progress,
   label,
   labelClassName = '',
@@ -53,3 +53,5 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     </div>
   );
 };
+
+export const ProgressBar = React.memo(ProgressBarComponent);

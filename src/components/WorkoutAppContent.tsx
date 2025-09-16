@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { setUpdateCallback, refreshApp } from '../main';
 import { WorkoutHistoryEntry } from '../types';
+import { AchievementModalData } from '../types/achievements';
 import { clearWorkoutHistory } from '../utils/storage';
 import { useWorkoutTimer } from '../hooks/useWorkoutTimer';
 import { useClickToResume } from '../hooks/useClickToResume';
@@ -60,11 +61,7 @@ export const WorkoutAppContent: React.FC = () => {
   const [waitingForAchievements, setWaitingForAchievements] = useState(false);
   const [whatsNewKey, setWhatsNewKey] = useState(0); // Force re-render key
   const [storageRefreshKey, setStorageRefreshKey] = useState(0); // Force level display refresh
-  const [achievementModalData, setAchievementModalData] = useState<{
-    unlockedAchievements: any[];
-    progressAchievements: any[];
-    workoutData: any;
-  } | null>(null);
+  const [achievementModalData, setAchievementModalData] = useState<AchievementModalData | null>(null);
 
   // Process achievements when workout completes
   React.useEffect(() => {

@@ -1,4 +1,5 @@
 import { WorkoutState, TimerSettings, WorkoutHistoryEntry } from '../types';
+import { Achievement } from '../types/achievements';
 import { STORAGE_KEYS, DEFAULTS } from '../constants';
 
 export const DEFAULT_SETTINGS: TimerSettings = DEFAULTS.SETTINGS;
@@ -89,11 +90,11 @@ export const loadPreviousVolume = (): number => {
   return saved !== null ? parseFloat(saved) : DEFAULTS.SOUND_VOLUME;
 };
 
-export const saveAchievements = (achievements: any[]) => {
+export const saveAchievements = (achievements: Achievement[]) => {
   localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(achievements));
 };
 
-export const loadAchievements = (): any[] => {
+export const loadAchievements = (): Achievement[] => {
   const saved = localStorage.getItem(STORAGE_KEYS.ACHIEVEMENTS);
   return saved ? JSON.parse(saved) : [];
 };

@@ -12,7 +12,7 @@ interface ButtonProps {
   className?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({
+const ButtonComponent: React.FC<ButtonProps> = ({
   onClick,
   disabled = false,
   variant = 'primary',
@@ -32,3 +32,5 @@ export const Button: React.FC<ButtonProps> = ({
     </button>
   );
 };
+
+export const Button = React.memo(ButtonComponent);
