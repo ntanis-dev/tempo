@@ -1,6 +1,5 @@
 import { useCallback, useRef } from 'react';
 import { WorkoutState, Phase } from '../types';
-import { getPhases } from '../utils/timer';
 import { audioManager } from '../utils/audio';
 import { clearWorkoutState } from '../utils/storage';
 import { TIME } from '../constants';
@@ -88,17 +87,40 @@ export const useWorkoutPhase = (
   };
 
   const skipPhase = useCallback(() => {
-    const phases = getPhases(workout);
-    const currentIndex = phases.indexOf(workout.phase);
+    // Determine next phase based on current phase
+    switch (workout.phase) {
+      case 'countdown':
+        // Skip from countdown (stretch) to work
+        transitionToPhase('work', {
+          timeRemaining: workout.settings.timePerRep * workout.settings.repsPerSet,
+          currentRep: 1
+        });
+        break;
 
-    if (currentIndex < phases.length - 1) {
-      const nextPhase = phases[currentIndex + 1];
+      case 'work':
+        // Skip from work to rest (or complete if last set)
+        if (workout.currentSet >= workout.totalSets) {
+          transitionToPhase('complete');
+        } else {
+          transitionToPhase('rest', {
+            timeRemaining: workout.settings.restTime,
+            currentRep: 1
+          });
+        }
+        break;
 
-      if (workout.phase === 'rest' && workout.currentSet >= workout.totalSets) {
-        transitionToPhase('complete');
-      } else {
-        transitionToPhase(nextPhase as Phase);
-      }
+      case 'rest':
+        // Skip from rest to next work phase
+        transitionToPhase('work', {
+          currentSet: workout.currentSet + 1,
+          timeRemaining: workout.settings.timePerRep * workout.settings.repsPerSet,
+          currentRep: 1
+        });
+        break;
+
+      default:
+        // No skip for other phases
+        break;
     }
   }, [workout, transitionToPhase]);
 
