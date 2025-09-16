@@ -9,14 +9,14 @@ export const milestoneAchievements: AchievementDefinition[] = [
     category: 'milestone',
     rarity: 'rare',
     
-    checkUnlock: (workout, _data) => {
+    checkUnlock: (workout) => {
       const totalTimeSeconds = workout.statistics.totalTimeStretched +
                              workout.statistics.totalTimeExercised +
                              workout.statistics.totalTimeRested;
       return Math.floor(totalTimeSeconds / 60) >= 30;
     },
 
-    hasSessionProgress: (_workoutData) => true,
+    hasSessionProgress: () => true,
     getSessionProgress: (workoutData) => `+ ${Math.floor((workoutData?.timeSeconds || 0) / 60)} min workout`
   },
   
@@ -28,14 +28,14 @@ export const milestoneAchievements: AchievementDefinition[] = [
     category: 'milestone',
     rarity: 'epic',
     
-    checkUnlock: (workout, _data) => {
+    checkUnlock: (workout) => {
       const totalTimeSeconds = workout.statistics.totalTimeStretched +
                              workout.statistics.totalTimeExercised +
                              workout.statistics.totalTimeRested;
       return Math.floor(totalTimeSeconds / 60) >= 45;
     },
 
-    hasSessionProgress: (_workoutData) => true,
+    hasSessionProgress: () => true,
     getSessionProgress: (workoutData) => `+ ${Math.floor((workoutData?.timeSeconds || 0) / 60)} min workout`
   },
   
@@ -47,8 +47,8 @@ export const milestoneAchievements: AchievementDefinition[] = [
     category: 'milestone',
     rarity: 'epic',
     
-    checkUnlock: (workout, _data) => workout.totalSets >= 30,
-    hasSessionProgress: (_workoutData) => true,
+    checkUnlock: (workout) => workout.totalSets >= 30,
+    hasSessionProgress: () => true,
     getSessionProgress: (workoutData) => `+ ${workoutData?.sets || 0} sets in one workout`
   }
 ];

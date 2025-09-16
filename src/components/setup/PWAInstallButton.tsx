@@ -17,7 +17,7 @@ export const PWAInstallButton: React.FC = () => {
       }
       
       // Method 1: iOS PWA detection
-      const isIOSPWA = (window.navigator as any).standalone === true;
+      const isIOSPWA = (window.navigator as { standalone?: boolean }).standalone === true;
       
       // Method 2: Check for standalone display mode (most reliable)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
@@ -26,17 +26,17 @@ export const PWAInstallButton: React.FC = () => {
       const isMinimalUI = window.matchMedia('(display-mode: minimal-ui)').matches;
       
       // Method 4: Check if launched from home screen (additional check)
-      const isLaunchedFromHomeScreen = window.location.search.includes('homescreen') || 
-                                      window.location.search.includes('standalone') ||
-                                      document.referrer === '';
+      // const isLaunchedFromHomeScreen = window.location.search.includes('homescreen') ||
+      //                                 window.location.search.includes('standalone') ||
+      //                                 document.referrer === '';
       
       // Method 5: Check window characteristics typical of installed PWAs
-      const hasStandaloneFeatures = (
-        // Installed PWAs often have specific window properties
-        (window.outerWidth === window.innerWidth && window.outerHeight === window.innerHeight) ||
-        // Or specific user agent characteristics
-        /Mobile/.test(navigator.userAgent) && window.orientation !== undefined
-      );
+      // const hasStandaloneFeatures = (
+      //   // Installed PWAs often have specific window properties
+      //   (window.outerWidth === window.innerWidth && window.outerHeight === window.innerHeight) ||
+      //   // Or specific user agent characteristics
+      //   /Mobile/.test(navigator.userAgent) && window.orientation !== undefined
+      // );
       
       const isPWA = isIOSPWA || isStandalone || isMinimalUI;
       

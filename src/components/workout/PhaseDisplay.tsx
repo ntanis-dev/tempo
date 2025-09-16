@@ -5,7 +5,7 @@ interface PhaseDisplayProps {
   subtitle: string;
 }
 
-export const PhaseDisplay: React.FC<PhaseDisplayProps> = ({
+export const PhaseDisplay: React.FC<PhaseDisplayProps> = React.memo(({
   currentPhase,
   subtitle
 }) => {
@@ -22,4 +22,4 @@ export const PhaseDisplay: React.FC<PhaseDisplayProps> = ({
       </div>
     </div>
   );
-};
+});

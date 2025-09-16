@@ -1,7 +1,7 @@
 import { ExperienceData, LevelInfo, XPGain } from '../types/experience';
 import { WorkoutState } from '../types';
 import { calculateXPRequired, getTotalXPForLevel, XP_SOURCES, LEVEL_CAP } from '../constants/experience';
-import { STORAGE_KEYS } from '../constants';
+import { storageService } from '../services/storageService';
 
 export class ExperienceProcessor {
   private data: ExperienceData = {
@@ -14,18 +14,11 @@ export class ExperienceProcessor {
   }
 
   private loadExperienceData() {
-    const saved = localStorage.getItem(STORAGE_KEYS.EXPERIENCE);
-    if (saved) {
-      try {
-        this.data = { ...this.data, ...JSON.parse(saved) };
-      } catch (error) {
-        console.error('Failed to load experience data:', error);
-      }
-    }
+    this.data = storageService.getExperience();
   }
 
   private saveExperienceData() {
-    localStorage.setItem(STORAGE_KEYS.EXPERIENCE, JSON.stringify(this.data));
+    storageService.saveExperience(this.data);
   }
 
   private calculateLevel(totalXP: number): number {
@@ -128,7 +121,7 @@ export class ExperienceProcessor {
       totalXP: 0,
       currentLevel: 1
     };
-    this.saveExperienceData();
+    storageService.resetExperience();
   }
 
   refreshFromStorage() {

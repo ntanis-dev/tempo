@@ -10,7 +10,7 @@ interface WorkoutControlsProps {
   onShowRestSkipError: () => void;
 }
 
-export const WorkoutControls: React.FC<WorkoutControlsProps> = ({
+export const WorkoutControls: React.FC<WorkoutControlsProps> = React.memo(({
   onTogglePause,
   onResetWorkout,
   onSkip,
@@ -63,4 +63,4 @@ export const WorkoutControls: React.FC<WorkoutControlsProps> = ({
       </button>
     </div>
   );
-};
+});

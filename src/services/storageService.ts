@@ -42,6 +42,7 @@ class StorageService {
     // App related
     INSTALL_PROMPT_SHOWN: 'tempo-install-prompt-shown',
     APP_VERSION: 'tempo-app-version',
+    DEBUG_MODE: 'tempo-debug-mode',
   } as const;
 
   // Generic storage methods
@@ -135,15 +136,7 @@ class StorageService {
   }
 
   getAchievementModalData(): AchievementModalData | null {
-    const data = localStorage.getItem(this.KEYS.ACHIEVEMENT_MODAL_DATA);
-    if (!data) return null;
-
-    try {
-      return JSON.parse(data);
-    } catch {
-      this.removeItem(this.KEYS.ACHIEVEMENT_MODAL_DATA);
-      return null;
-    }
+    return this.getItem(this.KEYS.ACHIEVEMENT_MODAL_DATA, null);
   }
 
   saveAchievementModalData(data: AchievementModalData): void {
@@ -211,11 +204,20 @@ class StorageService {
 
   // App state methods
   getLastProcessedWorkout(): string | null {
-    return localStorage.getItem(this.KEYS.LAST_PROCESSED_WORKOUT);
+    return this.getItem(this.KEYS.LAST_PROCESSED_WORKOUT, null);
   }
 
   setLastProcessedWorkout(workoutId: string): void {
-    localStorage.setItem(this.KEYS.LAST_PROCESSED_WORKOUT, workoutId);
+    this.setItem(this.KEYS.LAST_PROCESSED_WORKOUT, workoutId);
+  }
+
+  // Debug mode methods
+  isDebugMode(): boolean {
+    return this.getItem(this.KEYS.DEBUG_MODE, false);
+  }
+
+  setDebugMode(enabled: boolean): void {
+    this.setItem(this.KEYS.DEBUG_MODE, enabled);
   }
 
   // Export/Import methods

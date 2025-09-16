@@ -4,6 +4,7 @@ import { Modal } from './ui/Modal';
 import { ModalHeader } from './ui/ModalHeader';
 import { Button } from './ui/Button';
 import { MODAL_STYLES } from '../constants/styles';
+import { storageService } from '../services/storageService';
 
 interface StorageModalProps {
   isOpen: boolean;
@@ -56,25 +57,13 @@ export const StorageModal: React.FC<StorageModalProps> = ({
 
   const handleClearStorage = () => {
     try {
-      // Get all keys that start with 'tempo-'
-      const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('tempo-')) {
-          keysToRemove.push(key);
-        }
-      }
-      
-      // Remove all tempo keys
-      keysToRemove.forEach(key => {
-        localStorage.removeItem(key);
-      });
-      
+      storageService.clearAllData();
+
       setShowClearConfirm(false);
-      
+
       // Dispatch storage event to notify other components
       window.dispatchEvent(new Event('storage'));
-      
+
       // Show success message and refresh all storage-dependent state
       onClearSuccess();
     } catch (error) {
@@ -85,25 +74,10 @@ export const StorageModal: React.FC<StorageModalProps> = ({
 
   const exportData = () => {
     try {
-      const data = {
-        timestamp: Date.now(),
-        data: {
-          'tempo-sets': localStorage.getItem('tempo-sets'),
-          'tempo-settings': localStorage.getItem('tempo-settings'),
-          'tempo-history': localStorage.getItem('tempo-history'),
-          'tempo-sound-enabled': localStorage.getItem('tempo-sound-enabled'),
-          'tempo-sound-volume': localStorage.getItem('tempo-sound-volume'),
-          'tempo-previous-volume': localStorage.getItem('tempo-previous-volume'),
-          'tempo-achievements': localStorage.getItem('tempo-achievements'),
-          'tempo-achievement-data': localStorage.getItem('tempo-achievement-data'),
-          'tempo-debug-mode': localStorage.getItem('tempo-debug-mode')
-        }
-      };
-
-      const jsonString = JSON.stringify(data, null, 2);
+      const jsonString = storageService.exportAllData();
       const blob = new Blob([jsonString], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      
+
       const a = document.createElement('a');
       a.href = url;
       a.download = `tempo-backup-${new Date().toISOString().split('T')[0]}.json`;
@@ -137,38 +111,11 @@ export const StorageModal: React.FC<StorageModalProps> = ({
       return;
     }
 
-
     try {
       const fileContent = await file.text();
-      const parsed = JSON.parse(fileContent);
-      
-      if (!parsed.data || typeof parsed.data !== 'object') {
-        throw new Error('Invalid backup format');
-      }
 
-      // Clear existing data
-      const keysToImport = [
-        'tempo-sets', 
-        'tempo-settings',
-        'tempo-history',
-        'tempo-sound-enabled',
-        'tempo-sound-volume',
-        'tempo-previous-volume',
-        'tempo-achievements',
-        'tempo-achievement-data',
-        'tempo-debug-mode'
-      ];
-
-      keysToImport.forEach(key => {
-        localStorage.removeItem(key);
-      });
-
-      // Import new data
-      Object.entries(parsed.data).forEach(([key, value]) => {
-        if (value !== null && keysToImport.includes(key)) {
-          localStorage.setItem(key, value as string);
-        }
-      });
+      // Try to import using StorageService
+      storageService.importData(fileContent);
 
       onImportSuccess();
 

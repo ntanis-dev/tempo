@@ -1,7 +1,6 @@
 // Audio utility functions for workout timer sound effects
-import { saveSoundEnabled, loadSoundEnabled } from './storage';
-import { saveSoundVolume, loadSoundVolume } from './storage';
 import { AUDIO } from '../constants';
+import { storageService } from '../services/storageService';
 
 class AudioManager {
   private audioContext: AudioContext | null = null;
@@ -12,8 +11,8 @@ class AudioManager {
     // Initialize audio context on first user interaction
     this.initializeAudioContext();
     // Load saved sound preference
-    this.isEnabled = loadSoundEnabled();
-    this.volume = loadSoundVolume();
+    this.isEnabled = storageService.isSoundEnabled();
+    this.volume = storageService.getVolume();
   }
 
   private initializeAudioContext() {
@@ -160,12 +159,12 @@ class AudioManager {
 
   setEnabled(enabled: boolean) {
     this.isEnabled = enabled;
-    saveSoundEnabled(enabled);
+    storageService.setSoundEnabled(enabled);
   }
 
   setVolume(volume: number) {
     this.volume = Math.max(0, Math.min(1, volume));
-    saveSoundVolume(this.volume);
+    storageService.setVolume(this.volume);
   }
 
   getVolume(): number {
@@ -177,8 +176,8 @@ class AudioManager {
   }
 
   refreshFromStorage() {
-    this.isEnabled = loadSoundEnabled();
-    this.volume = loadSoundVolume();
+    this.isEnabled = storageService.isSoundEnabled();
+    this.volume = storageService.getVolume();
   }
 }
 

@@ -4,8 +4,7 @@ import { Modal } from '../ui/Modal';
 import { ModalHeader } from '../ui/ModalHeader';
 import { LevelDisplay } from '../ui/LevelDisplay';
 import { experienceProcessor } from '../../utils/experienceProcessor';
-import { XP_SOURCES, getLevelTitle } from '../../constants/experience';
-import { useModalBackdrop } from '../../hooks/useModalBackdrop';
+import { XP_SOURCES } from '../../constants/experience';
 import { MODAL_STYLES } from '../../constants/styles';
 
 interface ExperienceModalProps {
@@ -65,7 +64,7 @@ export const ExperienceModal: React.FC<ExperienceModalProps> = ({ isOpen, onClos
     onShowSuccess('Experience Reset', 'Your experience and level have been reset.');
   };
 
-  const currentTitle = getLevelTitle(levelInfo.level);
+  // const currentTitle = getLevelTitle(levelInfo.level);
 
   return (
     <div 

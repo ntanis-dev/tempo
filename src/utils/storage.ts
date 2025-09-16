@@ -1,104 +1,93 @@
 import { WorkoutState, TimerSettings, WorkoutHistoryEntry } from '../types';
 import { Achievement } from '../types/achievements';
 import { STORAGE_KEYS, DEFAULTS } from '../constants';
+import { storageService } from '../services/storageService';
 
 export const DEFAULT_SETTINGS: TimerSettings = DEFAULTS.SETTINGS;
 export const DEFAULT_STATISTICS = DEFAULTS.STATISTICS;
 
 export const saveWorkoutState = (state: WorkoutState) => {
-  localStorage.setItem(STORAGE_KEYS.WORKOUT, JSON.stringify(state));
+  storageService.saveWorkoutState(state);
 };
 
 export const loadWorkoutState = (): WorkoutState | null => {
-  const saved = localStorage.getItem(STORAGE_KEYS.WORKOUT);
-  return saved ? JSON.parse(saved) : null;
+  return storageService.getWorkoutState();
 };
 
 export const saveTotalSets = (sets: number) => {
+  // This function is deprecated - workout settings are now handled by StorageService
+  console.warn('saveTotalSets is deprecated, use StorageService.saveWorkoutSettings instead');
   localStorage.setItem(STORAGE_KEYS.SETS, sets.toString());
 };
 
 export const loadTotalSets = (): number => {
+  // This function is deprecated - workout settings are now handled by StorageService
+  console.warn('loadTotalSets is deprecated, use StorageService.getWorkoutSettings instead');
   const saved = localStorage.getItem(STORAGE_KEYS.SETS);
   return saved ? parseInt(saved, 10) : DEFAULTS.TOTAL_SETS;
 };
 
 export const saveSettings = (settings: TimerSettings) => {
-  localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+  storageService.saveWorkoutSettings(settings);
 };
 
 export const loadSettings = (): TimerSettings => {
-  const saved = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-  return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+  return storageService.getWorkoutSettings() || DEFAULT_SETTINGS;
 };
 
 export const clearWorkoutState = () => {
-  localStorage.removeItem(STORAGE_KEYS.WORKOUT);
+  storageService.clearWorkoutState();
 };
 
 export const saveWorkoutToHistory = (workout: WorkoutState) => {
-  const historyEntry: WorkoutHistoryEntry = {
-    id: Date.now().toString(),
-    date: workout.statistics.workoutStartTime || Date.now(),
-    totalSets: workout.totalSets,
-    repsPerSet: workout.settings.repsPerSet,
-    timePerRep: workout.settings.timePerRep,
-    restTime: workout.settings.restTime,
-    stretchTime: workout.settings.stretchTime,
-    statistics: workout.statistics
-  };
-
-  const existingHistory = loadWorkoutHistory();
-  const newHistory = [historyEntry, ...existingHistory].slice(0, DEFAULTS.HISTORY_LIMIT);
-  
-  localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(newHistory));
+  storageService.saveWorkoutToHistory(workout);
 };
 
 export const loadWorkoutHistory = (): WorkoutHistoryEntry[] => {
-  const saved = localStorage.getItem(STORAGE_KEYS.HISTORY);
-  return saved ? JSON.parse(saved) : [];
+  return storageService.getWorkoutHistory();
 };
 
 export const clearWorkoutHistory = () => {
-  localStorage.removeItem(STORAGE_KEYS.HISTORY);
+  storageService.clearWorkoutHistory();
 };
 
 export const saveSoundEnabled = (enabled: boolean) => {
-  localStorage.setItem(STORAGE_KEYS.SOUND, enabled.toString());
+  storageService.setSoundEnabled(enabled);
 };
 
 export const loadSoundEnabled = (): boolean => {
-  const saved = localStorage.getItem(STORAGE_KEYS.SOUND);
-  return saved !== null ? saved === 'true' : DEFAULTS.SOUND_ENABLED;
+  return storageService.isSoundEnabled();
 };
 
 export const saveSoundVolume = (volume: number) => {
-  localStorage.setItem(STORAGE_KEYS.SOUND_VOLUME, volume.toString());
+  storageService.setVolume(volume);
 };
 
 export const loadSoundVolume = (): number => {
-  const saved = localStorage.getItem(STORAGE_KEYS.SOUND_VOLUME);
-  return saved !== null ? parseFloat(saved) : DEFAULTS.SOUND_VOLUME;
+  return storageService.getVolume();
 };
 
 export const savePreviousVolume = (volume: number) => {
+  // This function is deprecated - previous volume is not handled by StorageService
+  console.warn('savePreviousVolume is deprecated');
   localStorage.setItem(STORAGE_KEYS.PREVIOUS_VOLUME, volume.toString());
 };
 
 export const loadPreviousVolume = (): number => {
+  // This function is deprecated - previous volume is not handled by StorageService
+  console.warn('loadPreviousVolume is deprecated');
   const saved = localStorage.getItem(STORAGE_KEYS.PREVIOUS_VOLUME);
   return saved !== null ? parseFloat(saved) : DEFAULTS.SOUND_VOLUME;
 };
 
 export const saveAchievements = (achievements: Achievement[]) => {
-  localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(achievements));
+  storageService.saveAchievements(achievements);
 };
 
 export const loadAchievements = (): Achievement[] => {
-  const saved = localStorage.getItem(STORAGE_KEYS.ACHIEVEMENTS);
-  return saved ? JSON.parse(saved) : [];
+  return storageService.getAchievements();
 };
 
 export const clearAchievements = () => {
-  localStorage.removeItem(STORAGE_KEYS.ACHIEVEMENTS);
+  storageService.resetAchievements();
 };

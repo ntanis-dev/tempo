@@ -4,13 +4,14 @@ import { useUIStore } from '../store/uiStore';
 import { achievementProcessor } from '../utils/achievementProcessor';
 import { experienceProcessor } from '../utils/experienceProcessor';
 import { audioManager } from '../utils/audio';
+import { storageService } from '../services/storageService';
 
 interface AchievementContainerProps {
   workout: WorkoutState;
   isSetupPhase: boolean;
 }
 
-const ACHIEVEMENT_MODAL_DATA_KEY = 'tempo-achievement-modal-data';
+// Remove this constant as we now use StorageService methods
 
 export const AchievementContainer: React.FC<AchievementContainerProps> = React.memo(({
   workout,
@@ -38,7 +39,7 @@ export const AchievementContainer: React.FC<AchievementContainerProps> = React.m
 
     // Store modal data for later display
     if (modalData) {
-      localStorage.setItem(ACHIEVEMENT_MODAL_DATA_KEY, JSON.stringify(modalData));
+      storageService.saveAchievementModalData(modalData);
     }
 
     // Force refresh of level displays after XP processing
@@ -48,11 +49,11 @@ export const AchievementContainer: React.FC<AchievementContainerProps> = React.m
   useEffect(() => {
     if (workout.phase === 'complete' && workout.statistics.workoutStartTime) {
       const workoutId = workout.statistics.workoutStartTime?.toString();
-      const lastProcessedWorkout = localStorage.getItem('tempo-last-processed-workout');
+      const lastProcessedWorkout = storageService.getLastProcessedWorkout();
 
       if (lastProcessedWorkout !== workoutId) {
         processWorkoutAchievements();
-        localStorage.setItem('tempo-last-processed-workout', workoutId);
+        storageService.setLastProcessedWorkout(workoutId);
       }
     }
   }, [workout.phase, workout.statistics.workoutStartTime, processWorkoutAchievements]);
@@ -62,21 +63,15 @@ export const AchievementContainer: React.FC<AchievementContainerProps> = React.m
     // Only show achievements modal when on setup screen
     if (!isSetupPhase) return;
 
-    const savedModalData = localStorage.getItem(ACHIEVEMENT_MODAL_DATA_KEY);
+    const savedModalData = storageService.getAchievementModalData();
     if (savedModalData && !achievementModalData) {
-      try {
-        const modalData = JSON.parse(savedModalData);
-        if (modalData.unlockedAchievements?.length > 0 || modalData.progressAchievements?.length > 0) {
-          setAchievementModalData(modalData);
+      if (savedModalData.unlockedAchievements?.length > 0 || savedModalData.progressAchievements?.length > 0) {
+        setAchievementModalData(savedModalData);
 
-          // Play sound once if there are unlocked achievements
-          if (modalData.unlockedAchievements?.length > 0) {
-            audioManager.playAchievementUnlock();
-          }
+        // Play sound once if there are unlocked achievements
+        if (savedModalData.unlockedAchievements?.length > 0) {
+          audioManager.playAchievementUnlock();
         }
-      } catch (error) {
-        console.error('Failed to parse saved achievement modal data:', error);
-        localStorage.removeItem(ACHIEVEMENT_MODAL_DATA_KEY);
       }
     }
   }, [achievementModalData, isSetupPhase, setAchievementModalData]);
@@ -84,15 +79,10 @@ export const AchievementContainer: React.FC<AchievementContainerProps> = React.m
 
   // Handle showing achievements after workout reset
   const checkForPendingAchievements = (): boolean => {
-    const savedModalData = localStorage.getItem(ACHIEVEMENT_MODAL_DATA_KEY);
+    const savedModalData = storageService.getAchievementModalData();
     if (!savedModalData) return false;
 
-    try {
-      const modalData = JSON.parse(savedModalData);
-      return (modalData.unlockedAchievements?.length > 0 || modalData.progressAchievements?.length > 0);
-    } catch {
-      return false;
-    }
+    return (savedModalData.unlockedAchievements?.length > 0 || savedModalData.progressAchievements?.length > 0);
   };
 
   // Public method to handle reset with achievements
@@ -104,24 +94,17 @@ export const AchievementContainer: React.FC<AchievementContainerProps> = React.m
         setWaitingForAchievements(hasAchievements);
 
         if (hasAchievements) {
-          const savedModalData = localStorage.getItem(ACHIEVEMENT_MODAL_DATA_KEY);
+          const savedModalData = storageService.getAchievementModalData();
           if (savedModalData) {
-            try {
-              const modalData = JSON.parse(savedModalData);
+            // Show modal after a short delay to let reset animation complete
+            setTimeout(() => {
+              setAchievementModalData(savedModalData);
 
-              // Show modal after a short delay to let reset animation complete
-              setTimeout(() => {
-                setAchievementModalData(modalData);
-
-                // Play sound once if there are unlocked achievements
-                if (modalData.unlockedAchievements?.length > 0) {
-                  audioManager.playAchievementUnlock();
-                }
-              }, 750);
-            } catch (error) {
-              console.error('Failed to parse achievement modal data:', error);
-              setWaitingForAchievements(false);
-            }
+              // Play sound once if there are unlocked achievements
+              if (savedModalData.unlockedAchievements?.length > 0) {
+                audioManager.playAchievementUnlock();
+              }
+            }, 750);
           }
         }
       }

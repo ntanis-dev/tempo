@@ -1,4 +1,4 @@
-import { STORAGE_KEYS } from '../constants';
+import { storageService } from '../services/storageService';
 
 export class WhatsNewTracker {
   private currentVersion: string;
@@ -6,8 +6,8 @@ export class WhatsNewTracker {
 
   constructor(currentVersion: string) {
     this.currentVersion = currentVersion;
-    this.lastReadVersion = localStorage.getItem(STORAGE_KEYS.WHATS_NEW_VERSION_KEY);
-    
+    this.lastReadVersion = storageService.isWhatsNewRead(currentVersion) ? currentVersion : null;
+
     // If no version has been read before (first visit), automatically mark current as read
     // This prevents the indicator from showing on first visit
     if (this.lastReadVersion === null) {
@@ -22,7 +22,7 @@ export class WhatsNewTracker {
 
   markAsRead(): void {
     this.lastReadVersion = this.currentVersion;
-    localStorage.setItem(STORAGE_KEYS.WHATS_NEW_VERSION_KEY, this.currentVersion);
+    storageService.markWhatsNewAsRead(this.currentVersion);
   }
 
   getCurrentVersion(): string {
@@ -34,7 +34,7 @@ export class WhatsNewTracker {
   }
 
   refreshFromStorage(): void {
-    this.lastReadVersion = localStorage.getItem(STORAGE_KEYS.WHATS_NEW_VERSION_KEY);
+    this.lastReadVersion = storageService.isWhatsNewRead(this.currentVersion) ? this.currentVersion : null;
   }
 }
 

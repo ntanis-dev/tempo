@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { X, Trophy, Star } from 'lucide-react';
 import { TIME } from '../../constants';
 import { Achievement } from '../../types/achievements';
-import { achievementProcessor } from '../../utils/achievementProcessor';
 import { getSessionProgress, WorkoutData } from '../../utils/achievementFiltering';
 import { getRarityColor, getRarityText, sortAchievementsByRarity, calculateProgressPercent } from '../../utils/achievementUI';
 import { getAchievementDefinition } from '../../achievements';
@@ -25,9 +24,6 @@ export const AchievementProgressModal: React.FC<AchievementProgressModalProps> =
   const [isVisible, setIsVisible] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
 
-  // Only render if modal is open AND there are either unlocked achievements or progress updates on locked achievements
-  if (!isOpen || (achievements.length === 0 && progressAchievements.length === 0)) return null;
-
   // Fade in animation
   React.useEffect(() => {
     if (isOpen && !isClosing) {
@@ -37,6 +33,9 @@ export const AchievementProgressModal: React.FC<AchievementProgressModalProps> =
       setIsVisible(false);
     }
   }, [isOpen, isClosing]);
+
+  // Only render if modal is open AND there are either unlocked achievements or progress updates on locked achievements
+  if (!isOpen || (achievements.length === 0 && progressAchievements.length === 0)) return null;
 
   // Handle fade out transition
   const handleClose = () => {

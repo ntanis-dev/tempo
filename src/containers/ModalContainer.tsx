@@ -13,6 +13,7 @@ import { whatsNewTracker } from '../utils/whatsNewTracker';
 import { achievementProcessor } from '../utils/achievementProcessor';
 import { experienceProcessor } from '../utils/experienceProcessor';
 import { audioManager } from '../utils/audio';
+import { storageService } from '../services/storageService';
 
 interface ModalContainerProps {
   workoutHistory: WorkoutHistoryEntry[];
@@ -88,7 +89,7 @@ export const ModalContainer: React.FC<ModalContainerProps> = React.memo(({
 
   const handleCloseAchievementModal = () => {
     setAchievementModalData(null);
-    localStorage.removeItem('tempo-achievement-modal-data');
+    storageService.clearAchievementModalData();
   };
 
   return (

@@ -9,8 +9,19 @@ interface WorkoutStatsProps {
   workout: WorkoutState;
 }
 
-export const WorkoutStats: React.FC<WorkoutStatsProps> = ({ workout }) => {
-  const { date, time } = formatWorkoutDateTime(workout.statistics.workoutStartTime);
+export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout }) => {
+  // Memoize expensive date/time formatting
+  const { date, time } = React.useMemo(() =>
+    formatWorkoutDateTime(workout.statistics.workoutStartTime),
+    [workout.statistics.workoutStartTime]
+  );
+
+  // Memoize total workout time calculation
+  const totalWorkoutTime = React.useMemo(() =>
+    getTotalWorkoutTime(workout.statistics),
+    [workout.statistics]
+  );
+
   const [levelInfo, setLevelInfo] = React.useState(experienceProcessor.getCurrentLevelInfo());
 
   // Update level info when component mounts
@@ -82,7 +93,7 @@ export const WorkoutStats: React.FC<WorkoutStatsProps> = ({ workout }) => {
         
         {/* Row 3: Total Time */}
         <div className="text-center">
-          <div className="text-xl font-bold text-gray-700 font-mono">{formatDuration(getTotalWorkoutTime(workout.statistics))}</div>
+          <div className="text-xl font-bold text-gray-700 font-mono">{formatDuration(totalWorkoutTime)}</div>
           <div className="text-xs text-black font-sans">Total Time</div>
         </div>
       </div>
@@ -97,4 +108,4 @@ export const WorkoutStats: React.FC<WorkoutStatsProps> = ({ workout }) => {
     </div>
     </>
   );
-}
+});

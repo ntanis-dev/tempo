@@ -1,7 +1,6 @@
 import React from 'react';
 import { Play } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { SetupMenu } from './SetupMenu';
 
 interface SetupActionsProps {
   onStartWorkout: () => void;

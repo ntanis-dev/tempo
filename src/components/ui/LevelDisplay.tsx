@@ -10,13 +10,14 @@ interface LevelDisplayProps {
   onClick?: () => void;
 }
 
-export const LevelDisplay: React.FC<LevelDisplayProps> = ({ 
-  levelInfo, 
+export const LevelDisplay: React.FC<LevelDisplayProps> = React.memo(({
+  levelInfo,
   variant = 'compact',
   showTitle = true,
   onClick
 }) => {
-  const title = getLevelTitle(levelInfo.level);
+  // Memoize title calculation
+  const title = React.useMemo(() => getLevelTitle(levelInfo.level), [levelInfo.level]);
 
   if (variant === 'compact') {
     return (
@@ -76,4 +77,4 @@ export const LevelDisplay: React.FC<LevelDisplayProps> = ({
       </div>
     </div>
   );
-};
+});

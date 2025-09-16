@@ -1,10 +1,9 @@
 import React from 'react';
-import { X, Calendar, Clock, Target, Dumbbell, Timer, Eraser, Trophy } from 'lucide-react';
+import { Calendar, Clock, Target, Dumbbell, Timer, Eraser } from 'lucide-react';
 import { WorkoutHistoryEntry } from '../../types';
 import { ModalHeader } from '../ui/ModalHeader';
 import { Modal } from '../ui/Modal';
 import { formatDuration, getTotalWorkoutTime, formatRelativeDate, formatTimeOfDay } from '../../utils/formatters';
-import { useModalBackdrop } from '../../hooks/useModalBackdrop';
 import { MODAL_STYLES } from '../../constants/styles';
 
 interface WorkoutHistoryProps {
@@ -20,7 +19,7 @@ export const WorkoutHistory: React.FC<WorkoutHistoryProps> = ({ history, onClose
   const [hoveredLatest, setHoveredLatest] = React.useState(false);
   const [isVisible, setIsVisible] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
-  const handleBackdropClick = useModalBackdrop(onClose);
+  // const handleBackdropClick = useModalBackdrop(onClose);
 
   // Update local history when prop changes
   React.useEffect(() => {

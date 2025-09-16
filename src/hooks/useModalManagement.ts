@@ -6,8 +6,9 @@ import { experienceProcessor } from '../utils/experienceProcessor';
 import { whatsNewTracker } from '../utils/whatsNewTracker';
 import { clearWorkoutHistory } from '../utils/storage';
 import { WorkoutHistoryEntry } from '../types';
+import { storageService } from '../services/storageService';
 
-const ACHIEVEMENT_MODAL_DATA_KEY = 'tempo-achievement-modal-data';
+// Remove this constant as we now use StorageService methods
 
 /**
  * Custom hook to manage all modal states and their related actions
@@ -64,7 +65,7 @@ export const useModalManagement = (
 
   const handleCloseAchievementModal = useCallback(() => {
     setAchievementModalData(null);
-    localStorage.removeItem(ACHIEVEMENT_MODAL_DATA_KEY);
+    storageService.clearAchievementModalData();
   }, [setAchievementModalData]);
 
   // Storage Modal

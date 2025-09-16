@@ -59,12 +59,12 @@ export const WorkoutSettings: React.FC<WorkoutSettingsProps> = ({
     }
   }, [isDebugMode, settings.stretchTime, settings.restTime, onAdjustTime]);
   
-  const getMinValue = (type: 'stretch' | 'rest') => {
-    if (type === 'stretch') {
-      return isDebugMode ? 1 : LIMITS.STRETCH_TIME.MIN;
-    }
-    return isDebugMode ? 1 : LIMITS.REST_TIME.MIN;
-  };
+  // const getMinValue = (type: 'stretch' | 'rest') => {
+  //   if (type === 'stretch') {
+  //     return isDebugMode ? 1 : LIMITS.STRETCH_TIME.MIN;
+  //   }
+  //   return isDebugMode ? 1 : LIMITS.REST_TIME.MIN;
+  // };
 
   return (
     <div className="my-4 sm:my-8 md:my-12 bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-white/20 shadow-lg relative max-w-xl mx-auto">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { setUpdateCallback, refreshApp } from '../main';
 import { useWorkoutTimer } from '../hooks/useWorkoutTimer';
 import { useClickToResume } from '../hooks/useClickToResume';
@@ -11,16 +11,30 @@ import { SetupScreen } from './SetupScreen';
 import { PrepareScreen } from './PrepareScreen';
 import { CompleteScreen } from './CompleteScreen';
 import { WorkoutScreen } from './WorkoutScreen';
-import { WorkoutHistory } from './history/WorkoutHistory';
-import { AchievementsModal } from './achievements/AchievementsModal';
 import { AchievementProgressModal } from './achievements/AchievementProgressModal';
-import { StorageModal } from './StorageModal';
 import { PauseOverlay } from './workout/PauseOverlay';
 import { PWAInstallModal } from './setup/PWAInstallModal';
-import { ExperienceModal } from './levels/ExperienceModal';
-import { WhatsNewModal } from './whats-new/WhatsNewModal';
 import { NotificationSystem } from './ui/NotificationSystem';
 import { UpdateBar } from './ui/UpdateBar';
+
+// Lazy load heavy modal components
+const WorkoutHistory = React.lazy(() => import('./history/WorkoutHistory').then(module => ({ default: module.WorkoutHistory })));
+const AchievementsModal = React.lazy(() => import('./achievements/AchievementsModal').then(module => ({ default: module.AchievementsModal })));
+const StorageModal = React.lazy(() => import('./StorageModal').then(module => ({ default: module.StorageModal })));
+const ExperienceModal = React.lazy(() => import('./levels/ExperienceModal').then(module => ({ default: module.ExperienceModal })));
+const WhatsNewModal = React.lazy(() => import('./whats-new/WhatsNewModal').then(module => ({ default: module.WhatsNewModal })));
+
+// Loading fallback component
+const ModalLoadingFallback: React.FC = () => (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-black/30 rounded-2xl border border-white/10 p-8 max-w-sm mx-4">
+      <div className="flex items-center justify-center space-x-3">
+        <div className="animate-spin rounded-full h-6 w-6 border-2 border-white/30 border-t-white"></div>
+        <span className="text-white font-medium">Loading...</span>
+      </div>
+    </div>
+  </div>
+);
 
 export const WorkoutAppContent: React.FC = () => {
   // Core workout functionality
@@ -97,49 +111,59 @@ export const WorkoutAppContent: React.FC = () => {
         )}
       />
 
-      {/* Modals */}
+      {/* Modals with Suspense */}
       {modalHandlers.showHistory && (
-        <WorkoutHistory
-          history={workoutHistory}
-          onClose={modalHandlers.hideWorkoutHistory}
-          onClearHistory={modalHandlers.handleClearHistory}
-          onShowSuccess={showSuccess}
-        />
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <WorkoutHistory
+            history={workoutHistory}
+            onClose={modalHandlers.hideWorkoutHistory}
+            onClearHistory={modalHandlers.handleClearHistory}
+            onShowSuccess={showSuccess}
+          />
+        </Suspense>
       )}
 
       {modalHandlers.showAchievements && (
-        <AchievementsModal
-          isOpen={modalHandlers.showAchievements}
-          onClose={modalHandlers.hideAchievementsModal}
-          onShowSuccess={showSuccess}
-        />
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <AchievementsModal
+            isOpen={modalHandlers.showAchievements}
+            onClose={modalHandlers.hideAchievementsModal}
+            onShowSuccess={showSuccess}
+          />
+        </Suspense>
       )}
 
       {modalHandlers.showStorage && (
-        <StorageModal
-          isOpen={modalHandlers.showStorage}
-          onClose={modalHandlers.hideStorageModal}
-          onShowSuccess={modalHandlers.handleStorageExportSuccess}
-          onClearSuccess={modalHandlers.handleStorageClearSuccess}
-          onShowError={modalHandlers.handleStorageError}
-          onImportSuccess={modalHandlers.handleStorageImportSuccess}
-        />
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <StorageModal
+            isOpen={modalHandlers.showStorage}
+            onClose={modalHandlers.hideStorageModal}
+            onShowSuccess={modalHandlers.handleStorageExportSuccess}
+            onClearSuccess={modalHandlers.handleStorageClearSuccess}
+            onShowError={modalHandlers.handleStorageError}
+            onImportSuccess={modalHandlers.handleStorageImportSuccess}
+          />
+        </Suspense>
       )}
 
       {modalHandlers.showLevels && (
-        <ExperienceModal
-          isOpen={modalHandlers.showLevels}
-          onClose={modalHandlers.hideLevelsModal}
-          onShowSuccess={showSuccess}
-        />
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <ExperienceModal
+            isOpen={modalHandlers.showLevels}
+            onClose={modalHandlers.hideLevelsModal}
+            onShowSuccess={showSuccess}
+          />
+        </Suspense>
       )}
 
       {modalHandlers.showWhatsNew && (
-        <WhatsNewModal
-          isOpen={modalHandlers.showWhatsNew}
-          onClose={modalHandlers.hideWhatsNewModal}
-          onMarkAsRead={modalHandlers.handleWhatsNewRead}
-        />
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <WhatsNewModal
+            isOpen={modalHandlers.showWhatsNew}
+            onClose={modalHandlers.hideWhatsNewModal}
+            onMarkAsRead={modalHandlers.handleWhatsNewRead}
+          />
+        </Suspense>
       )}
 
       <PWAInstallModal />

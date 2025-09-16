@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { STORAGE_KEYS } from '../constants';
+import { storageService } from '../services/storageService';
 
 export const useDebugMode = () => {
   const [isDebugMode, setIsDebugMode] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.DEBUG_MODE);
-    return saved === 'true';
+    return storageService.isDebugMode();
   });
 
   useEffect(() => {
@@ -13,7 +12,7 @@ export const useDebugMode = () => {
         event.preventDefault();
         const newDebugMode = !isDebugMode;
         setIsDebugMode(newDebugMode);
-        localStorage.setItem(STORAGE_KEYS.DEBUG_MODE, newDebugMode.toString());
+        storageService.setDebugMode(newDebugMode);
       }
     };
 

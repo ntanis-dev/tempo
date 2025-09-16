@@ -1,5 +1,5 @@
 import React from 'react';
-import { WorkoutState, Phase } from '../types';
+import { WorkoutState } from '../types';
 import { TIME } from '../constants';
 import { getPhases } from '../utils/timer';
 import { SoundToggle } from './common/SoundToggle';
@@ -11,7 +11,6 @@ import { QuoteDisplay } from './workout/QuoteDisplay';
 import { WorkoutControls } from './workout/WorkoutControls';
 import { useFadeIn } from '../hooks/useFadeIn';
 import { getFadeClasses } from '../utils/classNames';
-import { getCurrentRep, calculateWorkoutProgress } from '../utils/workoutCalculations';
 
 interface WorkoutScreenProps {
   workout: WorkoutState;
@@ -77,15 +76,15 @@ export const WorkoutScreen: React.FC<WorkoutScreenProps> = ({
     return ((currentPhase.duration - workout.timeRemaining) / currentPhase.duration) * 100;
   };
 
-  const getOverallProgress = () => {
-    if (workout.phase === 'setup' || workout.phase === 'prepare') return 0;
-    if (workout.phase === 'complete') return 100;
-    
-    // Count completed sets (a set is complete when rest finishes)
-    const completedSets = workout.currentSet - 1;
-    
-    return (completedSets / workout.totalSets) * 100;
-  };
+  // const getOverallProgress = () => {
+  //   if (workout.phase === 'setup' || workout.phase === 'prepare') return 0;
+  //   if (workout.phase === 'complete') return 100;
+  //
+  //   // Count completed sets (a set is complete when rest finishes)
+  //   const completedSets = workout.currentSet - 1;
+  //
+  //   return (completedSets / workout.totalSets) * 100;
+  // };
 
   const getSubtitle = () => {
     switch (workout.phase) {
@@ -100,7 +99,7 @@ export const WorkoutScreen: React.FC<WorkoutScreenProps> = ({
     }
   }
   const currentPhase = getCurrentPhase();
-  const overallProgress = calculateWorkoutProgress(workout);
+  // const overallProgress = calculateWorkoutProgress(workout);
 
   return (
     <div className={`min-height h-screen flex flex-col items-center justify-center p-4 text-white w-full ${getFadeClasses(isVisible, isResetting)} ${hideUI ? 'cursor-none' : ''}`}>

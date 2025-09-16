@@ -4,7 +4,6 @@ import { Achievement } from '../../types/achievements';
 import { achievementProcessor } from '../../utils/achievementProcessor';
 import { Modal } from '../ui/Modal';
 import { ModalHeader } from '../ui/ModalHeader';
-import { useModalBackdrop } from '../../hooks/useModalBackdrop';
 import { MODAL_STYLES } from '../../constants/styles';
 import { useDebugMode } from '../../contexts/DebugContext';
 import { getRarityColor, getRarityText, getRarityBadgeClasses, sortAchievementsByRarity, getAchievementDisplay, calculateProgressPercent } from '../../utils/achievementUI';
@@ -21,7 +20,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const handleBackdropClick = useModalBackdrop(onClose);
+  // const handleBackdropClick = useModalBackdrop(onClose);
 
   // Load achievements whenever modal opens
   React.useEffect(() => {

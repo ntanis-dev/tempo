@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createContext, useContext, useState } from 'react';
-import { STORAGE_KEYS } from '../constants';
+import { storageService } from '../services/storageService';
 
 interface DebugContextType {
   isDebugMode: boolean;
@@ -11,13 +11,12 @@ const DebugContext = createContext<DebugContextType | undefined>(undefined);
 
 export const DebugProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isDebugMode, setIsDebugMode] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.DEBUG_MODE);
-    return saved === 'true';
+    return storageService.isDebugMode();
   });
 
   const setDebugMode = (enabled: boolean) => {
     setIsDebugMode(enabled);
-    localStorage.setItem(STORAGE_KEYS.DEBUG_MODE, enabled.toString());
+    storageService.setDebugMode(enabled);
   };
 
   return (
@@ -27,6 +26,7 @@ export const DebugProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useDebugMode = (): [boolean, (enabled: boolean) => void] => {
   const context = useContext(DebugContext);
   if (context === undefined) {

@@ -8,29 +8,28 @@ interface WorkoutProgressProps {
   workout: WorkoutState;
 }
 
-export const WorkoutProgress: React.FC<WorkoutProgressProps> = ({
+export const WorkoutProgress: React.FC<WorkoutProgressProps> = React.memo(({
   workout,
 }) => {
-  const remainingTime = calculateRemainingTime(workout);
-  
+  // Memoize expensive calculations
+  const remainingTime = React.useMemo(() => calculateRemainingTime(workout), [workout]);
+
   // Calculate sets-based progress percentage
-  const setsProgress = calculateWorkoutProgress(workout);
-  
-  // Calculate time-based percentage for display
-  const calculateTimePercentage = () => {
+  const setsProgress = React.useMemo(() => calculateWorkoutProgress(workout), [workout]);
+
+  // Memoize time-based percentage calculation
+  const timePercentage = React.useMemo(() => {
     if (workout.phase === 'setup' || workout.phase === 'prepare') return 0;
     if (workout.phase === 'complete') return 100;
-    
+
     // Total workout duration
-    const totalTime = workout.settings.stretchTime + 
-      (workout.totalSets * workout.settings.timePerRep * workout.settings.repsPerSet) + 
+    const totalTime = workout.settings.stretchTime +
+      (workout.totalSets * workout.settings.timePerRep * workout.settings.repsPerSet) +
       ((workout.totalSets - 1) * workout.settings.restTime);
-    
+
     const elapsedTime = totalTime - remainingTime;
     return Math.min(100, Math.max(0, (elapsedTime / totalTime) * 100));
-  };
-  
-  const timePercentage = calculateTimePercentage();
+  }, [workout, remainingTime]);
 
   return (
     <div className="mb-10 font-sans">
@@ -44,4 +43,4 @@ export const WorkoutProgress: React.FC<WorkoutProgressProps> = ({
       />
     </div>
   );
-};
+});

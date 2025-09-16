@@ -25,10 +25,10 @@ export const firstWorkoutAchievement: AchievementDefinition = {
   category: 'milestone',
   rarity: 'common',
   
-  checkUnlock: (_workout: WorkoutState, _data: AchievementData) => {
+  checkUnlock: () => {
     return true; // Always unlocks on first completed workout
   },
 
-  hasSessionProgress: (_workoutData: WorkoutSessionData) => true,
-  getSessionProgress: (_workoutData: WorkoutSessionData) => '+ First workout!'
+  hasSessionProgress: () => true,
+  getSessionProgress: () => '+ First workout!'
 };

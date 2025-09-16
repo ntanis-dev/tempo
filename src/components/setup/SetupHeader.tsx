@@ -1,7 +1,7 @@
 import React from 'react';
 import { Timer } from 'lucide-react';
 
-export const SetupHeader: React.FC = () => {
+export const SetupHeader: React.FC = React.memo(() => {
   return (
     <div className="mb-4 font-sans">
       <Timer className="w-12 h-12 mx-auto mb-2 text-orange-400 hidden sm:block" />
@@ -11,4 +11,4 @@ export const SetupHeader: React.FC = () => {
       </p>
     </div>
   );
-};
+});

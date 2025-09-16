@@ -3,6 +3,7 @@ import { WorkoutState } from '../types';
 import { ALL_ACHIEVEMENTS } from '../achievements';
 import { saveAchievements, loadAchievements } from './storage';
 import { STORAGE_KEYS, UI } from '../constants';
+import { storageService } from '../services/storageService';
 
 export interface AchievementUpdate {
   achievement: Achievement;
@@ -121,17 +122,15 @@ export class AchievementProcessor {
   }
 
   private incrementRestSkipAttempts() {
-    const current = this.getRestSkipAttempts();
-    localStorage.setItem(STORAGE_KEYS.REST_SKIP_ATTEMPTS, (current + 1).toString());
+    storageService.incrementRestSkipAttempts();
   }
 
   private getRestSkipAttempts(): number {
-    const saved = localStorage.getItem(STORAGE_KEYS.REST_SKIP_ATTEMPTS);
-    return saved ? parseInt(saved, 10) : 0;
+    return storageService.getRestSkipAttempts();
   }
 
   private clearRestSkipAttempts() {
-    localStorage.removeItem(STORAGE_KEYS.REST_SKIP_ATTEMPTS);
+    storageService.clearRestSkipAttempts();
   }
 
   private updateWeeklyStreak(workoutDate: Date) {
@@ -372,7 +371,7 @@ export class AchievementProcessor {
     
     this.saveAchievements();
     this.saveAchievementData();
-    localStorage.removeItem(STORAGE_KEYS.REST_SKIP_ATTEMPTS);
+    storageService.clearRestSkipAttempts();
   }
 
   refreshFromStorage() {

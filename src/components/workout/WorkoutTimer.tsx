@@ -6,10 +6,10 @@ interface WorkoutTimerProps {
   phase: string;
 }
 
-export const WorkoutTimer: React.FC<WorkoutTimerProps> = ({ timeRemaining }) => {
+export const WorkoutTimer: React.FC<WorkoutTimerProps> = React.memo(({ timeRemaining }) => {
   return (
     <div className="text-8xl font-bold mb-10 tabular-nums font-mono">
       {formatTime(timeRemaining)}
     </div>
   );
-};
+});
