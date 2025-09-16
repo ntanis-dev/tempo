@@ -20,6 +20,27 @@ export const useAchievementProcessing = (workout: WorkoutState, resetWorkout: ()
     incrementStorageRefreshKey,
   } = useUIStore();
 
+  const processWorkoutAchievements = useCallback(() => {
+    // Process XP gains (no UI notification)
+    experienceProcessor.processWorkoutCompletion(workout);
+
+    // Process achievements (this will unlock some and update progress)
+    const { updates, modalData } = achievementProcessor.processWorkoutCompletion(workout);
+
+    // Award XP for achievement unlocks
+    updates
+      .filter(({ wasJustUnlocked }) => wasJustUnlocked)
+      .forEach(() => experienceProcessor.processAchievementUnlock());
+
+    // Store modal data for later display
+    if (modalData) {
+      storageService.saveAchievementModalData(modalData);
+    }
+
+    // Force refresh of level displays after XP processing
+    incrementStorageRefreshKey();
+  }, [workout, incrementStorageRefreshKey]);
+
   // Process achievements when workout completes
   useEffect(() => {
     if (workout.phase === 'complete' && workout.statistics.workoutStartTime) {
@@ -50,27 +71,6 @@ export const useAchievementProcessing = (workout: WorkoutState, resetWorkout: ()
       }
     }
   }, [achievementModalData, workout.phase, setAchievementModalData]);
-
-  const processWorkoutAchievements = useCallback(() => {
-    // Process XP gains (no UI notification)
-    experienceProcessor.processWorkoutCompletion(workout);
-
-    // Process achievements (this will unlock some and update progress)
-    const { updates, modalData } = achievementProcessor.processWorkoutCompletion(workout);
-
-    // Award XP for achievement unlocks
-    updates
-      .filter(({ wasJustUnlocked }) => wasJustUnlocked)
-      .forEach(() => experienceProcessor.processAchievementUnlock());
-
-    // Store modal data for later display
-    if (modalData) {
-      storageService.saveAchievementModalData(modalData);
-    }
-
-    // Force refresh of level displays after XP processing
-    incrementStorageRefreshKey();
-  }, [workout, incrementStorageRefreshKey]);
 
   const handleResetWorkout = useCallback(() => {
     // Check if there are achievements to show BEFORE resetting
