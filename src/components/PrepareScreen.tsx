@@ -1,15 +1,13 @@
 import React from 'react';
-import { WorkoutState } from '../types';
 import { SoundToggle } from './common/SoundToggle';
 import { useFadeIn } from '../hooks/useFadeIn';
 import { useDebugMode } from '../contexts/DebugContext';
 import { getFadeClasses } from '../utils/classNames';
 import { audioManager } from '../utils/audio';
-import { CheckCircle, RotateCcw, Zap, Timer, Play, Loader2 } from 'lucide-react';
+import { RotateCcw, Zap, Loader2 } from 'lucide-react';
 import { Button } from './ui/Button';
 
 interface PrepareScreenProps {
-  workout: WorkoutState;
   onContinue: () => void;
   onResetWorkout: () => void;
   isResetting: boolean;
@@ -25,7 +23,6 @@ const preWorkoutTips = [
 ];
 
 export const PrepareScreen: React.FC<PrepareScreenProps> = ({
-  workout,
   onContinue,
   onResetWorkout,
   isResetting,

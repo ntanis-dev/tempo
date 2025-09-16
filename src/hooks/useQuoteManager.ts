@@ -58,7 +58,7 @@ export const useQuoteManager = (
   // Update quotes when phase changes
   useEffect(() => {
     updateQuoteForPhase(workout.phase);
-  }, [workout.phase]);
+  }, [workout.phase, updateQuoteForPhase]);
 
   const resetQuotes = useCallback(() => {
     updateWorkout(prev => ({

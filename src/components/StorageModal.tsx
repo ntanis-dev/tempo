@@ -3,7 +3,6 @@ import { Download, Upload, Database, FileText, AlertTriangle, Trash2 } from 'luc
 import { Modal } from './ui/Modal';
 import { ModalHeader } from './ui/ModalHeader';
 import { Button } from './ui/Button';
-import { useModalBackdrop } from '../hooks/useModalBackdrop';
 import { MODAL_STYLES } from '../constants/styles';
 
 interface StorageModalProps {
@@ -24,7 +23,6 @@ export const StorageModal: React.FC<StorageModalProps> = ({
   onImportSuccess
 }) => {
   const [activeTab, setActiveTab] = useState<'export' | 'import'>('export');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -125,25 +123,23 @@ export const StorageModal: React.FC<StorageModalProps> = ({
     const file = event.target.files?.[0];
     if (file) {
       if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-        setImportError('Please select a JSON backup file.');
+        onShowError('Please select a JSON backup file.');
         return;
       }
-      setSelectedFile(file);
       // Automatically start import when file is selected
       handleImportData(file);
     }
   };
 
-  const handleImportData = async (file?: File) => {
-    const fileToImport = file || selectedFile;
-    if (!fileToImport) {
+  const handleImportData = async (file: File) => {
+    if (!file) {
       onShowError('Please select a backup file first.');
       return;
     }
 
 
     try {
-      const fileContent = await fileToImport.text();
+      const fileContent = await file.text();
       const parsed = JSON.parse(fileContent);
       
       if (!parsed.data || typeof parsed.data !== 'object') {
@@ -184,14 +180,13 @@ export const StorageModal: React.FC<StorageModalProps> = ({
       if (input) {
         input.value = '';
       }
-      setSelectedFile(null);
     }
   };
 
   const getStorageSize = () => {
     let total = 0;
-    for (let key in localStorage) {
-      if (localStorage.hasOwnProperty(key) && key.startsWith('tempo-')) {
+    for (const key in localStorage) {
+      if (Object.prototype.hasOwnProperty.call(localStorage, key) && key.startsWith('tempo-')) {
         total += localStorage[key].length;
       }
     }
@@ -199,8 +194,8 @@ export const StorageModal: React.FC<StorageModalProps> = ({
   };
 
   const hasStorageData = () => {
-    for (let key in localStorage) {
-      if (localStorage.hasOwnProperty(key) && key.startsWith('tempo-')) {
+    for (const key in localStorage) {
+      if (Object.prototype.hasOwnProperty.call(localStorage, key) && key.startsWith('tempo-')) {
         return true;
       }
     }

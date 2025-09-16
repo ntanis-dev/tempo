@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { WorkoutState } from '../types';
 import { useUIStore } from '../store/uiStore';
 import { achievementProcessor } from '../utils/achievementProcessor';
@@ -24,6 +24,27 @@ export const AchievementContainer: React.FC<AchievementContainerProps> = React.m
   } = useUIStore();
 
   // Process achievements when workout completes
+  const processWorkoutAchievements = useCallback(() => {
+    // Process XP gains (no UI notification)
+    experienceProcessor.processWorkoutCompletion(workout);
+
+    // Process achievements (this will unlock some and update progress)
+    const { updates, modalData } = achievementProcessor.processWorkoutCompletion(workout);
+
+    // Award XP for achievement unlocks
+    updates
+      .filter(({ wasJustUnlocked }) => wasJustUnlocked)
+      .forEach(() => experienceProcessor.processAchievementUnlock());
+
+    // Store modal data for later display
+    if (modalData) {
+      localStorage.setItem(ACHIEVEMENT_MODAL_DATA_KEY, JSON.stringify(modalData));
+    }
+
+    // Force refresh of level displays after XP processing
+    incrementStorageRefreshKey();
+  }, [workout, incrementStorageRefreshKey]);
+
   useEffect(() => {
     if (workout.phase === 'complete' && workout.statistics.workoutStartTime) {
       const workoutId = workout.statistics.workoutStartTime?.toString();
@@ -34,7 +55,7 @@ export const AchievementContainer: React.FC<AchievementContainerProps> = React.m
         localStorage.setItem('tempo-last-processed-workout', workoutId);
       }
     }
-  }, [workout.phase, workout.statistics.workoutStartTime]);
+  }, [workout.phase, workout.statistics.workoutStartTime, processWorkoutAchievements]);
 
   // Check for pending achievement modal data on app load/refresh
   useEffect(() => {
@@ -60,26 +81,6 @@ export const AchievementContainer: React.FC<AchievementContainerProps> = React.m
     }
   }, [achievementModalData, isSetupPhase, setAchievementModalData]);
 
-  const processWorkoutAchievements = () => {
-    // Process XP gains (no UI notification)
-    experienceProcessor.processWorkoutCompletion(workout);
-
-    // Process achievements (this will unlock some and update progress)
-    const { updates, modalData } = achievementProcessor.processWorkoutCompletion(workout);
-
-    // Award XP for achievement unlocks
-    updates
-      .filter(({ wasJustUnlocked }) => wasJustUnlocked)
-      .forEach(() => experienceProcessor.processAchievementUnlock());
-
-    // Store modal data for later display
-    if (modalData) {
-      localStorage.setItem(ACHIEVEMENT_MODAL_DATA_KEY, JSON.stringify(modalData));
-    }
-
-    // Force refresh of level displays after XP processing
-    incrementStorageRefreshKey();
-  };
 
   // Handle showing achievements after workout reset
   const checkForPendingAchievements = (): boolean => {
@@ -125,7 +126,7 @@ export const AchievementContainer: React.FC<AchievementContainerProps> = React.m
         }
       }
     }),
-    []
+    [setAchievementModalData, setWaitingForAchievements]
   );
 
   return null; // This is a logic-only container

@@ -2,6 +2,16 @@ import { WorkoutState, WorkoutHistoryEntry, WorkoutSettings } from '../types';
 import { Achievement } from '../types/achievements';
 import { ExperienceData } from '../types/experience';
 
+// Achievement modal data type
+interface AchievementModalData {
+  achievementId: string;
+  title: string;
+  description: string;
+  icon: string;
+  rarity: string;
+  category: string;
+}
+
 /**
  * Centralized storage service for all localStorage operations
  * Provides type-safe methods for reading and writing data
@@ -124,7 +134,7 @@ class StorageService {
     this.removeItem(this.KEYS.ACHIEVEMENTS);
   }
 
-  getAchievementModalData(): any | null {
+  getAchievementModalData(): AchievementModalData | null {
     const data = localStorage.getItem(this.KEYS.ACHIEVEMENT_MODAL_DATA);
     if (!data) return null;
 
@@ -136,7 +146,7 @@ class StorageService {
     }
   }
 
-  saveAchievementModalData(data: any): void {
+  saveAchievementModalData(data: AchievementModalData): void {
     this.setItem(this.KEYS.ACHIEVEMENT_MODAL_DATA, data);
   }
 
@@ -262,7 +272,7 @@ class StorageService {
 
   clearAllData(): void {
     // Clear all app data except PWA detection
-    Object.entries(this.KEYS).forEach(([key, value]) => {
+    Object.entries(this.KEYS).forEach(([, value]) => {
       if (value !== this.KEYS.PWA_DETECTED) {
         this.removeItem(value);
       }

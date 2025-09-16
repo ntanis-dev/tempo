@@ -1,5 +1,5 @@
 import { useCallback, useRef, useEffect } from 'react';
-import { WorkoutState, WorkoutStatistics } from '../types';
+import { WorkoutState } from '../types';
 
 export const useWorkoutStatistics = (
   workout: WorkoutState,
@@ -61,7 +61,7 @@ export const useWorkoutStatistics = (
     }
 
     lastPhaseChangeRef.current = now;
-  }, [workout.phase]);
+  }, [workout.phase, updateStatistics]);
 
   const startWorkoutTracking = useCallback(() => {
     updateWorkout(prev => ({
@@ -74,20 +74,8 @@ export const useWorkoutStatistics = (
     }));
   }, [updateWorkout]);
 
-  const completeRep = useCallback(() => {
-    updateWorkout(prev => ({
-      ...prev,
-      statistics: {
-        ...prev.statistics,
-        totalRepsCompleted: prev.statistics.totalRepsCompleted + 1,
-        lastActiveTime: Date.now()
-      }
-    }));
-  }, [updateWorkout]);
-
   return {
     startWorkoutTracking,
-    completeRep,
     updateStatistics
   };
 };

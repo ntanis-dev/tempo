@@ -30,7 +30,7 @@ export const useAchievementProcessing = (workout: WorkoutState, resetWorkout: ()
         localStorage.setItem('tempo-last-processed-workout', workoutId);
       }
     }
-  }, [workout.phase, workout.statistics.workoutStartTime]);
+  }, [workout.phase, workout.statistics.workoutStartTime, processWorkoutAchievements]);
 
   // Check for pending achievement modal data on app load/refresh
   useEffect(() => {

@@ -4,8 +4,6 @@ import { SoundToggle } from './common/SoundToggle';
 import { FireworksAnimation } from './complete/FireworksAnimation';
 import { WorkoutStats } from './complete/WorkoutStats';
 import { CompletionActions } from './complete/CompletionActions';
-import { LevelDisplay } from './ui/LevelDisplay';
-import { experienceProcessor } from '../utils/experienceProcessor';
 import { useFadeIn } from '../hooks/useFadeIn';
 import { getFadeClasses } from '../utils/classNames';
 
@@ -13,26 +11,15 @@ interface CompleteScreenProps {
   workout: WorkoutState;
   onResetWorkout: () => void;
   isResetting?: boolean;
-  onShowSuccess: (title: string, message?: string) => void;
-  onShowError: (title: string, message?: string) => void;
-  storageRefreshKey?: number;
 }
 
 export const CompleteScreen: React.FC<CompleteScreenProps> = ({
   workout,
   onResetWorkout,
-  isResetting = false,
-  onShowSuccess,
-  onShowError,
-  storageRefreshKey = 0
+  isResetting = false
 }) => {
   const isVisible = useFadeIn();
-  const [levelInfo, setLevelInfo] = React.useState(experienceProcessor.getCurrentLevelInfo());
 
-  // Update level info when component mounts or when storage is refreshed
-  React.useEffect(() => {
-    setLevelInfo(experienceProcessor.getCurrentLevelInfo());
-  }, [storageRefreshKey]);
 
   return (
     <div className={`min-height h-screen flex items-center justify-center p-4 w-full ${getFadeClasses(isVisible, isResetting)}`}>

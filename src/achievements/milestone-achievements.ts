@@ -9,14 +9,14 @@ export const milestoneAchievements: AchievementDefinition[] = [
     category: 'milestone',
     rarity: 'rare',
     
-    checkUnlock: (workout, data) => {
-      const totalTimeSeconds = workout.statistics.totalTimeStretched + 
-                             workout.statistics.totalTimeExercised + 
+    checkUnlock: (workout, _data) => {
+      const totalTimeSeconds = workout.statistics.totalTimeStretched +
+                             workout.statistics.totalTimeExercised +
                              workout.statistics.totalTimeRested;
       return Math.floor(totalTimeSeconds / 60) >= 30;
     },
-    
-    hasSessionProgress: (workoutData) => true,
+
+    hasSessionProgress: (_workoutData) => true,
     getSessionProgress: (workoutData) => `+ ${Math.floor((workoutData?.timeSeconds || 0) / 60)} min workout`
   },
   
@@ -28,14 +28,14 @@ export const milestoneAchievements: AchievementDefinition[] = [
     category: 'milestone',
     rarity: 'epic',
     
-    checkUnlock: (workout, data) => {
-      const totalTimeSeconds = workout.statistics.totalTimeStretched + 
-                             workout.statistics.totalTimeExercised + 
+    checkUnlock: (workout, _data) => {
+      const totalTimeSeconds = workout.statistics.totalTimeStretched +
+                             workout.statistics.totalTimeExercised +
                              workout.statistics.totalTimeRested;
       return Math.floor(totalTimeSeconds / 60) >= 45;
     },
-    
-    hasSessionProgress: (workoutData) => true,
+
+    hasSessionProgress: (_workoutData) => true,
     getSessionProgress: (workoutData) => `+ ${Math.floor((workoutData?.timeSeconds || 0) / 60)} min workout`
   },
   
@@ -47,8 +47,8 @@ export const milestoneAchievements: AchievementDefinition[] = [
     category: 'milestone',
     rarity: 'epic',
     
-    checkUnlock: (workout, data) => workout.totalSets >= 30,
-    hasSessionProgress: (workoutData) => true,
+    checkUnlock: (workout, _data) => workout.totalSets >= 30,
+    hasSessionProgress: (_workoutData) => true,
     getSessionProgress: (workoutData) => `+ ${workoutData?.sets || 0} sets in one workout`
   }
 ];

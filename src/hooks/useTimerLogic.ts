@@ -125,7 +125,7 @@ function handlePhaseTransition(state: WorkoutState): WorkoutState {
         currentRep: 1
       };
 
-    case 'work':
+    case 'work': {
       // Work → Rest or Complete
       const isLastSet = state.currentSet >= state.totalSets;
 
@@ -148,6 +148,7 @@ function handlePhaseTransition(state: WorkoutState): WorkoutState {
           currentRep: 1
         };
       }
+    }
 
     case 'rest':
       // Rest → Work (next set)

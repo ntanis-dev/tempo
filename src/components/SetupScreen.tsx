@@ -21,7 +21,6 @@ interface SetupScreenProps {
   onShowStorage: () => void;
   onShowLevels: () => void;
   onShowWhatsNew: () => void;
-  onShowSuccess: (title: string, message?: string) => void;
   isTransitioning: boolean;
   isResetting: boolean;
   waitingForAchievements: boolean;
@@ -39,7 +38,6 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
   onShowStorage,
   onShowLevels,
   onShowWhatsNew,
-  onShowSuccess,
   isTransitioning,
   isResetting,
   waitingForAchievements,

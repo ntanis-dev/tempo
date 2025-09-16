@@ -1,7 +1,6 @@
 import React from 'react';
 import { Pause, RotateCcw, SkipForward } from 'lucide-react';
 import { TIME } from '../../constants';
-import { Button } from '../ui/Button';
 
 interface WorkoutControlsProps {
   onTogglePause: () => void;

@@ -9,9 +9,9 @@ export const specialAchievements: AchievementDefinition[] = [
     category: 'special',
     rarity: 'rare',
     
-    checkUnlock: (workout, data) => workout.settings.timePerRep === 1,
-    hasSessionProgress: (workoutData) => true,
-    getSessionProgress: (workoutData) => '+ Speed workout completed'
+    checkUnlock: (workout, _data) => workout.settings.timePerRep === 1,
+    hasSessionProgress: (_workoutData) => true,
+    getSessionProgress: (_workoutData) => '+ Speed workout completed'
   },
   
   {
@@ -22,9 +22,9 @@ export const specialAchievements: AchievementDefinition[] = [
     category: 'special',
     rarity: 'epic',
     
-    checkUnlock: (workout, data) => workout.settings.timePerRep === 10,
-    hasSessionProgress: (workoutData) => true,
-    getSessionProgress: (workoutData) => '+ Zen workout completed'
+    checkUnlock: (workout, _data) => workout.settings.timePerRep === 10,
+    hasSessionProgress: (_workoutData) => true,
+    getSessionProgress: (_workoutData) => '+ Zen workout completed'
   },
   
   {
@@ -35,9 +35,9 @@ export const specialAchievements: AchievementDefinition[] = [
     category: 'special',
     rarity: 'common',
     
-    checkUnlock: (workout, data) => workout.totalSets === 1,
-    hasSessionProgress: (workoutData) => true,
-    getSessionProgress: (workoutData) => '+ Minimal workout completed'
+    checkUnlock: (workout, _data) => workout.totalSets === 1,
+    hasSessionProgress: (_workoutData) => true,
+    getSessionProgress: (_workoutData) => '+ Minimal workout completed'
   },
   
   {
@@ -48,9 +48,9 @@ export const specialAchievements: AchievementDefinition[] = [
     category: 'special',
     rarity: 'epic',
     
-    checkUnlock: (workout, data) => workout.totalSets >= 25,
-    hasSessionProgress: (workoutData) => true,
-    getSessionProgress: (workoutData) => '+ Maximum workout completed'
+    checkUnlock: (workout, _data) => workout.totalSets >= 25,
+    hasSessionProgress: (_workoutData) => true,
+    getSessionProgress: (_workoutData) => '+ Maximum workout completed'
   },
   
   {
@@ -61,13 +61,13 @@ export const specialAchievements: AchievementDefinition[] = [
     category: 'special',
     rarity: 'rare',
     
-    checkUnlock: (workout, data) => {
+    checkUnlock: (workout, _data) => {
       const hour = new Date(workout.statistics.workoutStartTime || Date.now()).getHours();
       return hour < 7;
     },
-    
-    hasSessionProgress: (workoutData) => true,
-    getSessionProgress: (workoutData) => '+ Early morning workout'
+
+    hasSessionProgress: (_workoutData) => true,
+    getSessionProgress: (_workoutData) => '+ Early morning workout'
   },
   
   {
@@ -78,13 +78,13 @@ export const specialAchievements: AchievementDefinition[] = [
     category: 'special',
     rarity: 'rare',
     
-    checkUnlock: (workout, data) => {
+    checkUnlock: (workout, _data) => {
       const hour = new Date(workout.statistics.workoutStartTime || Date.now()).getHours();
       return hour >= 22;
     },
-    
-    hasSessionProgress: (workoutData) => true,
-    getSessionProgress: (workoutData) => '+ Late night workout'
+
+    hasSessionProgress: (_workoutData) => true,
+    getSessionProgress: (_workoutData) => '+ Late night workout'
   },
   
   {
@@ -95,8 +95,8 @@ export const specialAchievements: AchievementDefinition[] = [
     category: 'special',
     rarity: 'common',
     
-    checkUnlock: (workout, data) => true, // Unlocked by rest skip attempts
-    hasSessionProgress: (workoutData) => true,
-    getSessionProgress: (workoutData) => '+ Rest skip detected'
+    checkUnlock: (_workout, _data) => true, // Unlocked by rest skip attempts
+    hasSessionProgress: (_workoutData) => true,
+    getSessionProgress: (_workoutData) => '+ Rest skip detected'
   }
 ];

@@ -9,9 +9,9 @@ export const dedicationAchievements: AchievementDefinition[] = [
     category: 'dedication',
     rarity: 'rare',
     
-    checkUnlock: (workout, data) => workout.statistics.totalTimePaused === 0,
-    hasSessionProgress: (workoutData) => true,
-    getSessionProgress: (workoutData) => '+ No pause workout'
+    checkUnlock: (workout, _data) => workout.statistics.totalTimePaused === 0,
+    hasSessionProgress: (_workoutData) => true,
+    getSessionProgress: (_workoutData) => '+ No pause workout'
   },
   
   {
@@ -25,10 +25,10 @@ export const dedicationAchievements: AchievementDefinition[] = [
     
     checkUnlock: (workout, data) => data.consecutiveNoPauseWorkouts >= 10,
     calculateProgress: (data) => data.consecutiveNoPauseWorkouts,
-    hasSessionProgress: (workoutData) => {
+    hasSessionProgress: (_workoutData) => {
       // Only show progress if this workout had no pauses
       return true; // Will be handled by the processor logic
     },
-    getSessionProgress: (workoutData) => '+ 1 workout without pause'
+    getSessionProgress: (_workoutData) => '+ 1 workout without pause'
   }
 ];

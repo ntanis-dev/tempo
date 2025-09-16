@@ -1,4 +1,4 @@
-import { Achievement, AchievementData, WorkoutSessionData } from '../types/achievements';
+import { AchievementData, WorkoutSessionData } from '../types/achievements';
 import { WorkoutState } from '../types';
 
 export interface AchievementDefinition {
@@ -25,10 +25,10 @@ export const firstWorkoutAchievement: AchievementDefinition = {
   category: 'milestone',
   rarity: 'common',
   
-  checkUnlock: (workout: WorkoutState, data: AchievementData) => {
+  checkUnlock: (_workout: WorkoutState, _data: AchievementData) => {
     return true; // Always unlocks on first completed workout
   },
-  
-  hasSessionProgress: (workoutData: WorkoutSessionData) => true,
-  getSessionProgress: (workoutData: WorkoutSessionData) => '+ First workout!'
+
+  hasSessionProgress: (_workoutData: WorkoutSessionData) => true,
+  getSessionProgress: (_workoutData: WorkoutSessionData) => '+ First workout!'
 };

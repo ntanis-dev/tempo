@@ -1,5 +1,4 @@
 import React from 'react';
-import { WorkoutState } from '../../types';
 
 interface PhaseDisplayProps {
   currentPhase: { label: string } | null;

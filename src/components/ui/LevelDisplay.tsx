@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Zap, Trophy } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { LevelInfo } from '../../types/experience';
 import { getLevelTitle } from '../../constants/experience';
 

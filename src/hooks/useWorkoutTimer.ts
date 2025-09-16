@@ -27,8 +27,7 @@ export const useWorkoutTimer = () => {
 
   // Statistics tracking
   const {
-    startWorkoutTracking,
-    completeRep
+    startWorkoutTracking
   } = useWorkoutStatistics(workout, updateWorkout);
 
   // Quote management

@@ -7,7 +7,6 @@ import {
   loadTotalSets,
   saveSettings,
   loadSettings,
-  DEFAULT_SETTINGS,
   DEFAULT_STATISTICS
 } from '../utils/storage';
 import { validateSets, validateReps, validateTimePerRep, validateRestTime, validateStretchTime } from '../utils/validation';

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, X, Plus, Settings, Palette } from 'lucide-react';
-import { Modal } from '../ui/Modal';
+import { Sparkles, Plus, Settings, Palette } from 'lucide-react';
 import { ModalHeader } from '../ui/ModalHeader';
 import { MODAL_STYLES } from '../../constants/styles';
 

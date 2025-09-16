@@ -1,7 +1,7 @@
 // Audio utility functions for workout timer sound effects
 import { saveSoundEnabled, loadSoundEnabled } from './storage';
 import { saveSoundVolume, loadSoundVolume } from './storage';
-import { AUDIO, TIME } from '../constants';
+import { AUDIO } from '../constants';
 
 class AudioManager {
   private audioContext: AudioContext | null = null;
@@ -18,7 +18,7 @@ class AudioManager {
 
   private initializeAudioContext() {
     try {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
     } catch (error) {
       console.error('Audio not supported:', error);
       this.isEnabled = false;
@@ -41,7 +41,12 @@ class AudioManager {
   }
 
   private createBeep(frequency: number, duration: number, baseVolume: number = 0.3) {
-    return new Promise<void>(async (resolve) => {
+    return new Promise<void>((resolve) => {
+      this.createBeepInternal(frequency, duration, baseVolume, resolve);
+    });
+  }
+
+  private async createBeepInternal(frequency: number, duration: number, baseVolume: number, resolve: () => void) {
       const audioContext = await this.ensureAudioContext();
       if (!audioContext) {
         resolve();
@@ -73,7 +78,6 @@ class AudioManager {
       oscillator.stop(audioContext.currentTime + duration);
 
       oscillator.onended = () => resolve();
-    });
   }
 
   // Sound effects

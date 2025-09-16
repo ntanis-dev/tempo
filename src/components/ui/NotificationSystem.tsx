@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
 export interface Notification {
@@ -35,14 +35,14 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onDis
       }, notification.duration);
       return () => clearTimeout(timer);
     }
-  }, [notification.duration]);
+  }, [notification.duration, handleDismiss]);
 
-  const handleDismiss = () => {
+  const handleDismiss = useCallback(() => {
     setIsExiting(true);
     setTimeout(() => {
       onDismiss(notification.id);
     }, 300);
-  };
+  }, [notification.id, onDismiss]);
 
   const getIcon = () => {
     switch (notification.type) {

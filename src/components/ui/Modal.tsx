@@ -1,6 +1,5 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { useModalBackdrop } from '../../hooks/useModalBackdrop';
 
 interface ModalProps {
   isOpen: boolean;
@@ -19,9 +18,6 @@ const ModalComponent: React.FC<ModalProps> = ({
 }) => {
   const [isVisible, setIsVisible] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
-  const { handleBackdropClick } = useModalBackdrop(handleClose);
-
-  if (!isOpen) return null;
 
   // Fade in animation
   React.useEffect(() => {
@@ -30,6 +26,15 @@ const ModalComponent: React.FC<ModalProps> = ({
       return () => clearTimeout(timer);
     }
   }, [isOpen, isClosing]);
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      setIsVisible(false);
+      setIsClosing(false);
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const maxWidthClasses = {
     sm: 'max-w-sm',

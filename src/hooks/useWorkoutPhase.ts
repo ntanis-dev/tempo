@@ -36,7 +36,7 @@ export const useWorkoutPhase = (
           audioManager.playWorkStart();
           break;
 
-        case 'rest':
+        case 'rest': {
           const nextSet = prev.currentSet + 1;
           const isComplete = nextSet > prev.totalSets;
 
@@ -52,6 +52,7 @@ export const useWorkoutPhase = (
           };
           audioManager.playRestStart();
           break;
+        }
 
         case 'complete':
           return transitionToComplete(prev);

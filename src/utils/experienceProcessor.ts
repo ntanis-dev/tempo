@@ -68,7 +68,6 @@ export class ExperienceProcessor {
 
   awardXP(amount: number, source: string): XPGain {
     const oldLevel = this.data.currentLevel;
-    const oldXP = this.data.totalXP;
     
     // Add XP
     this.data.totalXP += amount;

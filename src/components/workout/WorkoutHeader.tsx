@@ -2,8 +2,7 @@ import React from 'react';
 import { ProgressBar } from '../ui/ProgressBar';
 import { WorkoutState } from '../../types';
 import { formatDuration } from '../../utils/formatters';
-import { calculateRemainingTime, calculateWorkoutProgress, getCompletedSets } from '../../utils/workoutCalculations';
-import { getPhases } from '../../utils/timer';
+import { calculateRemainingTime, calculateWorkoutProgress } from '../../utils/workoutCalculations';
 
 interface WorkoutProgressProps {
   workout: WorkoutState;
