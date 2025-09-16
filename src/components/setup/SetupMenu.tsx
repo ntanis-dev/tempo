@@ -170,15 +170,6 @@ export const SetupMenu: React.FC<SetupMenuProps> = ({
                   >
                     ntanis-dev
                   </a>
-                  <span>using</span>
-                  <a 
-                    href="https://bolt.new" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-white/80 hover:text-white underline transition-colors ml-1"
-                  >
-                    Bolt AI
-                  </a>.
                 </div>
               </div>
             </div>

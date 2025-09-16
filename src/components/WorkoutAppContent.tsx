@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { setUpdateCallback, refreshApp } from '../main';
 import { WorkoutHistoryEntry } from '../types';
-import { AchievementModalData } from '../types/achievements';
 import { clearWorkoutHistory } from '../utils/storage';
 import { useWorkoutTimer } from '../hooks/useWorkoutTimer';
-// import { useWorkoutTimerV2 as useWorkoutTimer } from '../hooks/useWorkoutTimerV2';
 import { useClickToResume } from '../hooks/useClickToResume';
 import { useNotifications } from '../hooks/useNotifications';
+import { useUIStore } from '../store/uiStore';
 import { audioManager } from '../utils/audio';
 import { achievementProcessor } from '../utils/achievementProcessor';
 import { experienceProcessor } from '../utils/experienceProcessor';
+import { whatsNewTracker } from '../utils/whatsNewTracker';
 import { getBackgroundClass } from '../utils/backgroundClasses';
 import { SetupScreen } from './SetupScreen';
 import { PrepareScreen } from './PrepareScreen';
@@ -23,7 +23,6 @@ import { PauseOverlay } from './workout/PauseOverlay';
 import { PWAInstallModal } from './setup/PWAInstallModal';
 import { ExperienceModal } from './levels/ExperienceModal';
 import { WhatsNewModal } from './whats-new/WhatsNewModal';
-import { whatsNewTracker } from '../utils/whatsNewTracker';
 import { NotificationSystem } from './ui/NotificationSystem';
 import { UpdateBar } from './ui/UpdateBar';
 
@@ -45,31 +44,44 @@ export const WorkoutAppContent: React.FC = () => {
     adjustTime,
     refreshFromStorage: refreshWorkoutFromStorage
   } = useWorkoutTimer();
-  
+
   const {
     notifications,
     dismissNotification,
     showError,
     showSuccess
   } = useNotifications();
-  
-  const [showHistory, setShowHistory] = useState(false);
-  const [showAchievements, setShowAchievements] = useState(false);
-  const [showStorage, setShowStorage] = useState(false);
-  const [showLevels, setShowLevels] = useState(false);
-  const [showWhatsNew, setShowWhatsNew] = useState(false);
-  const [showUpdateButton, setShowUpdateButton] = useState(false);
-  const [waitingForAchievements, setWaitingForAchievements] = useState(false);
-  const [whatsNewKey, setWhatsNewKey] = useState(0); // Force re-render key
-  const [storageRefreshKey, setStorageRefreshKey] = useState(0); // Force level display refresh
-  const [achievementModalData, setAchievementModalData] = useState<AchievementModalData | null>(null);
+
+  // Get all UI state from Zustand store
+  const {
+    showHistory,
+    showAchievements,
+    showStorage,
+    showLevels,
+    showWhatsNew,
+    showUpdateButton,
+    waitingForAchievements,
+    achievementModalData,
+    whatsNewKey,
+    storageRefreshKey,
+    setShowHistory,
+    setShowAchievements,
+    setShowStorage,
+    setShowLevels,
+    setShowWhatsNew,
+    setShowUpdateButton,
+    setWaitingForAchievements,
+    setAchievementModalData,
+    incrementWhatsNewKey,
+    incrementStorageRefreshKey
+  } = useUIStore();
 
   // Process achievements when workout completes
   React.useEffect(() => {
     if (workout.phase === 'complete' && workout.statistics.workoutStartTime) {
       const workoutId = workout.statistics.workoutStartTime?.toString();
       const lastProcessedWorkout = localStorage.getItem('tempo-last-processed-workout');
-      
+
       if (lastProcessedWorkout !== workoutId) {
         processWorkoutAchievements();
         localStorage.setItem('tempo-last-processed-workout', workoutId);
@@ -81,14 +93,14 @@ export const WorkoutAppContent: React.FC = () => {
   React.useEffect(() => {
     // Only show achievements modal when on setup screen
     if (workout.phase !== 'setup') return;
-    
+
     const savedModalData = localStorage.getItem(ACHIEVEMENT_MODAL_DATA_KEY);
     if (savedModalData && !achievementModalData) {
       try {
         const modalData = JSON.parse(savedModalData);
         if (modalData.unlockedAchievements?.length > 0 || modalData.progressAchievements?.length > 0) {
           setAchievementModalData(modalData);
-          
+
           // Play sound once if there are unlocked achievements
           if (modalData.unlockedAchievements?.length > 0) {
             audioManager.playAchievementUnlock();
@@ -99,38 +111,38 @@ export const WorkoutAppContent: React.FC = () => {
         localStorage.removeItem(ACHIEVEMENT_MODAL_DATA_KEY);
       }
     }
-  }, [achievementModalData, workout.phase]);
-  
+  }, [achievementModalData, workout.phase, setAchievementModalData]);
+
   const processWorkoutAchievements = () => {
     // Process XP gains (no UI notification)
     experienceProcessor.processWorkoutCompletion(workout);
-    
+
     // Process achievements (this will unlock some and update progress)
     const { updates, modalData } = achievementProcessor.processWorkoutCompletion(workout);
-    
+
     // Award XP for achievement unlocks
     updates
       .filter(({ wasJustUnlocked }) => wasJustUnlocked)
       .forEach(() => experienceProcessor.processAchievementUnlock());
-    
+
     // Store modal data for later display
     if (modalData) {
       localStorage.setItem(ACHIEVEMENT_MODAL_DATA_KEY, JSON.stringify(modalData));
     }
-    
+
     // Force refresh of level displays after XP processing
-    setStorageRefreshKey(prev => prev + 1);
+    incrementStorageRefreshKey();
   };
 
   // Handle click to resume when paused
   useClickToResume(workout, togglePause);
-  
+
   // Set up update callback
   React.useEffect(() => {
     setUpdateCallback(() => {
       setShowUpdateButton(true);
     });
-  }, []);
+  }, [setShowUpdateButton]);
 
   const showWorkoutHistory = () => {
     setShowHistory(true);
@@ -160,7 +172,7 @@ export const WorkoutAppContent: React.FC = () => {
   const hideStorageModal = () => {
     setShowStorage(false);
   };
-  
+
   const showLevelsModal = () => {
     setShowLevels(true);
   };
@@ -180,54 +192,54 @@ export const WorkoutAppContent: React.FC = () => {
   const handleWhatsNewRead = () => {
     whatsNewTracker.markAsRead();
     // Force menu re-render by updating the key
-    setWhatsNewKey(prev => prev + 1);
+    incrementWhatsNewKey();
   };
-  
+
   const handleStorageExportSuccess = () => {
     setShowStorage(false);
     showSuccess('Export Successful', 'Your backup file has been downloaded successfully.');
   };
-  
+
   const handleStorageClearSuccess = () => {
     // Refresh all storage-dependent states
     achievementProcessor.resetAchievements();
     experienceProcessor.resetExperience();
     refreshWorkoutFromStorage();
-    
+
     // Refresh audio settings
     audioManager.refreshFromStorage();
-    
+
     // Force menu re-render to show red indicator (storage clear removes the read status)
-    setWhatsNewKey(prev => prev + 1);
-    
+    incrementWhatsNewKey();
+
     // Refresh the whats new tracker to detect the change
     whatsNewTracker.refreshFromStorage();
-    
+
     // Force level display refresh
-    setStorageRefreshKey(prev => prev + 1);
-    
+    incrementStorageRefreshKey();
+
     showSuccess('Storage Cleared', 'All your data have been cleared.');
   };
-  
+
   const handleStorageImportSuccess = () => {
     setShowStorage(false);
-    // Refresh all storage-dependent states  
+    // Refresh all storage-dependent states
     achievementProcessor.refreshFromStorage();
     experienceProcessor.refreshFromStorage();
     refreshWorkoutFromStorage();
-    
+
     // Refresh audio settings
     audioManager.refreshFromStorage();
-    
+
     // Force menu re-render (import might restore read status)
-    setWhatsNewKey(prev => prev + 1);
-    
+    incrementWhatsNewKey();
+
     // Force level display refresh
-    setStorageRefreshKey(prev => prev + 1);
-    
+    incrementStorageRefreshKey();
+
     showSuccess('Import Successful', 'Your backup has been restored successfully.');
   };
-  
+
   const handleStorageError = (error: string) => {
     showError('Import Failed', error);
   };
@@ -248,23 +260,23 @@ export const WorkoutAppContent: React.FC = () => {
         return false;
       }
     })() : false;
-    
+
     // Set waiting state if achievements will show
     setWaitingForAchievements(hasAchievements);
-    
+
     // Reset the workout first
     resetWorkout();
-    
+
     // Check if there are achievements to show
-    
+
     if (savedModalData) {
       try {
         const modalData = JSON.parse(savedModalData);
-        
+
         // Show modal after a short delay to let reset animation complete
         setTimeout(() => {
           setAchievementModalData(modalData);
-          
+
           // Play sound once if there are unlocked achievements
           if (modalData.unlockedAchievements?.length > 0) {
             audioManager.playAchievementUnlock();
@@ -290,13 +302,13 @@ export const WorkoutAppContent: React.FC = () => {
   };
 
   return (
-    <div 
-      id="main-container" 
+    <div
+      id="main-container"
       className={`min-h-screen ${getBackgroundClass(workout, isResetting, isTransitioning)}`}
     >
       {/* Pause overlay outside the scaled container */}
       <PauseOverlay isVisible={workout.isPaused && !isResetting && (workout.phase === 'countdown' || workout.phase === 'work' || workout.phase === 'rest')} />
-      
+
       {/* Modals outside the scaled container */}
       {showHistory && (
         <WorkoutHistory
@@ -306,7 +318,7 @@ export const WorkoutAppContent: React.FC = () => {
           onShowSuccess={showSuccess}
         />
       )}
-      
+
       {/* Achievements Modal outside the scaled container */}
       {showAchievements && (
         <AchievementsModal
@@ -315,7 +327,7 @@ export const WorkoutAppContent: React.FC = () => {
           onShowSuccess={showSuccess}
         />
       )}
-      
+
       {/* Storage Modal outside the scaled container */}
       {showStorage && (
         <StorageModal
@@ -327,7 +339,7 @@ export const WorkoutAppContent: React.FC = () => {
           onImportSuccess={handleStorageImportSuccess}
         />
       )}
-      
+
       {/* Levels Modal outside the scaled container */}
       {showLevels && (
         <ExperienceModal
@@ -336,7 +348,7 @@ export const WorkoutAppContent: React.FC = () => {
           onShowSuccess={showSuccess}
         />
       )}
-      
+
       {/* What's New Modal outside the scaled container */}
       {showWhatsNew && (
         <WhatsNewModal
@@ -345,16 +357,16 @@ export const WorkoutAppContent: React.FC = () => {
           onMarkAsRead={handleWhatsNewRead}
         />
       )}
-      
+
       {/* PWA Install Modal outside scaled container */}
       <PWAInstallModal />
-      
+
       {/* Update Bar */}
-      <UpdateBar 
+      <UpdateBar
         isVisible={showUpdateButton}
         onRefresh={refreshApp}
       />
-      
+
       {/* Achievement Progress Modal */}
       {achievementModalData && (
         <AchievementProgressModal
@@ -365,7 +377,7 @@ export const WorkoutAppContent: React.FC = () => {
           onClose={handleCloseAchievementModal}
         />
       )}
-      
+
       <div id="app-container" className={'relative'}>
         {(workout.phase === 'setup' || workout.phase === 'transition') && (
           <SetupScreen
@@ -420,7 +432,7 @@ export const WorkoutAppContent: React.FC = () => {
         )}
 
       </div>
-      
+
       {/* Notification System */}
       <NotificationSystem
         notifications={notifications}

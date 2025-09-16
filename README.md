@@ -4,7 +4,7 @@ A beautiful, progressive web app for structured workout timing.
 
 ## About
 
-**Tempo** is a workout timer I created to help structure my exercise routines. What started as a simple timing tool evolved into a comprehensive fitness companion that also serves as an experiment in AI-assisted development using [Bolt AI](https://bolt.new).
+**Tempo** is a workout timer I created to help structure my exercise routines. What started as a simple timing tool evolved into a comprehensive fitness companion built with modern web technologies.
 
 ## Features
 
@@ -32,13 +32,13 @@ A beautiful, progressive web app for structured workout timing.
 - [Vite](https://vitejs.dev) - Build tool.
 - [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) - Custom sound effects.
 
-## AI Development Experiment
+## Development Approach
 
-This entire application was built through natural language conversations with AI, showcasing how modern AI tools can transform ideas into production-ready applications. The project demonstrates:
+This application showcases modern web development practices including:
 
-- **Natural Language Programming** - Built entirely through conversational instructions.
-- **AI-Driven Design** - Beautiful UI/UX created through descriptive prompts.
-- **Rapid Prototyping** - From concept to working app through iterative AI collaboration.
+- **Component-Based Architecture** - Modular and reusable components.
+- **Type-Safe Development** - Full TypeScript implementation for reliability.
+- **Progressive Enhancement** - Works offline with PWA capabilities.
 
 ## Installation
 
