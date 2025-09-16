@@ -43,14 +43,7 @@ export const PWAInstallButton: React.FC = () => {
       // Cache the result to avoid re-detection
       sessionStorage.setItem('tempo-pwa-detected', isPWA.toString());
       
-      console.log('PWA Detection:', {
-        isIOSPWA,
-        isStandalone,
-        isMinimalUI,
-        isLaunchedFromHomeScreen,
-        hasStandaloneFeatures,
-        finalResult: isPWA
-      });
+      // PWA Detection complete
       
       return isPWA;
     };

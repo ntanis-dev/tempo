@@ -44,7 +44,7 @@ class ServiceWorkerManager {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
           .then((registration) => {
-            console.log('SW: Registered successfully');
+            // SW: Registered successfully
 
             // Store current active service worker
             this.state.currentSW = registration.active;
@@ -57,26 +57,26 @@ class ServiceWorkerManager {
 
             // Listen for new service worker installing
             registration.addEventListener('updatefound', () => {
-              console.log('SW: Update found');
+              // SW: Update found
               const newWorker = registration.installing;
 
               if (newWorker) {
                 newWorker.addEventListener('statechange', () => {
-                  console.log('SW: State changed to', newWorker.state);
+                  // SW: State changed
 
                   if (newWorker.state === 'installed') {
                     if (this.state.currentSW) {
                       // New service worker is waiting
-                      console.log('SW: New version waiting');
+                      // SW: New version waiting
                       this.state.waitingSW = newWorker;
                       this.checkForUpdates();
                     } else {
                       // First install
-                      console.log('SW: First install');
+                      // SW: First install
                       this.state.currentSW = newWorker;
                     }
                   } else if (newWorker.state === 'activated') {
-                    console.log('SW: Activated');
+                    // SW: Activated
                     this.state.currentSW = newWorker;
                     this.state.waitingSW = null;
                   }
