@@ -10,6 +10,7 @@ import {
 import { storageService } from '../services/StorageService';
 import { validateSets, validateReps, validateTimePerRep, validateRestTime, validateStretchTime } from '../utils/validation';
 import { useDebugMode } from '../contexts/DebugContext';
+import { DEFAULTS } from '../constants';
 
 // Core workout state management
 export const useWorkoutState = () => {
@@ -36,7 +37,7 @@ export const useWorkoutState = () => {
     return {
       phase: 'setup',
       currentSet: 0,
-      totalSets: storageService.getWorkoutSettings()?.totalSets || 3,
+      totalSets: storageService.getWorkoutSettings()?.totalSets || DEFAULTS.TOTAL_SETS,
       timeRemaining: 0,
       isPaused: false,
       currentRep: 1,
@@ -102,20 +103,28 @@ export const useWorkoutState = () => {
     const savedState = loadWorkoutState();
     const settings = loadSettings();
     const workoutSettings = storageService.getWorkoutSettings();
-    const totalSets = workoutSettings?.totalSets || 3;
+    const totalSets = workoutSettings?.totalSets || DEFAULTS.TOTAL_SETS;
 
     if (savedState && savedState.phase !== 'setup' && savedState.phase !== 'transition') {
       setWorkout({
         ...savedState,
         isPaused: savedState.phase === 'complete' ? false : (savedState.isPaused ?? true),
         settings: savedState.settings || settings,
-        statistics: savedState.statistics || DEFAULT_STATISTICS
+        statistics: savedState.statistics || DEFAULT_STATISTICS,
+        totalSets: savedState.totalSets || totalSets
       });
     } else {
+      // When no saved state or in setup, reset to defaults
       setWorkout(prev => ({
         ...prev,
+        phase: 'setup',
+        currentSet: 1,
+        timeRemaining: 0,
+        isPaused: false,
+        currentRep: 1,
         settings,
-        totalSets
+        totalSets,
+        statistics: DEFAULT_STATISTICS
       }));
     }
   }, []);
