@@ -4,7 +4,6 @@ import { SoundToggle } from './common/SoundToggle';
 import { SetupHeader } from './setup/SetupHeader';
 import { WorkoutSettings } from './setup/WorkoutSettings';
 import { SetupActions } from './setup/SetupActions';
-import { PWAInstallButton } from './setup/PWAInstallButton';
 import { SetupMenu } from './setup/SetupMenu';
 import { LevelDisplay } from './ui/LevelDisplay';
 import { experienceProcessor } from '../utils/experienceProcessor';
@@ -80,12 +79,6 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
           key={menuKey}
         />
       </div>
-      
-      {/* PWA Install Button - Bottom Center */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10">
-        <PWAInstallButton />
-      </div>
-      
       
       <div className="scalable bg-transparent rounded-3xl p-4 max-w-4xl w-full text-center text-white">
         <div className="font-sans">

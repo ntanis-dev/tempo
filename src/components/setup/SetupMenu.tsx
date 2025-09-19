@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Menu, History, Trophy, X, Heart, Database, Bug, Star, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Menu, History, Trophy, X, Heart, Database, Bug, Star, Sparkles, Download } from 'lucide-react';
 import { useDebugMode } from '../../contexts/DebugContext';
 import { whatsNewTracker } from '../../utils/whatsNewTracker';
 
@@ -11,16 +11,18 @@ interface SetupMenuProps {
   onShowWhatsNew: () => void;
 }
 
-export const SetupMenu: React.FC<SetupMenuProps> = ({ 
-  onShowHistory, 
-  onShowAchievements, 
-  onShowStorage, 
-  onShowLevels, 
-  onShowWhatsNew 
+export const SetupMenu: React.FC<SetupMenuProps> = ({
+  onShowHistory,
+  onShowAchievements,
+  onShowStorage,
+  onShowLevels,
+  onShowWhatsNew
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugMode, setDebugMode] = useDebugMode();
   const [hasUnreadUpdates, setHasUnreadUpdates] = useState(whatsNewTracker.hasUnreadUpdates());
+  const [showInstallButton, setShowInstallButton] = useState(false);
+  const [detectionComplete, setDetectionComplete] = useState(false);
 
   // Close menu when clicking outside
   React.useEffect(() => {
@@ -75,6 +77,81 @@ export const SetupMenu: React.FC<SetupMenuProps> = ({
     setHasUnreadUpdates(whatsNewTracker.hasUnreadUpdates());
   }, []);
 
+  // PWA detection logic (same as PWAInstallButton)
+  useEffect(() => {
+    let isMounted = true;
+
+    const isPWAInstalled = () => {
+      const cachedResult = sessionStorage.getItem('tempo-pwa-detected');
+      if (cachedResult !== null) {
+        return cachedResult === 'true';
+      }
+
+      const isIOSPWA = (window.navigator as { standalone?: boolean }).standalone === true;
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      const isMinimalUI = window.matchMedia('(display-mode: minimal-ui)').matches;
+
+      const isPWA = isIOSPWA || isStandalone || isMinimalUI;
+      sessionStorage.setItem('tempo-pwa-detected', isPWA.toString());
+
+      return isPWA;
+    };
+
+    const detectWithRetry = (attempt = 1, maxAttempts = 3) => {
+      if (!isMounted) return;
+
+      const delay = attempt * 100;
+
+      setTimeout(() => {
+        if (!isMounted) return;
+
+        const isPWA = isPWAInstalled();
+
+        if (isPWA || attempt >= maxAttempts) {
+          setShowInstallButton(!isPWA);
+          setDetectionComplete(true);
+        } else {
+          detectWithRetry(attempt + 1, maxAttempts);
+        }
+      }, delay);
+    };
+
+    detectWithRetry();
+
+    const standaloneQuery = window.matchMedia('(display-mode: standalone)');
+    const minimalUIQuery = window.matchMedia('(display-mode: minimal-ui)');
+
+    const handleDisplayModeChange = () => {
+      if (!isMounted) return;
+
+      const isPWA = standaloneQuery.matches || minimalUIQuery.matches;
+      if (isPWA) {
+        sessionStorage.setItem('tempo-pwa-detected', 'true');
+        setShowInstallButton(false);
+      }
+    };
+
+    if (standaloneQuery.addEventListener) {
+      standaloneQuery.addEventListener('change', handleDisplayModeChange);
+      minimalUIQuery.addEventListener('change', handleDisplayModeChange);
+    } else {
+      standaloneQuery.addListener(handleDisplayModeChange);
+      minimalUIQuery.addListener(handleDisplayModeChange);
+    }
+
+    return () => {
+      isMounted = false;
+
+      if (standaloneQuery.removeEventListener) {
+        standaloneQuery.removeEventListener('change', handleDisplayModeChange);
+        minimalUIQuery.removeEventListener('change', handleDisplayModeChange);
+      } else {
+        standaloneQuery.removeListener(handleDisplayModeChange);
+        minimalUIQuery.removeListener(handleDisplayModeChange);
+      }
+    };
+  }, []);
+
 
   return (
     <div className="relative" data-menu-container>
@@ -92,6 +169,24 @@ export const SetupMenu: React.FC<SetupMenuProps> = ({
       {isOpen && (
         <div className="absolute top-12 left-0 z-20 bg-black/30 backdrop-blur-xl rounded-xl shadow-lg border border-white/10 min-w-[275px]">
             <div className="py-2">
+              {/* Install PWA Button - Only shows when not in PWA mode */}
+              {showInstallButton && detectionComplete && (
+                <>
+                  <button
+                    onClick={() => {
+                      window.dispatchEvent(new CustomEvent('openPWAModal'));
+                      setIsOpen(false);
+                    }}
+                    className="w-full px-4 py-3 text-left text-orange-300 bg-orange-500/20 hover:bg-orange-500/30 transition-colors flex items-center space-x-2 border-b border-orange-500/20"
+                  >
+                    <Download className="w-5 h-5" />
+                    <span className="font-semibold">Install</span>
+                    <span className="ml-auto text-xs opacity-80">PWA</span>
+                  </button>
+                  <div className="py-1"></div>
+                </>
+              )}
+
               <button
                 onClick={handleLevelsClick}
                 className="w-full px-4 py-2 text-left text-white hover:bg-white/20 transition-colors flex items-center space-x-2"

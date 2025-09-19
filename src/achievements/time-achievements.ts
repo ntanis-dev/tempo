@@ -4,7 +4,7 @@ export const timeAchievements: AchievementDefinition[] = [
   {
     id: 'total_50_hours',
     title: 'Time Master',
-    description: 'Accumulate 50 hours of total workout time.',
+    description: 'Accumulate 50 hours of total workout time (pausing not included).',
     icon: '⏰',
     category: 'endurance',
     rarity: 'epic',
