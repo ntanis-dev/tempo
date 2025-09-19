@@ -8,6 +8,7 @@ import { useAchievementProcessing } from '../hooks/useAchievementProcessing';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { useUIStore } from '../store/uiStore';
 import { getBackgroundClass } from '../utils/backgroundClasses';
+import { storageService } from '../services/StorageService';
 import { SetupScreen } from './SetupScreen';
 import { PrepareScreen } from './PrepareScreen';
 import { CompleteScreen } from './CompleteScreen';
@@ -29,11 +30,7 @@ const ModalLoadingFallback = () => null;
 
 export const WorkoutAppContent: React.FC = () => {
   // Muted mode state for re-rendering backgrounds - initialize from storage
-  const [mutedMode, setMutedMode] = React.useState(() => {
-    // Import storageService at the top of the component
-    const { storageService } = require('../services/StorageService');
-    return storageService.isMutedMode();
-  });
+  const [mutedMode, setMutedMode] = React.useState(() => storageService.isMutedMode());
 
   // Listen for muted mode changes
   React.useEffect(() => {
