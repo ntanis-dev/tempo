@@ -11,44 +11,45 @@ export const useQuoteManager = (
     switch (phase) {
       case 'work':
         updateWorkout(prev => {
-          const quote = getRandomQuote(prev.usedQuotes);
+          const result = getRandomQuote(prev.usedQuotes);
           return {
             ...prev,
-            currentQuote: quote.text,
-            usedQuotes: [...prev.usedQuotes, quote.id]
+            currentQuote: result.quote,
+            usedQuotes: result.newUsedQuotes
           };
         });
         break;
 
       case 'rest':
         updateWorkout(prev => {
-          const quote = getRandomCalmingQuote(prev.usedCalmingQuotes);
+          const result = getRandomCalmingQuote(prev.usedCalmingQuotes);
           return {
             ...prev,
-            currentCalmingQuote: quote.text,
-            usedCalmingQuotes: [...prev.usedCalmingQuotes, quote.id]
+            currentCalmingQuote: result.quote,
+            usedCalmingQuotes: result.newUsedQuotes
           };
         });
         break;
 
       case 'prepare':
+      case 'countdown':
         updateWorkout(prev => {
-          const quote = getRandomPreExerciseQuote(prev.usedPreExerciseQuotes);
+          const result = getRandomPreExerciseQuote(prev.usedPreExerciseQuotes);
           return {
             ...prev,
-            currentPreExerciseQuote: quote.text,
-            usedPreExerciseQuotes: [...prev.usedPreExerciseQuotes, quote.id]
+            currentPreExerciseQuote: result.quote,
+            usedPreExerciseQuotes: result.newUsedQuotes
           };
         });
         break;
 
       case 'complete':
         updateWorkout(prev => {
-          const quote = getRandomPostWorkoutQuote(prev.usedPostWorkoutQuotes);
+          const result = getRandomPostWorkoutQuote(prev.usedPostWorkoutQuotes);
           return {
             ...prev,
-            currentPostWorkoutQuote: quote.text,
-            usedPostWorkoutQuotes: [...prev.usedPostWorkoutQuotes, quote.id]
+            currentPostWorkoutQuote: result.quote,
+            usedPostWorkoutQuotes: result.newUsedQuotes
           };
         });
         break;
@@ -58,7 +59,8 @@ export const useQuoteManager = (
   // Update quotes when phase changes
   useEffect(() => {
     updateQuoteForPhase(workout.phase);
-  }, [workout.phase, updateQuoteForPhase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workout.phase]); // Only depend on phase to avoid infinite loops
 
   const resetQuotes = useCallback(() => {
     updateWorkout(prev => ({

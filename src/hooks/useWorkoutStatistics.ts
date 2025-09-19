@@ -48,20 +48,10 @@ export const useWorkoutStatistics = (
     }
   }, [workout.isPaused, updateWorkout]);
 
-  // Track phase changes for statistics
+  // Track phase changes - removed statistics update since timer handles it now
   useEffect(() => {
-    const now = Date.now();
-    const timeInLastPhase = (now - lastPhaseChangeRef.current) / 1000;
-
-    if (timeInLastPhase > 0.5) { // Only count if phase lasted more than 0.5 seconds
-      const previousPhase = getPreviousPhase(workout.phase);
-      if (previousPhase) {
-        updateStatistics(previousPhase, timeInLastPhase);
-      }
-    }
-
-    lastPhaseChangeRef.current = now;
-  }, [workout.phase, updateStatistics]);
+    lastPhaseChangeRef.current = Date.now();
+  }, [workout.phase]);
 
   const startWorkoutTracking = useCallback(() => {
     updateWorkout(prev => ({

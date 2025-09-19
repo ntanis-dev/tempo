@@ -94,9 +94,9 @@ export const specialAchievements: AchievementDefinition[] = [
     icon: '⏭️',
     category: 'special',
     rarity: 'common',
-    
-    checkUnlock: () => true, // Unlocked by rest skip attempts
-    hasSessionProgress: () => true,
+
+    checkUnlock: () => false, // Only unlocked via rest skip attempts in processWorkoutCompletion
+    hasSessionProgress: () => false, // No session progress shown
     getSessionProgress: () => '+ Rest skip detected'
   }
 ];

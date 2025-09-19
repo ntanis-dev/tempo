@@ -38,16 +38,8 @@ export const useTimerLogic = (
     };
   }, [workout.phase, workout.isPaused, workout.timeRemaining, updateWorkout]);
 
-  // Countdown audio effects
-  useEffect(() => {
-    if (workout.phase === 'countdown' && !workout.isPaused && workout.timeRemaining > 0) {
-      if (workout.timeRemaining <= TIME.FINAL_COUNTDOWN) {
-        audioManager.playCountdownFinal();
-      } else {
-        audioManager.playCountdownTick();
-      }
-    }
-  }, [workout.timeRemaining, workout.phase, workout.isPaused]);
+  // Countdown audio effects - removed for stretch phase
+  // The countdown phase is actually the stretch phase now, so no countdown sounds needed
 
   // Save to history on completion
   useEffect(() => {
@@ -76,6 +68,24 @@ function handleTimerTick(state: WorkoutState): WorkoutState {
  * Handle countdown logic for work and other phases
  */
 function handleCountdown(state: WorkoutState, now: number): WorkoutState {
+  let updatedStats = { ...state.statistics, lastActiveTime: now };
+
+  // Update phase-specific statistics
+  switch (state.phase) {
+    case 'work':
+      updatedStats.totalTimeExercised += 1;
+      break;
+    case 'rest':
+      updatedStats.totalTimeRested += 1;
+      break;
+    case 'prepare':
+      updatedStats.totalTimeStretched += 1;
+      break;
+    case 'countdown':
+      updatedStats.totalTimeStretched += 1;
+      break;
+  }
+
   // Special handling for work phase reps
   if (state.phase === 'work') {
     const totalWorkTime = state.settings.timePerRep * state.settings.repsPerSet;
@@ -90,10 +100,8 @@ function handleCountdown(state: WorkoutState, now: number): WorkoutState {
         currentRep: newRep,
         timeRemaining: state.timeRemaining - 1,
         statistics: {
-          ...state.statistics,
-          totalRepsCompleted: state.statistics.totalRepsCompleted + 1,
-          totalTimeExercised: state.statistics.totalTimeExercised + 1,
-          lastActiveTime: now
+          ...updatedStats,
+          totalRepsCompleted: state.statistics.totalRepsCompleted + 1
         }
       };
     }
@@ -103,10 +111,7 @@ function handleCountdown(state: WorkoutState, now: number): WorkoutState {
   return {
     ...state,
     timeRemaining: state.timeRemaining - 1,
-    statistics: {
-      ...state.statistics,
-      lastActiveTime: now
-    }
+    statistics: updatedStats
   };
 }
 
@@ -145,7 +150,11 @@ function handlePhaseTransition(state: WorkoutState): WorkoutState {
           ...state,
           phase: 'rest' as Phase,
           timeRemaining: state.settings.restTime,
-          currentRep: 1
+          currentRep: 1,
+          statistics: {
+            ...state.statistics,
+            setsCompleted: state.currentSet
+          }
         };
       }
     }
@@ -162,13 +171,10 @@ function handlePhaseTransition(state: WorkoutState): WorkoutState {
       };
 
     case 'prepare':
-      // Prepare → Countdown
-      audioManager.playPreparePhase();
+      // Prepare phase doesn't auto-transition - stays at 0 until user continues
       return {
         ...state,
-        phase: 'countdown' as Phase,
-        timeRemaining: TIME.COUNTDOWN_THRESHOLD,
-        currentSet: 1
+        timeRemaining: 0
       };
 
     default:

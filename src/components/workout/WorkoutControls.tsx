@@ -23,6 +23,7 @@ export const WorkoutControls: React.FC<WorkoutControlsProps> = React.memo(({
     if (canSkip) {
       onSkip();
     } else {
+      // Track the rest skip attempt when user clicks during rest phase
       onShowRestSkipError();
       setIsShaking(true);
       setTimeout(() => setIsShaking(false), TIME.SHAKE_DURATION);

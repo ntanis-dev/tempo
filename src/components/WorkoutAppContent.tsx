@@ -5,6 +5,7 @@ import { useClickToResume } from '../hooks/useClickToResume';
 import { useNotifications } from '../hooks/useNotifications';
 import { useModalManagement } from '../hooks/useModalManagement';
 import { useAchievementProcessing } from '../hooks/useAchievementProcessing';
+import { useWakeLock } from '../hooks/useWakeLock';
 import { useUIStore } from '../store/uiStore';
 import { getBackgroundClass } from '../utils/backgroundClasses';
 import { SetupScreen } from './SetupScreen';
@@ -78,6 +79,9 @@ export const WorkoutAppContent: React.FC = () => {
     handleRestSkipAttempt,
     handleCloseAchievementModal,
   } = useAchievementProcessing(workout, resetWorkout);
+
+  // Wake lock to prevent screen auto-lock during workout
+  useWakeLock(workout);
 
   // UI Store state
   const {

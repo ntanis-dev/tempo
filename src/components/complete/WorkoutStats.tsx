@@ -24,8 +24,10 @@ export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout }
 
   const [levelInfo, setLevelInfo] = React.useState(experienceProcessor.getCurrentLevelInfo());
 
-  // Update level info when component mounts
+  // Update level info when component mounts and refresh from storage
   React.useEffect(() => {
+    // Refresh the experience processor from storage to get latest data
+    experienceProcessor.refreshFromStorage();
     setLevelInfo(experienceProcessor.getCurrentLevelInfo());
   }, []);
 

@@ -20,13 +20,6 @@ export const saveTotalSets = (sets: number) => {
   localStorage.setItem(STORAGE_KEYS.SETS, sets.toString());
 };
 
-export const loadTotalSets = (): number => {
-  // This function is deprecated - workout settings are now handled by StorageService
-  console.warn('loadTotalSets is deprecated, use StorageService.getWorkoutSettings instead');
-  const saved = localStorage.getItem(STORAGE_KEYS.SETS);
-  return saved ? parseInt(saved, 10) : DEFAULTS.TOTAL_SETS;
-};
-
 export const saveSettings = (settings: TimerSettings) => {
   storageService.saveWorkoutSettings(settings);
 };
@@ -65,19 +58,6 @@ export const saveSoundVolume = (volume: number) => {
 
 export const loadSoundVolume = (): number => {
   return storageService.getVolume();
-};
-
-export const savePreviousVolume = (volume: number) => {
-  // This function is deprecated - previous volume is not handled by StorageService
-  console.warn('savePreviousVolume is deprecated');
-  localStorage.setItem(STORAGE_KEYS.PREVIOUS_VOLUME, volume.toString());
-};
-
-export const loadPreviousVolume = (): number => {
-  // This function is deprecated - previous volume is not handled by StorageService
-  console.warn('loadPreviousVolume is deprecated');
-  const saved = localStorage.getItem(STORAGE_KEYS.PREVIOUS_VOLUME);
-  return saved !== null ? parseFloat(saved) : DEFAULTS.SOUND_VOLUME;
 };
 
 export const saveAchievements = (achievements: Achievement[]) => {

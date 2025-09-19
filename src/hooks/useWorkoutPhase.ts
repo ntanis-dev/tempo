@@ -17,27 +17,34 @@ export const useWorkoutPhase = (
       // Handle phase-specific logic
       switch (newPhase) {
         case 'prepare':
-          updates.timeRemaining = prev.settings.stretchTime;
+          updates = {
+            ...updates,
+            timeRemaining: prev.settings.stretchTime
+          };
           break;
 
         case 'countdown':
           updates = {
             ...updates,
             currentSet: prev.currentSet === 0 ? 1 : prev.currentSet,
-            timeRemaining: TIME.COUNTDOWN_THRESHOLD,
+            timeRemaining: prev.settings.stretchTime,
             currentRep: 1
           };
           audioManager.playPreparePhase();
           break;
 
         case 'work':
-          updates.timeRemaining = prev.settings.timePerRep;
+          updates = {
+            ...updates,
+            timeRemaining: prev.settings.timePerRep * prev.settings.repsPerSet,
+            currentRep: 1
+          };
           audioManager.playWorkStart();
           break;
 
         case 'rest': {
-          const nextSet = prev.currentSet + 1;
-          const isComplete = nextSet > prev.totalSets;
+          // Don't increment currentSet here - it stays the same during rest
+          const isComplete = prev.currentSet >= prev.totalSets;
 
           if (isComplete) {
             return transitionToComplete(prev);
@@ -45,7 +52,6 @@ export const useWorkoutPhase = (
 
           updates = {
             ...updates,
-            currentSet: nextSet,
             timeRemaining: prev.settings.restTime,
             currentRep: 1
           };
@@ -104,7 +110,11 @@ export const useWorkoutPhase = (
         } else {
           transitionToPhase('rest', {
             timeRemaining: workout.settings.restTime,
-            currentRep: 1
+            currentRep: 1,
+            statistics: {
+              ...workout.statistics,
+              setsCompleted: workout.currentSet
+            }
           });
         }
         break;

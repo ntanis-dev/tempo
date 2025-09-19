@@ -62,7 +62,13 @@ export const StorageModal: React.FC<StorageModalProps> = ({
       setShowClearConfirm(false);
 
       // Dispatch storage event to notify other components
-      window.dispatchEvent(new Event('storage'));
+      // Use StorageEvent with proper detail for cross-tab compatibility
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: null,  // null means all storage was cleared
+        newValue: null,
+        oldValue: null,
+        storageArea: localStorage
+      }));
 
       // Show success message and refresh all storage-dependent state
       onClearSuccess();

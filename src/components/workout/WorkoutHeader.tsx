@@ -19,10 +19,10 @@ export const WorkoutProgress: React.FC<WorkoutProgressProps> = React.memo(({
 
   // Memoize time-based percentage calculation
   const timePercentage = React.useMemo(() => {
-    if (workout.phase === 'setup' || workout.phase === 'prepare') return 0;
+    if (workout.phase === 'setup') return 0;
     if (workout.phase === 'complete') return 100;
 
-    // Total workout duration
+    // Total workout duration (stretch time is the countdown phase)
     const totalTime = workout.settings.stretchTime +
       (workout.totalSets * workout.settings.timePerRep * workout.settings.repsPerSet) +
       ((workout.totalSets - 1) * workout.settings.restTime);

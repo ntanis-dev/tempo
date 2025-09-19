@@ -52,8 +52,8 @@ class AudioManager {
         return;
       }
 
-      // Apply global volume multiplier
-      const adjustedVolume = baseVolume * this.volume;
+      // Apply global volume multiplier (convert from 0-100 to 0-1)
+      const adjustedVolume = baseVolume * (this.volume / 100);
       
       if (adjustedVolume === 0) {
         resolve();
@@ -157,13 +157,22 @@ class AudioManager {
     await this.createBeep(freq2, AUDIO.DURATIONS.LONG, AUDIO.VOLUMES.HIGH);
   }
 
+  async playResetSound() {
+    // Sad descending tone for reset (giving up)
+    await this.createBeep(440, 0.15, 0.3); // A4
+    await new Promise(resolve => setTimeout(resolve, 80));
+    await this.createBeep(330, 0.15, 0.3); // E4
+    await new Promise(resolve => setTimeout(resolve, 80));
+    await this.createBeep(262, 0.25, 0.3); // C4
+  }
+
   setEnabled(enabled: boolean) {
     this.isEnabled = enabled;
     storageService.setSoundEnabled(enabled);
   }
 
   setVolume(volume: number) {
-    this.volume = Math.max(0, Math.min(1, volume));
+    this.volume = Math.max(0, Math.min(100, volume));
     storageService.setVolume(this.volume);
   }
 

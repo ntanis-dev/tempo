@@ -122,11 +122,11 @@ export const WorkoutScreen: React.FC<WorkoutScreenProps> = ({
         <WorkoutTimer timeRemaining={workout.timeRemaining} phase={workout.phase} />
 
         {/* Motivational Quote */}
-        <QuoteDisplay 
+        <QuoteDisplay
           quote={
             workout.phase === 'work' ? workout.currentQuote :
             workout.phase === 'rest' ? workout.currentCalmingQuote :
-            workout.phase === 'countdown' ? workout.currentPreExerciseQuote :
+            (workout.phase === 'countdown' || workout.phase === 'prepare') ? workout.currentPreExerciseQuote :
             ''
           }
         />

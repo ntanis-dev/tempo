@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { Volume2, VolumeX, Volume1 } from 'lucide-react';
 import { audioManager } from '../../utils/audio';
-import { savePreviousVolume, loadPreviousVolume } from '../../utils/storage';
+import { storageService } from '../../services/StorageService';
 
 export const SoundToggle: React.FC = () => {
   const [volume, setVolume] = useState(audioManager.getVolume());
-  const [previousVolume, setPreviousVolume] = useState(loadPreviousVolume());
+  const [previousVolume, setPreviousVolume] = useState(storageService.getVolume());
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLButtonElement>(null);
 
@@ -31,7 +31,7 @@ export const SoundToggle: React.FC = () => {
     if (newVolume > 0 && volume !== newVolume) {
       const prevVol = volume > 0 ? volume : previousVolume;
       setPreviousVolume(prevVol);
-      savePreviousVolume(prevVol);
+      storageService.setVolume(prevVol);
     }
     
     setVolume(newVolume);
@@ -49,7 +49,7 @@ export const SoundToggle: React.FC = () => {
 
   const getVolumeIcon = () => {
     if (volume === 0) return VolumeX;
-    if (volume < 0.5) return Volume1;
+    if (volume < 50) return Volume1;
     return Volume2;
   };
 
@@ -59,7 +59,7 @@ export const SoundToggle: React.FC = () => {
   React.useEffect(() => {
     const handleStorageChange = () => {
       const newVolume = audioManager.getVolume();
-      const newPreviousVolume = loadPreviousVolume();
+      const newPreviousVolume = storageService.getVolume();
       setVolume(newVolume);
       setPreviousVolume(newPreviousVolume);
     };
@@ -86,7 +86,7 @@ export const SoundToggle: React.FC = () => {
       <div className="flex items-center space-x-2 px-3 py-2 flex-shrink-0">
           <VolumeIcon className="w-4 h-4" />
           <span className="text-xs font-medium">
-            {volume === 0 ? 'Muted' : `${Math.round(volume * 100)}%`}
+            {volume === 0 ? 'Muted' : `${Math.round(volume)}%`}
           </span>
       </div>
 
@@ -98,14 +98,14 @@ export const SoundToggle: React.FC = () => {
         <input
           type="range"
           min="0"
-          max="1"
-          step="0.05"
+          max="100"
+          step="5"
           value={volume}
           onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
           onClick={(e) => e.stopPropagation()}
           className="w-16 h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer volume-slider mr-3 mx-2"
           style={{
-            background: `linear-gradient(to right, #f97316 0%, #f97316 ${volume * 100}%, rgba(255,255,255,0.2) ${volume * 100}%, rgba(255,255,255,0.2) 100%)`
+            background: `linear-gradient(to right, #f97316 0%, #f97316 ${volume}%, rgba(255,255,255,0.2) ${volume}%, rgba(255,255,255,0.2) 100%)`
           }}
         />
         </div>

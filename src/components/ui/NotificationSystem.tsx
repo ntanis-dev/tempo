@@ -22,6 +22,13 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onDis
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
+  const handleDismiss = useCallback(() => {
+    setIsExiting(true);
+    setTimeout(() => {
+      onDismiss(notification.id);
+    }, 300);
+  }, [notification.id, onDismiss]);
+
   useEffect(() => {
     // Trigger entrance animation
     const timer = setTimeout(() => setIsVisible(true), 50);
@@ -36,13 +43,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onDis
       return () => clearTimeout(timer);
     }
   }, [notification.duration, handleDismiss]);
-
-  const handleDismiss = useCallback(() => {
-    setIsExiting(true);
-    setTimeout(() => {
-      onDismiss(notification.id);
-    }, 300);
-  }, [notification.id, onDismiss]);
 
   const getIcon = () => {
     switch (notification.type) {

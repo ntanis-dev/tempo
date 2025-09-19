@@ -4,11 +4,11 @@ import {
   saveWorkoutState,
   loadWorkoutState,
   saveTotalSets,
-  loadTotalSets,
   saveSettings,
   loadSettings,
   DEFAULT_STATISTICS
 } from '../utils/storage';
+import { storageService } from '../services/StorageService';
 import { validateSets, validateReps, validateTimePerRep, validateRestTime, validateStretchTime } from '../utils/validation';
 import { useDebugMode } from '../contexts/DebugContext';
 
@@ -37,7 +37,7 @@ export const useWorkoutState = () => {
     return {
       phase: 'setup',
       currentSet: 0,
-      totalSets: loadTotalSets(),
+      totalSets: storageService.getWorkoutSettings()?.totalSets || 3,
       timeRemaining: 0,
       isPaused: false,
       currentRep: 1,
@@ -102,7 +102,8 @@ export const useWorkoutState = () => {
   const refreshFromStorage = useCallback(() => {
     const savedState = loadWorkoutState();
     const settings = loadSettings();
-    const totalSets = loadTotalSets();
+    const workoutSettings = storageService.getWorkoutSettings();
+    const totalSets = workoutSettings?.totalSets || 3;
 
     if (savedState && savedState.phase !== 'setup' && savedState.phase !== 'transition') {
       setWorkout({

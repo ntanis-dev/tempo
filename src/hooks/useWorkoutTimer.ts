@@ -9,6 +9,7 @@ import {
   clearWorkoutState,
   loadWorkoutHistory
 } from '../utils/storage';
+import { audioManager } from '../utils/audio';
 import { TIME } from '../constants';
 
 /**
@@ -64,6 +65,7 @@ export const useWorkoutTimer = () => {
   const startWorkout = useCallback(() => {
     setIsTransitioning(true);
     startWorkoutTracking();
+    audioManager.playStartSound(); // Play start sound when workout begins
 
     setTimeout(() => {
       transitionToPhase('prepare');
@@ -94,6 +96,9 @@ export const useWorkoutTimer = () => {
 
   const resetWorkout = useCallback(() => {
     setIsResetting(true);
+
+    // Play sad sound for giving up
+    audioManager.playResetSound();
 
     // Clear transition timeout if exists
     if (transitionTimeoutRef.current) {
