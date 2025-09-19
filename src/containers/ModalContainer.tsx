@@ -3,13 +3,11 @@ import { WorkoutHistory } from '../components/history/WorkoutHistory';
 import { AchievementsModal } from '../components/achievements/AchievementsModal';
 import { StorageModal } from '../components/StorageModal';
 import { ExperienceModal } from '../components/levels/ExperienceModal';
-import { WhatsNewModal } from '../components/whats-new/WhatsNewModal';
 import { PWAInstallModal } from '../components/setup/PWAInstallModal';
 import { AchievementProgressModal } from '../components/achievements/AchievementProgressModal';
 import { useUIStore } from '../store/uiStore';
 import { WorkoutHistoryEntry } from '../types';
 import { clearWorkoutHistory } from '../utils/storage';
-import { whatsNewTracker } from '../utils/whatsNewTracker';
 import { achievementProcessor } from '../utils/achievementProcessor';
 import { experienceProcessor } from '../utils/experienceProcessor';
 import { audioManager } from '../utils/audio';
@@ -31,24 +29,16 @@ export const ModalContainer: React.FC<ModalContainerProps> = React.memo(({
     showAchievements,
     showStorage,
     showLevels,
-    showWhatsNew,
     achievementModalData,
     setShowHistory,
     setShowAchievements,
     setShowStorage,
     setShowLevels,
-    setShowWhatsNew,
     setAchievementModalData,
     showSuccess,
     showError,
-    incrementWhatsNewKey,
     incrementStorageRefreshKey
   } = useUIStore();
-
-  const handleWhatsNewRead = () => {
-    whatsNewTracker.markAsRead();
-    incrementWhatsNewKey();
-  };
 
   const handleStorageExportSuccess = () => {
     setShowStorage(false);
@@ -61,8 +51,6 @@ export const ModalContainer: React.FC<ModalContainerProps> = React.memo(({
     experienceProcessor.resetExperience();
     refreshWorkoutFromStorage();
     audioManager.refreshFromStorage();
-    incrementWhatsNewKey();
-    whatsNewTracker.refreshFromStorage();
     incrementStorageRefreshKey();
     showSuccess('Storage Cleared', 'All your data have been cleared.');
   };
@@ -73,7 +61,6 @@ export const ModalContainer: React.FC<ModalContainerProps> = React.memo(({
     experienceProcessor.refreshFromStorage();
     refreshWorkoutFromStorage();
     audioManager.refreshFromStorage();
-    incrementWhatsNewKey();
     incrementStorageRefreshKey();
     showSuccess('Import Successful', 'Your backup has been restored successfully.');
   };
@@ -127,14 +114,6 @@ export const ModalContainer: React.FC<ModalContainerProps> = React.memo(({
           isOpen={showLevels}
           onClose={() => setShowLevels(false)}
           onShowSuccess={showSuccess}
-        />
-      )}
-
-      {showWhatsNew && (
-        <WhatsNewModal
-          isOpen={showWhatsNew}
-          onClose={() => setShowWhatsNew(false)}
-          onMarkAsRead={handleWhatsNewRead}
         />
       )}
 

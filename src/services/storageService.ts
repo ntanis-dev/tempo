@@ -206,14 +206,6 @@ class StorageService {
     this.setItem(this.KEYS.VOLUME, volume);
   }
 
-  isWhatsNewRead(version: string): boolean {
-    return this.getItem(this.KEYS.WHATS_NEW_READ, '') === version;
-  }
-
-  markWhatsNewAsRead(version: string): void {
-    this.setItem(this.KEYS.WHATS_NEW_READ, version);
-  }
-
   // App state methods
   getLastProcessedWorkout(): string | null {
     return this.getItem(this.KEYS.LAST_PROCESSED_WORKOUT, null);

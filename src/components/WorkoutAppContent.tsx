@@ -28,8 +28,12 @@ const ExperienceModal = React.lazy(() => import('./levels/ExperienceModal').then
 const ModalLoadingFallback = () => null;
 
 export const WorkoutAppContent: React.FC = () => {
-  // Muted mode state for re-rendering backgrounds
-  const [mutedMode, setMutedMode] = React.useState(false);
+  // Muted mode state for re-rendering backgrounds - initialize from storage
+  const [mutedMode, setMutedMode] = React.useState(() => {
+    // Import storageService at the top of the component
+    const { storageService } = require('../services/StorageService');
+    return storageService.isMutedMode();
+  });
 
   // Listen for muted mode changes
   React.useEffect(() => {
@@ -91,7 +95,6 @@ export const WorkoutAppContent: React.FC = () => {
   // UI Store state
   const {
     showUpdateButton,
-    whatsNewKey,
     storageRefreshKey,
     setShowUpdateButton,
   } = useUIStore();
@@ -109,7 +112,7 @@ export const WorkoutAppContent: React.FC = () => {
   return (
     <div
       id="main-container"
-      className={`min-h-screen ${getBackgroundClass(workout, isResetting, isTransitioning)}`}
+      className={`min-h-screen ${getBackgroundClass(workout, isResetting, isTransitioning, mutedMode)}`}
     >
       {/* Pause overlay */}
       <PauseOverlay
@@ -200,7 +203,6 @@ export const WorkoutAppContent: React.FC = () => {
             isTransitioning={isTransitioning}
             isResetting={isResetting}
             waitingForAchievements={waitingForAchievements}
-            menuKey={whatsNewKey}
             storageRefreshKey={storageRefreshKey}
           />
         )}

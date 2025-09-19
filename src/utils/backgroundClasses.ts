@@ -1,13 +1,12 @@
 import { WorkoutState } from '../types';
 import { TIME } from '../constants';
-import { storageService } from '../services/StorageService';
 
 export const getBackgroundClass = (
   workout: WorkoutState,
   isResetting: boolean,
-  isTransitioning: boolean
+  isTransitioning: boolean,
+  isMuted: boolean = false
 ): string => {
-  const isMuted = storageService.isMutedMode();
   const suffix = isMuted ? '-muted' : '';
 
   if (isResetting) {
