@@ -1,32 +1,36 @@
 import { WorkoutState } from '../types';
 import { TIME } from '../constants';
+import { storageService } from '../services/StorageService';
 
 export const getBackgroundClass = (
   workout: WorkoutState,
   isResetting: boolean,
   isTransitioning: boolean
 ): string => {
+  const isMuted = storageService.isMutedMode();
+  const suffix = isMuted ? '-muted' : '';
+
   if (isResetting) {
-    return 'background-resetting';
+    return `background-resetting${suffix}`;
   }
   if (isTransitioning && workout.phase === 'setup') {
-    return 'background-transitioning';
+    return `background-transitioning${suffix}`;
   }
   if (isTransitioning && workout.phase === 'prepare') {
-    return 'background-countdown'; // Background changes immediately even though phase is still 'prepare'
+    return `background-countdown${suffix}`; // Background changes immediately even though phase is still 'prepare'
   }
   if (workout.phase === 'prepare') {
-    return 'background-prepare';
+    return `background-prepare${suffix}`;
   }
   if (workout.phase === 'countdown') {
     if (workout.timeRemaining <= TIME.PREPARE_THRESHOLD) {
-      return 'background-countdown-prepare';
+      return `background-countdown-prepare${suffix}`;
     }
   }
   if (workout.phase === 'rest') {
     if (workout.timeRemaining <= TIME.PREPARE_THRESHOLD) {
-      return 'background-rest-prepare';
+      return `background-rest-prepare${suffix}`;
     }
   }
-  return `background-${workout.phase}`;
+  return `background-${workout.phase}${suffix}`;
 };

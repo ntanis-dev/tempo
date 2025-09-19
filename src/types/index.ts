@@ -7,6 +7,10 @@ export interface TimerSettings {
   repsPerSet: number;
 }
 
+export interface WorkoutSettings extends TimerSettings {
+  totalSets: number;
+}
+
 export interface WorkoutState {
   phase: Phase;
   currentSet: number;
@@ -35,6 +39,7 @@ export interface WorkoutStatistics {
   workoutStartTime: number | null;
   workoutEndTime: number | null;
   lastActiveTime: number;
+  pauseStartTime: number | null;
 }
 
 export interface WorkoutHistoryEntry {

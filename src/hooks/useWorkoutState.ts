@@ -68,7 +68,14 @@ export const useWorkoutState = () => {
   const adjustSets = React.useCallback((delta: number) => {
     setWorkout(prev => {
       const newSets = validateSets(prev.totalSets + delta);
-      // Total sets is stored as part of the workout state, not settings
+
+      // Save totalSets as part of WorkoutSettings
+      const newWorkoutSettings = {
+        ...prev.settings,
+        totalSets: newSets
+      };
+      storageService.saveWorkoutSettings(newWorkoutSettings);
+
       return { ...prev, totalSets: newSets };
     });
   }, []);

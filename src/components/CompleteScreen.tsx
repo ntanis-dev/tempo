@@ -1,6 +1,7 @@
 import React from 'react';
 import { WorkoutState } from '../types';
 import { SoundToggle } from './common/SoundToggle';
+import { MutedToggle } from './common/MutedToggle';
 import { FireworksAnimation } from './complete/FireworksAnimation';
 import { WorkoutStats } from './complete/WorkoutStats';
 import { CompletionActions } from './complete/CompletionActions';
@@ -23,9 +24,10 @@ export const CompleteScreen: React.FC<CompleteScreenProps> = ({
 
   return (
     <div className={`min-height h-screen flex items-center justify-center p-4 w-full ${getFadeClasses(isVisible, isResetting)}`}>
-      {/* Sound Toggle */}
+      {/* Sound and Muted Toggles */}
       <div className="fixed top-4 right-4 z-10">
-        <div className="flex flex-col space-y-2">
+        <div className="flex items-center space-x-2">
+          <MutedToggle />
           <SoundToggle />
         </div>
       </div>

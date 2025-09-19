@@ -32,7 +32,8 @@ export const DEFAULTS = {
     totalRepsCompleted: 0,
     workoutStartTime: null,
     workoutEndTime: null,
-    lastActiveTime: Date.now()
+    lastActiveTime: Date.now(),
+    pauseStartTime: null
   },
   TOTAL_SETS: 10,
   SOUND_ENABLED: true,

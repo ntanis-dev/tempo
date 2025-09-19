@@ -8,6 +8,13 @@ export const useWorkoutStatistics = (
   const pauseStartTimeRef = React.useRef<number | null>(null);
   const lastPhaseChangeRef = React.useRef<number>(Date.now());
 
+  // Initialize pause tracking from persisted state
+  React.useEffect(() => {
+    if (workout.isPaused && workout.statistics.pauseStartTime && !pauseStartTimeRef.current) {
+      pauseStartTimeRef.current = workout.statistics.pauseStartTime;
+    }
+  }, [workout.isPaused, workout.statistics.pauseStartTime]);
+
   // Update statistics based on phase
   const updateStatistics = React.useCallback((phase: string, timeElapsed: number) => {
     updateWorkout(prev => {
@@ -30,10 +37,21 @@ export const useWorkoutStatistics = (
     });
   }, [updateWorkout]);
 
-  // Track pause time
+  // Track pause time with persistence
   React.useEffect(() => {
     if (workout.isPaused && !pauseStartTimeRef.current) {
-      pauseStartTimeRef.current = Date.now();
+      const pauseStartTime = Date.now();
+      pauseStartTimeRef.current = pauseStartTime;
+
+      // Persist pause start time
+      updateWorkout(prev => ({
+        ...prev,
+        statistics: {
+          ...prev.statistics,
+          pauseStartTime,
+          lastActiveTime: Date.now()
+        }
+      }));
     } else if (!workout.isPaused && pauseStartTimeRef.current) {
       const pauseDuration = Date.now() - pauseStartTimeRef.current;
       updateWorkout(prev => ({
@@ -42,6 +60,7 @@ export const useWorkoutStatistics = (
           ...prev.statistics,
           // Round to avoid floating point accumulation
           totalTimePaused: Math.round(prev.statistics.totalTimePaused + pauseDuration / 1000),
+          pauseStartTime: null, // Clear pause start time
           lastActiveTime: Date.now()
         }
       }));

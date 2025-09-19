@@ -29,6 +29,21 @@ const WhatsNewModal = React.lazy(() => import('./whats-new/WhatsNewModal').then(
 const ModalLoadingFallback = () => null;
 
 export const WorkoutAppContent: React.FC = () => {
+  // Muted mode state for re-rendering backgrounds
+  const [mutedMode, setMutedMode] = React.useState(false);
+
+  // Listen for muted mode changes
+  React.useEffect(() => {
+    const handleMutedModeChange = (event: CustomEvent) => {
+      setMutedMode(event.detail);
+    };
+
+    window.addEventListener('mutedModeChanged' as any, handleMutedModeChange);
+    return () => {
+      window.removeEventListener('mutedModeChanged' as any, handleMutedModeChange);
+    };
+  }, []);
+
   // Core workout functionality
   const {
     workout,

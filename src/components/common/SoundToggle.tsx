@@ -103,7 +103,7 @@ export const SoundToggle: React.FC = () => {
           value={volume}
           onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
           onClick={(e) => e.stopPropagation()}
-          className="w-16 h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer volume-slider mr-3 mx-2"
+          className="w-16 h-3 bg-white/20 rounded-lg appearance-none cursor-pointer volume-slider mr-3 mx-2"
           style={{
             background: `linear-gradient(to right, #f97316 0%, #f97316 ${volume}%, rgba(255,255,255,0.2) ${volume}%, rgba(255,255,255,0.2) 100%)`
           }}
