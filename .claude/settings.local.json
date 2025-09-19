@@ -17,7 +17,11 @@
       "Bash(awk:*)",
       "Bash(npm outdated:*)",
       "Bash(npm update)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(npm ls:*)",
+      "Bash(xargs:*)",
+      "Bash(powershell:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

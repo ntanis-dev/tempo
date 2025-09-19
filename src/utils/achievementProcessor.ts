@@ -3,7 +3,7 @@ import { WorkoutState } from '../types';
 import { ALL_ACHIEVEMENTS } from '../achievements';
 import { saveAchievements, loadAchievements } from './storage';
 import { STORAGE_KEYS, UI } from '../constants';
-import { storageService } from '../services/storageService';
+import { storageService } from "../services/StorageService";
 
 export interface AchievementUpdate {
   achievement: Achievement;

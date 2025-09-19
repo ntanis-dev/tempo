@@ -6,7 +6,7 @@ import { experienceProcessor } from '../utils/experienceProcessor';
 import { whatsNewTracker } from '../utils/whatsNewTracker';
 import { clearWorkoutHistory } from '../utils/storage';
 import { WorkoutHistoryEntry } from '../types';
-import { storageService } from '../services/storageService';
+import { storageService } from "../services/StorageService";
 import { useDebugMode } from '../contexts/DebugContext';
 
 // Remove this constant as we now use StorageService methods

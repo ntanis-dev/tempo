@@ -4,7 +4,7 @@ import { useUIStore } from '../store/uiStore';
 import { audioManager } from '../utils/audio';
 import { achievementProcessor } from '../utils/achievementProcessor';
 import { experienceProcessor } from '../utils/experienceProcessor';
-import { storageService } from '../services/storageService';
+import { storageService } from "../services/StorageService";
 
 // Remove this constant as we now use StorageService methods
 

@@ -4,7 +4,7 @@ import { useUIStore } from '../store/uiStore';
 import { achievementProcessor } from '../utils/achievementProcessor';
 import { experienceProcessor } from '../utils/experienceProcessor';
 import { audioManager } from '../utils/audio';
-import { storageService } from '../services/storageService';
+import { storageService } from "../services/StorageService";
 
 interface AchievementContainerProps {
   workout: WorkoutState;

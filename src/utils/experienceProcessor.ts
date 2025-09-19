@@ -1,7 +1,7 @@
 import { ExperienceData, LevelInfo, XPGain } from '../types/experience';
 import { WorkoutState } from '../types';
 import { calculateXPRequired, getTotalXPForLevel, XP_SOURCES, LEVEL_CAP } from '../constants/experience';
-import { storageService } from '../services/storageService';
+import { storageService } from "../services/StorageService";
 
 export class ExperienceProcessor {
   private data: ExperienceData = {

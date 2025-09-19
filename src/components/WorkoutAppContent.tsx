@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { setUpdateCallback, refreshApp } from '../main';
+import { setUpdateCallback, refreshApp } from '../services/serviceWorker';
 import { useWorkoutTimer } from '../hooks/useWorkoutTimer';
 import { useClickToResume } from '../hooks/useClickToResume';
 import { useNotifications } from '../hooks/useNotifications';
@@ -25,17 +25,8 @@ const StorageModal = React.lazy(() => import('./StorageModal').then(module => ({
 const ExperienceModal = React.lazy(() => import('./levels/ExperienceModal').then(module => ({ default: module.ExperienceModal })));
 const WhatsNewModal = React.lazy(() => import('./whats-new/WhatsNewModal').then(module => ({ default: module.WhatsNewModal })));
 
-// Loading fallback component
-const ModalLoadingFallback: React.FC = () => (
-  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-    <div className="bg-black/30 rounded-2xl border border-white/10 p-8 max-w-sm mx-4">
-      <div className="flex items-center justify-center space-x-3">
-        <div className="animate-spin rounded-full h-6 w-6 border-2 border-white/30 border-t-white"></div>
-        <span className="text-white font-medium">Loading...</span>
-      </div>
-    </div>
-  </div>
-);
+// No loading fallback - modals load instantly
+const ModalLoadingFallback = () => null;
 
 export const WorkoutAppContent: React.FC = () => {
   // Core workout functionality

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { storageService } from '../services/storageService';
+import { storageService } from "../services/StorageService";
 
 export const useDebugMode = () => {
   const [isDebugMode, setIsDebugMode] = useState(() => {

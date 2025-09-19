@@ -4,7 +4,7 @@ import { Modal } from './ui/Modal';
 import { ModalHeader } from './ui/ModalHeader';
 import { Button } from './ui/Button';
 import { MODAL_STYLES } from '../constants/styles';
-import { storageService } from '../services/storageService';
+import { storageService } from "../services/StorageService";
 
 interface StorageModalProps {
   isOpen: boolean;

@@ -1,7 +1,7 @@
 import { WorkoutState, TimerSettings, WorkoutHistoryEntry } from '../types';
 import { Achievement } from '../types/achievements';
-import { STORAGE_KEYS, DEFAULTS } from '../constants';
-import { storageService } from '../services/storageService';
+import { DEFAULTS } from '../constants';
+import { storageService } from '../services/StorageService';
 
 export const DEFAULT_SETTINGS: TimerSettings = DEFAULTS.SETTINGS;
 export const DEFAULT_STATISTICS = DEFAULTS.STATISTICS;
@@ -12,12 +12,6 @@ export const saveWorkoutState = (state: WorkoutState) => {
 
 export const loadWorkoutState = (): WorkoutState | null => {
   return storageService.getWorkoutState();
-};
-
-export const saveTotalSets = (sets: number) => {
-  // This function is deprecated - workout settings are now handled by StorageService
-  console.warn('saveTotalSets is deprecated, use StorageService.saveWorkoutSettings instead');
-  localStorage.setItem(STORAGE_KEYS.SETS, sets.toString());
 };
 
 export const saveSettings = (settings: TimerSettings) => {

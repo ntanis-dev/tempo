@@ -1,6 +1,6 @@
 // Audio utility functions for workout timer sound effects
 import { AUDIO } from '../constants';
-import { storageService } from '../services/storageService';
+import { storageService } from "../services/StorageService";
 
 class AudioManager {
   private audioContext: AudioContext | null = null;

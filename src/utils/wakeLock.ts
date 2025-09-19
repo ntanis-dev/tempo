@@ -15,7 +15,6 @@ class WakeLockManager {
    */
   async requestWakeLock(): Promise<void> {
     if (!this.isSupported) {
-      console.log('Wake Lock API not supported on this device');
       return;
     }
 
@@ -27,14 +26,13 @@ class WakeLockManager {
 
       // Request new wake lock
       this.wakeLock = await (navigator as any).wakeLock.request('screen');
-      console.log('Wake Lock acquired - screen will stay on');
 
       // Re-acquire lock if page becomes visible again (e.g., after tab switch)
       document.addEventListener('visibilitychange', this.handleVisibilityChange);
 
       // Listen for release event
       this.wakeLock.addEventListener('release', () => {
-        console.log('Wake Lock was released');
+        // Wake Lock was released
       });
     } catch (err) {
       console.error('Failed to acquire wake lock:', err);
@@ -50,7 +48,6 @@ class WakeLockManager {
     try {
       await this.wakeLock.release();
       this.wakeLock = null;
-      console.log('Wake Lock released - screen can now auto-lock');
 
       // Remove visibility change listener
       document.removeEventListener('visibilitychange', this.handleVisibilityChange);

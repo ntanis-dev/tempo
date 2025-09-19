@@ -1,6 +1,5 @@
-import * as React from 'react';
-import { createContext, useContext, useState, useEffect } from 'react';
-import { storageService } from '../services/storageService';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { storageService } from '../services/StorageService';
 
 interface DebugContextType {
   isDebugMode: boolean;
@@ -10,14 +9,23 @@ interface DebugContextType {
 const DebugContext = createContext<DebugContextType | undefined>(undefined);
 
 export const DebugProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isDebugMode, setIsDebugMode] = useState(() => {
-    return storageService.isDebugMode();
-  });
+  // Initialize with false, then load from storage after mount
+  const [isDebugMode, setIsDebugMode] = useState(false);
 
   const setDebugMode = (enabled: boolean) => {
     setIsDebugMode(enabled);
     storageService.setDebugMode(enabled);
   };
+
+  // Load initial debug mode from storage after mount
+  useEffect(() => {
+    try {
+      const storedDebugMode = storageService.isDebugMode();
+      setIsDebugMode(storedDebugMode);
+    } catch (error) {
+      console.error('Error loading debug mode from storage:', error);
+    }
+  }, []);
 
   // Listen for storage events to update debug mode when storage is cleared
   useEffect(() => {
@@ -28,7 +36,6 @@ export const DebugProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (e.key === null || e.key === 'tempo-debug-mode') {
           // Force set debug mode to false when storage is cleared
           if (e.key === null) {
-            console.log('Storage cleared, setting debug mode to false');
             setIsDebugMode(false);
           } else {
             // Otherwise check the actual storage value

@@ -3,7 +3,6 @@ import { WorkoutState, TimerSettings } from '../types';
 import {
   saveWorkoutState,
   loadWorkoutState,
-  saveTotalSets,
   saveSettings,
   loadSettings,
   DEFAULT_STATISTICS
@@ -68,7 +67,7 @@ export const useWorkoutState = () => {
   const adjustSets = useCallback((delta: number) => {
     setWorkout(prev => {
       const newSets = validateSets(prev.totalSets + delta);
-      saveTotalSets(newSets);
+      // Total sets is stored as part of the workout state, not settings
       return { ...prev, totalSets: newSets };
     });
   }, []);

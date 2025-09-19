@@ -163,9 +163,8 @@ class StorageService {
   // Experience methods
   getExperience(): ExperienceData {
     return this.getItem(this.KEYS.EXPERIENCE, {
-      currentXP: 0,
       totalXP: 0,
-      level: 1
+      currentLevel: 1
     });
   }
 
