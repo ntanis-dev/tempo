@@ -7,6 +7,7 @@ import { whatsNewTracker } from '../utils/whatsNewTracker';
 import { clearWorkoutHistory } from '../utils/storage';
 import { WorkoutHistoryEntry } from '../types';
 import { storageService } from '../services/storageService';
+import { useDebugMode } from '../contexts/DebugContext';
 
 // Remove this constant as we now use StorageService methods
 
@@ -34,6 +35,8 @@ export const useModalManagement = (
     incrementWhatsNewKey,
     incrementStorageRefreshKey,
   } = useUIStore();
+
+  const [, setDebugMode] = useDebugMode();
 
   // History Modal
   const showWorkoutHistory = useCallback(() => {
@@ -100,8 +103,11 @@ export const useModalManagement = (
     // Force level display refresh
     incrementStorageRefreshKey();
 
+    // Force debug mode to false
+    setDebugMode(false);
+
     showSuccess('Storage Cleared', 'All your data have been cleared.');
-  }, [refreshWorkoutFromStorage, incrementWhatsNewKey, incrementStorageRefreshKey, showSuccess]);
+  }, [refreshWorkoutFromStorage, incrementWhatsNewKey, incrementStorageRefreshKey, showSuccess, setDebugMode]);
 
   const handleStorageImportSuccess = useCallback(() => {
     setShowStorage(false);

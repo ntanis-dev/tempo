@@ -75,6 +75,7 @@ export const SetupMenu: React.FC<SetupMenuProps> = ({
     setHasUnreadUpdates(whatsNewTracker.hasUnreadUpdates());
   }, []);
 
+
   return (
     <div className="relative" data-menu-container>
       <button
