@@ -23,7 +23,6 @@ const WorkoutHistory = React.lazy(() => import('./history/WorkoutHistory').then(
 const AchievementsModal = React.lazy(() => import('./achievements/AchievementsModal').then(module => ({ default: module.AchievementsModal })));
 const StorageModal = React.lazy(() => import('./StorageModal').then(module => ({ default: module.StorageModal })));
 const ExperienceModal = React.lazy(() => import('./levels/ExperienceModal').then(module => ({ default: module.ExperienceModal })));
-const WhatsNewModal = React.lazy(() => import('./whats-new/WhatsNewModal').then(module => ({ default: module.WhatsNewModal })));
 
 // No loading fallback - modals load instantly
 const ModalLoadingFallback = () => null;
@@ -166,15 +165,6 @@ export const WorkoutAppContent: React.FC = () => {
         </Suspense>
       )}
 
-      {modalHandlers.showWhatsNew && (
-        <Suspense fallback={<ModalLoadingFallback />}>
-          <WhatsNewModal
-            isOpen={modalHandlers.showWhatsNew}
-            onClose={modalHandlers.hideWhatsNewModal}
-            onMarkAsRead={modalHandlers.handleWhatsNewRead}
-          />
-        </Suspense>
-      )}
 
       <PWAInstallModal />
 
@@ -206,7 +196,6 @@ export const WorkoutAppContent: React.FC = () => {
             onShowAchievements={modalHandlers.showAchievementsModal}
             onShowStorage={modalHandlers.showStorageModal}
             onShowLevels={modalHandlers.showLevelsModal}
-            onShowWhatsNew={modalHandlers.showWhatsNewModal}
             onShowSuccess={showSuccess}
             isTransitioning={isTransitioning}
             isResetting={isResetting}

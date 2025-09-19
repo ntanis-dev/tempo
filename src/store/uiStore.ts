@@ -16,7 +16,6 @@ interface UIStore {
   showAchievements: boolean;
   showStorage: boolean;
   showLevels: boolean;
-  showWhatsNew: boolean;
   showUpdateButton: boolean;
   waitingForAchievements: boolean;
   achievementModalData: AchievementModalData | null;
@@ -25,7 +24,6 @@ interface UIStore {
   notifications: Notification[];
 
   // Keys for force re-renders
-  whatsNewKey: number;
   storageRefreshKey: number;
 
   // Modal actions
@@ -33,7 +31,6 @@ interface UIStore {
   setShowAchievements: (show: boolean) => void;
   setShowStorage: (show: boolean) => void;
   setShowLevels: (show: boolean) => void;
-  setShowWhatsNew: (show: boolean) => void;
   setShowUpdateButton: (show: boolean) => void;
   setWaitingForAchievements: (waiting: boolean) => void;
   setAchievementModalData: (data: AchievementModalData | null) => void;
@@ -48,7 +45,6 @@ interface UIStore {
   showInfo: (title: string, message?: string) => void;
 
   // Key actions
-  incrementWhatsNewKey: () => void;
   incrementStorageRefreshKey: () => void;
 }
 
@@ -58,12 +54,10 @@ export const useUIStore = create<UIStore>((set) => ({
   showAchievements: false,
   showStorage: false,
   showLevels: false,
-  showWhatsNew: false,
   showUpdateButton: false,
   waitingForAchievements: false,
   achievementModalData: null,
   notifications: [],
-  whatsNewKey: 0,
   storageRefreshKey: 0,
 
   // Modal actions
@@ -71,7 +65,6 @@ export const useUIStore = create<UIStore>((set) => ({
   setShowAchievements: (show) => set({ showAchievements: show }),
   setShowStorage: (show) => set({ showStorage: show }),
   setShowLevels: (show) => set({ showLevels: show }),
-  setShowWhatsNew: (show) => set({ showWhatsNew: show }),
   setShowUpdateButton: (show) => set({ showUpdateButton: show }),
   setWaitingForAchievements: (waiting) => set({ waitingForAchievements: waiting }),
   setAchievementModalData: (data) => set({ achievementModalData: data }),
@@ -81,18 +74,13 @@ export const useUIStore = create<UIStore>((set) => ({
     set((state) => ({
       notifications: [
         ...state.notifications,
-        {
-          ...notification,
-          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          duration: notification.duration ?? 4000,
-          dismissible: notification.dismissible ?? true
-        }
-      ]
+        { ...notification, id: Math.random().toString(36).substr(2, 9) },
+      ],
     })),
 
   dismissNotification: (id) =>
     set((state) => ({
-      notifications: state.notifications.filter((n) => n.id !== id)
+      notifications: state.notifications.filter((n) => n.id !== id),
     })),
 
   clearAllNotifications: () => set({ notifications: [] }),
@@ -102,14 +90,14 @@ export const useUIStore = create<UIStore>((set) => ({
       notifications: [
         ...state.notifications,
         {
-          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: Math.random().toString(36).substr(2, 9),
           type: 'success',
           title,
           message,
           duration: 4000,
-          dismissible: true
-        }
-      ]
+          dismissible: true,
+        },
+      ],
     })),
 
   showError: (title, message) =>
@@ -117,14 +105,14 @@ export const useUIStore = create<UIStore>((set) => ({
       notifications: [
         ...state.notifications,
         {
-          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: Math.random().toString(36).substr(2, 9),
           type: 'error',
           title,
           message,
-          duration: 4000,
-          dismissible: true
-        }
-      ]
+          duration: 6000,
+          dismissible: true,
+        },
+      ],
     })),
 
   showWarning: (title, message) =>
@@ -132,14 +120,14 @@ export const useUIStore = create<UIStore>((set) => ({
       notifications: [
         ...state.notifications,
         {
-          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: Math.random().toString(36).substr(2, 9),
           type: 'warning',
           title,
           message,
-          duration: 4000,
-          dismissible: true
-        }
-      ]
+          duration: 5000,
+          dismissible: true,
+        },
+      ],
     })),
 
   showInfo: (title, message) =>
@@ -147,20 +135,17 @@ export const useUIStore = create<UIStore>((set) => ({
       notifications: [
         ...state.notifications,
         {
-          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: Math.random().toString(36).substr(2, 9),
           type: 'info',
           title,
           message,
           duration: 4000,
-          dismissible: true
-        }
-      ]
+          dismissible: true,
+        },
+      ],
     })),
 
   // Key actions
-  incrementWhatsNewKey: () =>
-    set((state) => ({ whatsNewKey: state.whatsNewKey + 1 })),
-
   incrementStorageRefreshKey: () =>
-    set((state) => ({ storageRefreshKey: state.storageRefreshKey + 1 }))
+    set((state) => ({ storageRefreshKey: state.storageRefreshKey + 1 })),
 }));

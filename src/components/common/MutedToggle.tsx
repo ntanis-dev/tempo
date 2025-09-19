@@ -46,7 +46,6 @@ export const MutedToggle: React.FC = () => {
           ? 'bg-gray-500/20 border-gray-400/30 hover:bg-gray-500/30'
           : 'bg-white/10 border-white/20 hover:bg-white/20'
       }`}
-      title={isMuted ? 'Switch to vibrant colors' : 'Switch to muted colors'}
     >
       <Contrast
         className={`w-4 h-4 transition-colors ${
