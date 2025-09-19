@@ -21,49 +21,34 @@ interface UpdateEntry {
 }
 
 const update: UpdateEntry = {
-  version: '1.6.0',
-  date: 'January 18, 2025',
-  title: 'Major UI Polish & Feature Updates',
+  version: '1.6.1',
+  date: 'September 19, 2025',
+  title: 'Timer Accuracy & Stability Improvements',
   changes: [
     {
-      icon: Plus,
-      color: 'text-green-400',
-      text: 'Enhanced sound controls with volume slider.'
-    },
-    {
-      icon: Plus,
-      color: 'text-green-400',
-      text: 'PWA install button with smooth animation.'
-    },
-    {
-      icon: Plus,
-      color: 'text-green-400',
-      text: 'Click-outside-to-close functionality added to modals.'
-    },
-    {
-      icon: Palette,
-      color: 'text-purple-400',
-      text: 'Redesigned What\'s New modal with cleaner layout and footer organization.'
+      icon: Settings,
+      color: 'text-orange-400',
+      text: 'Fixed total workout time to accurately sum all tracked phases.'
     },
     {
       icon: Settings,
       color: 'text-orange-400',
-      text: 'Update bar icon consistency - moved icons left to match app patterns.'
+      text: 'Improved timer accuracy and phase transition handling.'
     },
     {
       icon: Settings,
       color: 'text-orange-400',
-      text: 'Enhanced experience display timing and improved level progression feedback.'
+      text: 'Fixed React initialization warnings and console cleanup.'
     },
     {
       icon: Settings,
       color: 'text-orange-400',
-      text: 'Storage management improvements with better import/export flow and data validation.'
+      text: 'Migrated to centralized StorageService for better reliability.'
     },
     {
       icon: Settings,
       color: 'text-orange-400',
-      text: 'Fixed workout history to show start time instead of finish time.'
+      text: 'Fixed debug mode toggle persistence after storage clear.'
     }
   ]
 };

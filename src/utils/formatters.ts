@@ -2,8 +2,10 @@
 import { WorkoutStatistics } from '../types';
 
 export const formatDuration = (seconds: number): string => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+  // Round to nearest integer to avoid floating point issues
+  const totalSeconds = Math.round(seconds);
+  const mins = Math.floor(totalSeconds / 60);
+  const secs = totalSeconds % 60;
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
@@ -71,9 +73,14 @@ export const calculateTotalWorkoutDuration = (
 };
 
 export const getTotalWorkoutTime = (statistics: WorkoutStatistics): number => {
+  // Handle missing statistics object
+  if (!statistics) {
+    return 0;
+  }
+
   // Always return the sum of tracked times
-  return statistics.totalTimeExercised +
-         statistics.totalTimePaused +
-         statistics.totalTimeRested +
-         statistics.totalTimeStretched;
+  return (statistics.totalTimeExercised || 0) +
+         (statistics.totalTimePaused || 0) +
+         (statistics.totalTimeRested || 0) +
+         (statistics.totalTimeStretched || 0);
 };

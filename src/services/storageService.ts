@@ -102,16 +102,28 @@ class StorageService {
     if (!workout.statistics.workoutStartTime) return;
 
     const history = this.getWorkoutHistory();
+
+    // Check if this workout was already saved (prevent duplicates on refresh)
+    // Use workoutStartTime as unique identifier since it's set when workout begins
+    const isDuplicate = history.some(entry =>
+      entry.date === workout.statistics.workoutStartTime &&
+      entry.totalSets === workout.totalSets &&
+      entry.repsPerSet === workout.settings.repsPerSet
+    );
+
+    if (isDuplicate) {
+      return; // Don't save duplicate
+    }
+
     const entry: WorkoutHistoryEntry = {
-      id: Date.now().toString(),
-      date: new Date().toISOString(),
-      totalSets: workout.statistics.setsCompleted,
-      totalReps: workout.statistics.totalRepsCompleted,
+      id: workout.statistics.workoutStartTime.toString(), // Use start time as ID for consistency
+      date: workout.statistics.workoutStartTime,
+      totalSets: workout.totalSets,
+      repsPerSet: workout.settings.repsPerSet,
       timePerRep: workout.settings.timePerRep,
       restTime: workout.settings.restTime,
-      totalTimeExercised: workout.statistics.totalTimeExercised,
-      totalPauseTime: workout.statistics.totalPauseTime,
-      workoutDuration: Date.now() - workout.statistics.workoutStartTime
+      stretchTime: workout.settings.stretchTime,
+      statistics: workout.statistics
     };
 
     const updatedHistory = [entry, ...history].slice(0, 50); // Keep last 50 workouts

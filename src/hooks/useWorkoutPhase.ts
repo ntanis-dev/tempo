@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { WorkoutState, Phase } from '../types';
 import { audioManager } from '../utils/audio';
-import { clearWorkoutState } from '../utils/storage';
+import { clearWorkoutState, saveWorkoutToHistory } from '../utils/storage';
 import { TIME } from '../constants';
 
 export const useWorkoutPhase = (
@@ -84,12 +84,19 @@ export const useWorkoutPhase = (
 
   const transitionToComplete = (state: WorkoutState): WorkoutState => {
     audioManager.playWorkoutComplete();
-    return {
+    const completedState = {
       ...state,
       phase: 'complete',
       timeRemaining: 0,
-      isPaused: false
+      isPaused: false,
+      statistics: {
+        ...state.statistics,
+        workoutEndTime: Date.now()
+      }
     };
+    // Save to history when completing via skip
+    saveWorkoutToHistory(completedState);
+    return completedState;
   };
 
   const skipPhase = useCallback(() => {
@@ -110,11 +117,7 @@ export const useWorkoutPhase = (
         } else {
           transitionToPhase('rest', {
             timeRemaining: workout.settings.restTime,
-            currentRep: 1,
-            statistics: {
-              ...workout.statistics,
-              setsCompleted: workout.currentSet
-            }
+            currentRep: 1
           });
         }
         break;

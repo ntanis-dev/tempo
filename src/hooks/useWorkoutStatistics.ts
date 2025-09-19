@@ -40,7 +40,8 @@ export const useWorkoutStatistics = (
         ...prev,
         statistics: {
           ...prev.statistics,
-          totalTimePaused: prev.statistics.totalTimePaused + pauseDuration / 1000,
+          // Round to avoid floating point accumulation
+          totalTimePaused: Math.round(prev.statistics.totalTimePaused + pauseDuration / 1000),
           lastActiveTime: Date.now()
         }
       }));

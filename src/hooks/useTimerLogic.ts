@@ -41,12 +41,7 @@ export const useTimerLogic = (
   // Countdown audio effects - removed for stretch phase
   // The countdown phase is actually the stretch phase now, so no countdown sounds needed
 
-  // Save to history on completion
-  useEffect(() => {
-    if (workout.phase === 'complete') {
-      saveWorkoutToHistory(workout);
-    }
-  }, [workout.phase, workout]);
+  // Note: Workout is saved in transitionToComplete (useWorkoutPhase) and handlePhaseTransition
 };
 
 /**
@@ -174,11 +169,7 @@ function handlePhaseTransition(state: WorkoutState): WorkoutState {
           ...state,
           phase: 'rest' as Phase,
           timeRemaining: state.settings.restTime,
-          currentRep: 1,
-          statistics: {
-            ...state.statistics,
-            setsCompleted: state.currentSet
-          }
+          currentRep: 1
         };
       }
     }

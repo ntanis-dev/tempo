@@ -152,19 +152,19 @@ export const WorkoutHistory: React.FC<WorkoutHistoryProps> = ({ history, onClose
                   {/* Time Breakdown */}
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
                     <div className="text-center p-2 bg-amber-500/20 rounded-lg">
-                      <div className="font-semibold text-amber-300">{formatDuration(entry.statistics.totalTimeStretched)}</div>
+                      <div className="font-semibold text-amber-300">{formatDuration(entry.statistics?.totalTimeStretched || 0)}</div>
                       <div className="text-amber-400">Stretched</div>
                     </div>
                     <div className="text-center p-2 bg-red-500/20 rounded-lg">
-                      <div className="font-semibold text-red-300">{formatDuration(entry.statistics.totalTimeExercised)}</div>
+                      <div className="font-semibold text-red-300">{formatDuration(entry.statistics?.totalTimeExercised || 0)}</div>
                       <div className="text-red-400">Exercised</div>
                     </div>
                     <div className="text-center p-2 bg-blue-500/20 rounded-lg">
-                      <div className="font-semibold text-blue-300">{formatDuration(entry.statistics.totalTimeRested)}</div>
+                      <div className="font-semibold text-blue-300">{formatDuration(entry.statistics?.totalTimeRested || 0)}</div>
                       <div className="text-blue-400">Rested</div>
                     </div>
                     <div className="text-center p-2 bg-white/10 rounded-lg">
-                      <div className="font-semibold text-white/90">{formatDuration(entry.statistics.totalTimePaused)}</div>
+                      <div className="font-semibold text-white/90">{formatDuration(entry.statistics?.totalTimePaused || 0)}</div>
                       <div className="text-white/70">Paused</div>
                     </div>
                     <div className="text-center p-2 bg-green-500/20 rounded-lg col-span-2 sm:col-span-1">
