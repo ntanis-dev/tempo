@@ -31,6 +31,7 @@ export const DEFAULTS = {
     totalTimeStretched: 0,
     totalRepsCompleted: 0,
     workoutStartTime: null,
+    workoutEndTime: null,
     lastActiveTime: Date.now()
   },
   TOTAL_SETS: 10,

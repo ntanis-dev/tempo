@@ -71,8 +71,9 @@ export const calculateTotalWorkoutDuration = (
 };
 
 export const getTotalWorkoutTime = (statistics: WorkoutStatistics): number => {
-  return statistics.totalTimeExercised + 
-         statistics.totalTimePaused + 
-         statistics.totalTimeRested + 
+  // Always return the sum of tracked times
+  return statistics.totalTimeExercised +
+         statistics.totalTimePaused +
+         statistics.totalTimeRested +
          statistics.totalTimeStretched;
 };

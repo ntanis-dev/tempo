@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { SoundToggle } from './common/SoundToggle';
 import { useFadeIn } from '../hooks/useFadeIn';
 import { useDebugMode } from '../contexts/DebugContext';
@@ -32,6 +32,12 @@ export const PrepareScreen: React.FC<PrepareScreenProps> = ({
   const [isDebugMode] = useDebugMode();
   const [countdown, setCountdown] = React.useState<number | null>(null);
   const countdownRef = React.useRef<NodeJS.Timeout>();
+
+  // Memoize spinner component to prevent re-rendering issues
+  const SpinnerIcon = useMemo(() =>
+    (props: React.ComponentProps<'svg'>) =>
+      <Loader2 {...props} className={`${props.className || ''} animate-spin`} />
+  , []);
 
   // Handle countdown timer
   React.useEffect(() => {
@@ -142,14 +148,14 @@ export const PrepareScreen: React.FC<PrepareScreenProps> = ({
             variant={countdown !== null ? "secondary" : "primary"}
             size="sm"
             icon={
-             isTransitioning || (countdown !== null && countdown > 0) ? 
-               ((props: React.ComponentProps<'svg'>) => <Loader2 {...props} className={`${props.className || ''} animate-spin`} />) :
+             isTransitioning || (countdown !== null && countdown > 0) ?
+               SpinnerIcon :
              Zap
             }
             disabled={(countdown !== null && countdown > 0) || isTransitioning}
             className="w-full sm:w-auto sm:min-w-[200px] bg-teal-700 hover:bg-teal-800 text-white"
           >
-            {isTransitioning ? "Starting" : (countdown !== null && countdown > 0 ? countdown : "I'm Ready")}
+            {isTransitioning ? "Starting" : (countdown !== null && countdown > 0 ? <span style={{ minWidth: '1ch', display: 'inline-block' }}>{countdown}</span> : "I'm Ready")}
           </Button>
           
           <Button

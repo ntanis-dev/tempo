@@ -97,8 +97,10 @@ export const useWorkoutTimer = () => {
   const resetWorkout = useCallback(() => {
     setIsResetting(true);
 
-    // Play sad sound for giving up
-    audioManager.playResetSound();
+    // Play sad sound only if giving up (not when workout is complete)
+    if (workout.phase !== 'complete') {
+      audioManager.playResetSound();
+    }
 
     // Clear transition timeout if exists
     if (transitionTimeoutRef.current) {
@@ -116,7 +118,7 @@ export const useWorkoutTimer = () => {
       setWorkoutHistory(loadWorkoutHistory());
       transitionTimeoutRef.current = null;
     }, TIME.RESET_DELAY);
-  }, [updateWorkout, resetWorkoutBase, resetQuotes]);
+  }, [workout.phase, updateWorkout, resetWorkoutBase, resetQuotes]);
 
   return {
     workout,

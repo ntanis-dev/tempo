@@ -21,7 +21,8 @@
       "Bash(npm ls:*)",
       "Bash(xargs:*)",
       "Bash(powershell:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

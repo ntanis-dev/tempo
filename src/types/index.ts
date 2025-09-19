@@ -33,6 +33,7 @@ export interface WorkoutStatistics {
   totalTimeStretched: number;
   totalRepsCompleted: number;
   workoutStartTime: number | null;
+  workoutEndTime: number | null;
   lastActiveTime: number;
 }
 

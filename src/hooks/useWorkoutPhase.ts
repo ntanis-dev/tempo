@@ -19,7 +19,7 @@ export const useWorkoutPhase = (
         case 'prepare':
           updates = {
             ...updates,
-            timeRemaining: prev.settings.stretchTime
+            timeRemaining: 0  // Prepare phase is static, no countdown
           };
           break;
 

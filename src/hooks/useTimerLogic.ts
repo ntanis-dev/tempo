@@ -15,8 +15,8 @@ export const useTimerLogic = (
 
   // Main timer effect
   useEffect(() => {
-    // Only run timer for active phases
-    const isActivePhase = ['work', 'rest', 'countdown', 'prepare'].includes(workout.phase);
+    // Only run timer for active phases (not prepare which is static)
+    const isActivePhase = ['work', 'rest', 'countdown'].includes(workout.phase);
 
     if (!isActivePhase || workout.isPaused || workout.timeRemaining <= 0) {
       if (intervalRef.current) {
@@ -55,13 +55,20 @@ export const useTimerLogic = (
 function handleTimerTick(state: WorkoutState): WorkoutState {
   const now = Date.now();
 
-  // Still counting down
-  if (state.timeRemaining > 1) {
-    return handleCountdown(state, now);
+  // Still counting down (including the last second)
+  if (state.timeRemaining >= 1) {
+    const newState = handleCountdown(state, now);
+
+    // If we just hit 0, transition to next phase
+    if (newState.timeRemaining === 0) {
+      return handlePhaseTransition(newState);
+    }
+
+    return newState;
   }
 
-  // Time's up - handle phase transition
-  return handlePhaseTransition(state);
+  // Already at 0, should not happen but handle gracefully
+  return state;
 }
 
 /**
@@ -69,6 +76,20 @@ function handleTimerTick(state: WorkoutState): WorkoutState {
  */
 function handleCountdown(state: WorkoutState, now: number): WorkoutState {
   let updatedStats = { ...state.statistics, lastActiveTime: now };
+
+  // Play countdown sound for last 5 seconds of stretch (countdown) and rest phases
+  // When timeRemaining is 6, it becomes 5 after decrement (visual shows 5)
+  // When timeRemaining is 2, it becomes 1 after decrement (visual shows 1)
+  if ((state.phase === 'countdown' || state.phase === 'rest') &&
+      state.timeRemaining <= TIME.PREPARE_THRESHOLD + 1 &&
+      state.timeRemaining >= 2) {
+    // Play final sound when visual will show 1 (timeRemaining is 2)
+    if (state.timeRemaining === 2) {
+      audioManager.playCountdownFinal();
+    } else {
+      audioManager.playCountdownTick();
+    }
+  }
 
   // Update phase-specific statistics
   switch (state.phase) {
@@ -78,12 +99,10 @@ function handleCountdown(state: WorkoutState, now: number): WorkoutState {
     case 'rest':
       updatedStats.totalTimeRested += 1;
       break;
-    case 'prepare':
-      updatedStats.totalTimeStretched += 1;
-      break;
     case 'countdown':
       updatedStats.totalTimeStretched += 1;
       break;
+    // Note: 'prepare' phase is static and doesn't count time
   }
 
   // Special handling for work phase reps
@@ -137,12 +156,17 @@ function handlePhaseTransition(state: WorkoutState): WorkoutState {
       if (isLastSet) {
         // Workout complete!
         audioManager.playWorkoutComplete();
-        saveWorkoutToHistory(state);
-        return {
+        const completedState = {
           ...state,
           phase: 'complete' as Phase,
-          timeRemaining: 0
+          timeRemaining: 0,
+          statistics: {
+            ...state.statistics,
+            workoutEndTime: Date.now()
+          }
         };
+        saveWorkoutToHistory(completedState);
+        return completedState;
       } else {
         // Move to rest
         audioManager.playRestStart();
@@ -170,12 +194,7 @@ function handlePhaseTransition(state: WorkoutState): WorkoutState {
         currentRep: 1
       };
 
-    case 'prepare':
-      // Prepare phase doesn't auto-transition - stays at 0 until user continues
-      return {
-        ...state,
-        timeRemaining: 0
-      };
+    // Note: 'prepare' phase never reaches here since timer doesn't run for it
 
     default:
       return state;
