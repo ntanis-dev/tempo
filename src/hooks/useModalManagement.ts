@@ -45,9 +45,8 @@ export const useModalManagement = (
     clearWorkoutHistory();
     const history = storageService.getWorkoutHistory();
     setWorkoutHistory(history);
-    setShowHistory(false);
-    showSuccess('History Cleared', 'All workout history has been removed.');
-  }, [setWorkoutHistory, setShowHistory, showSuccess]);
+    // Don't close the modal and don't show notification here (WorkoutHistory component will handle it)
+  }, [setWorkoutHistory]);
 
   // Achievements Modal
   const showAchievementsModal = useCallback(() => {
@@ -102,6 +101,10 @@ export const useModalManagement = (
     showSuccess('Storage Cleared', 'All your data have been cleared.');
   }, [refreshWorkoutFromStorage, incrementStorageRefreshKey, showSuccess, setDebugMode, setShowStorage]);
 
+  const handleStorageExportSuccess = useCallback(() => {
+    showSuccess('Export Successful', 'Your backup has been downloaded successfully.');
+  }, [showSuccess]);
+
   const handleStorageImportSuccess = useCallback(() => {
     setShowStorage(false);
 
@@ -119,8 +122,12 @@ export const useModalManagement = (
     showSuccess('Import Successful', 'Your backup has been restored successfully.');
   }, [setShowStorage, refreshWorkoutFromStorage, incrementStorageRefreshKey, showSuccess]);
 
-  const handleStorageError = useCallback((error: string) => {
+  const handleStorageImportError = useCallback((error: string) => {
     showError('Import Failed', error);
+  }, [showError]);
+
+  const handleStorageExportError = useCallback((error: string) => {
+    showError('Export Failed', error);
   }, [showError]);
 
   // Levels Modal
@@ -153,8 +160,10 @@ export const useModalManagement = (
     showStorageModal,
     hideStorageModal,
     handleStorageClearSuccess,
+    handleStorageExportSuccess,
     handleStorageImportSuccess,
-    handleStorageError,
+    handleStorageImportError,
+    handleStorageExportError,
 
     // Levels modal actions
     showLevelsModal,

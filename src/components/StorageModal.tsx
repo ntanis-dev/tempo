@@ -9,18 +9,20 @@ import { storageService } from "../services/StorageService";
 interface StorageModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onShowSuccess: () => void;
+  onExportSuccess: () => void;
+  onExportError: (error: string) => void;
   onClearSuccess: () => void;
-  onShowError: (error: string) => void;
+  onImportError: (error: string) => void;
   onImportSuccess: () => void;
 }
 
 export const StorageModal: React.FC<StorageModalProps> = ({
   isOpen,
   onClose,
-  onShowSuccess,
+  onExportSuccess,
+  onExportError,
   onClearSuccess,
-  onShowError,
+  onImportError,
   onImportSuccess
 }) => {
   const [activeTab, setActiveTab] = useState<'export' | 'import'>('export');
@@ -77,7 +79,7 @@ export const StorageModal: React.FC<StorageModalProps> = ({
       onClearSuccess();
     } catch (error) {
       console.error('Clear storage failed:', error);
-      onShowError('Unable to clear storage.');
+      onImportError('Unable to clear storage.');
     }
   };
 
@@ -95,10 +97,10 @@ export const StorageModal: React.FC<StorageModalProps> = ({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      onShowSuccess();
+      onExportSuccess();
     } catch (error) {
       console.error('Export failed:', error);
-      onShowError('Unable to export your data.');
+      onExportError('Unable to export your data.');
     }
   };
 
@@ -106,7 +108,7 @@ export const StorageModal: React.FC<StorageModalProps> = ({
     const file = event.target.files?.[0];
     if (file) {
       if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-        onShowError('Please select a JSON backup file.');
+        onImportError('Please select a JSON backup file.');
         return;
       }
       // Automatically start import when file is selected
@@ -116,7 +118,7 @@ export const StorageModal: React.FC<StorageModalProps> = ({
 
   const handleImportData = async (file: File) => {
     if (!file) {
-      onShowError('Please select a backup file first.');
+      onImportError('Please select a backup file first.');
       return;
     }
 
@@ -130,7 +132,7 @@ export const StorageModal: React.FC<StorageModalProps> = ({
 
     } catch (error) {
       console.error('Import failed:', error);
-      onShowError('Please check the file format and try again.');
+      onImportError('Please check the file format and try again.');
       // Reset the file input so user can select the same or different file again
       const input = document.getElementById('backup-file-input') as HTMLInputElement;
       if (input) {

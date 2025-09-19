@@ -34,7 +34,6 @@ class StorageService {
     EXPERIENCE: 'tempo-experience',
 
     // UI related
-    SOUND_ENABLED: 'tempo-sound-enabled',
     VOLUME: 'tempo-volume',
     WHATS_NEW_READ: 'tempo-whats-new-read',
     PWA_DETECTED: 'tempo-pwa-detected',
@@ -116,6 +115,10 @@ class StorageService {
       return; // Don't save duplicate
     }
 
+    // Clean statistics to remove runtime-only fields
+    const cleanedStats = { ...workout.statistics };
+    delete cleanedStats.pauseStartTime; // This is runtime-only, not for storage
+
     const entry: WorkoutHistoryEntry = {
       id: workout.statistics.workoutStartTime.toString(), // Use start time as ID for consistency
       date: workout.statistics.workoutStartTime,
@@ -124,7 +127,7 @@ class StorageService {
       timePerRep: workout.settings.timePerRep,
       restTime: workout.settings.restTime,
       stretchTime: workout.settings.stretchTime,
-      statistics: workout.statistics
+      statistics: cleanedStats
     };
 
     const updatedHistory = [entry, ...history].slice(0, 50); // Keep last 50 workouts
@@ -190,14 +193,6 @@ class StorageService {
   }
 
   // UI preference methods
-  isSoundEnabled(): boolean {
-    return this.getItem(this.KEYS.SOUND_ENABLED, true);
-  }
-
-  setSoundEnabled(enabled: boolean): void {
-    this.setItem(this.KEYS.SOUND_ENABLED, enabled);
-  }
-
   getVolume(): number {
     return this.getItem(this.KEYS.VOLUME, 50);
   }
@@ -235,19 +230,29 @@ class StorageService {
 
   // Export/Import methods
   exportAllData(): string {
+    // Clean up history entries to remove runtime-only fields
+    const cleanHistory = this.getWorkoutHistory().map(entry => {
+      const cleanedStats = { ...entry.statistics };
+      // Remove runtime-only field that shouldn't be persisted
+      delete cleanedStats.pauseStartTime;
+      return {
+        ...entry,
+        statistics: cleanedStats
+      };
+    });
+
     const data = {
-      version: '2.0',
       exportDate: new Date().toISOString(),
       workout: {
-        state: this.getWorkoutState(),
-        settings: this.getWorkoutSettings(),
-        history: this.getWorkoutHistory()
+        settings: this.getWorkoutSettings(), // This includes totalSets
+        history: cleanHistory
       },
       achievements: this.getAchievements(),
       experience: this.getExperience(),
       preferences: {
-        soundEnabled: this.isSoundEnabled(),
-        volume: this.getVolume()
+        volume: this.getVolume(),
+        mutedMode: this.isMutedMode(),
+        debugMode: this.isDebugMode()
       }
     };
 
@@ -259,9 +264,24 @@ class StorageService {
 
     // Import workout data
     if (data.workout) {
-      if (data.workout.state) this.saveWorkoutState(data.workout.state);
-      if (data.workout.settings) this.saveWorkoutSettings(data.workout.settings);
-      if (data.workout.history) this.setItem(this.KEYS.WORKOUT_HISTORY, data.workout.history);
+      // Import settings (includes totalSets)
+      if (data.workout.settings) {
+        this.saveWorkoutSettings(data.workout.settings);
+      }
+
+      // Import history
+      if (data.workout.history) {
+        // Clean up history entries in case they have pauseStartTime
+        const cleanedHistory = data.workout.history.map((entry: any) => {
+          if (entry.statistics && entry.statistics.pauseStartTime !== undefined) {
+            const cleanedStats = { ...entry.statistics };
+            delete cleanedStats.pauseStartTime;
+            return { ...entry, statistics: cleanedStats };
+          }
+          return entry;
+        });
+        this.setItem(this.KEYS.WORKOUT_HISTORY, cleanedHistory);
+      }
     }
 
     // Import achievements
@@ -276,11 +296,19 @@ class StorageService {
 
     // Import preferences
     if (data.preferences) {
-      if (typeof data.preferences.soundEnabled === 'boolean') {
-        this.setSoundEnabled(data.preferences.soundEnabled);
-      }
       if (typeof data.preferences.volume === 'number') {
         this.setVolume(data.preferences.volume);
+      }
+      // Handle legacy soundEnabled field for backwards compatibility
+      if (typeof data.preferences.soundEnabled === 'boolean' && !('volume' in data.preferences)) {
+        // If old format with soundEnabled but no volume, convert to volume
+        this.setVolume(data.preferences.soundEnabled ? 50 : 0);
+      }
+      if (typeof data.preferences.mutedMode === 'boolean') {
+        this.setMutedMode(data.preferences.mutedMode);
+      }
+      if (typeof data.preferences.debugMode === 'boolean') {
+        this.setDebugMode(data.preferences.debugMode);
       }
     }
   }

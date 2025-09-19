@@ -5,7 +5,7 @@ import { storageService } from '../../services/StorageService';
 
 export const SoundToggle: React.FC = () => {
   const [volume, setVolume] = useState(audioManager.getVolume());
-  const [previousVolume, setPreviousVolume] = useState(storageService.getVolume());
+  const [previousVolume, setPreviousVolume] = useState(50); // Default previous volume
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLButtonElement>(null);
 
@@ -27,16 +27,14 @@ export const SoundToggle: React.FC = () => {
   }, [isExpanded]);
 
   const handleVolumeChange = (newVolume: number) => {
-    // Store previous volume if we're not going to 0
-    if (newVolume > 0 && volume !== newVolume) {
-      const prevVol = volume > 0 ? volume : previousVolume;
-      setPreviousVolume(prevVol);
-      storageService.setVolume(prevVol);
+    // Store previous volume when going from non-zero to different non-zero
+    if (volume > 0 && newVolume > 0 && volume !== newVolume) {
+      setPreviousVolume(volume);
     }
-    
+
     setVolume(newVolume);
     audioManager.setVolume(newVolume);
-    
+
     // Play test sound when adjusting volume (but not when muting)
     if (newVolume > 0) {
       audioManager.playCountdownTick();
@@ -59,9 +57,10 @@ export const SoundToggle: React.FC = () => {
   React.useEffect(() => {
     const handleStorageChange = () => {
       const newVolume = audioManager.getVolume();
-      const newPreviousVolume = storageService.getVolume();
       setVolume(newVolume);
-      setPreviousVolume(newPreviousVolume);
+      if (newVolume > 0) {
+        setPreviousVolume(newVolume);
+      }
     };
 
     // Listen for storage events (when cleared from another component)

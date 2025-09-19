@@ -162,9 +162,10 @@ export const WorkoutAppContent: React.FC = () => {
           <StorageModal
             isOpen={modalHandlers.showStorage}
             onClose={modalHandlers.hideStorageModal}
-            onShowSuccess={modalHandlers.handleStorageExportSuccess}
+            onExportSuccess={modalHandlers.handleStorageExportSuccess}
+            onExportError={modalHandlers.handleStorageExportError}
             onClearSuccess={modalHandlers.handleStorageClearSuccess}
-            onShowError={modalHandlers.handleStorageError}
+            onImportError={modalHandlers.handleStorageImportError}
             onImportSuccess={modalHandlers.handleStorageImportSuccess}
           />
         </Suspense>

@@ -4,15 +4,13 @@ import { storageService } from "../services/StorageService";
 
 class AudioManager {
   private audioContext: AudioContext | null = null;
-  private isEnabled: boolean = true;
-  private volume: number = 1.0;
+  private volume: number = 50;
   private hasUserInteracted: boolean = false;
 
   constructor() {
     // Initialize audio context on first user interaction
     this.initializeAudioContext();
-    // Load saved sound preference
-    this.isEnabled = storageService.isSoundEnabled();
+    // Load saved volume preference (0 = muted)
     this.volume = storageService.getVolume();
 
     // Track user interaction
@@ -38,7 +36,7 @@ class AudioManager {
       this.audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
     } catch (error) {
       console.error('Audio not supported:', error);
-      this.isEnabled = false;
+      this.volume = 0; // Mute if audio not supported
     }
   }
 
@@ -46,7 +44,7 @@ class AudioManager {
     // Don't play sounds if user hasn't interacted with the document yet
     if (!this.hasUserInteracted) return null;
 
-    if (!this.audioContext || !this.isEnabled) return null;
+    if (!this.audioContext || this.volume === 0) return null;
 
     if (this.audioContext.state === 'suspended') {
       try {
@@ -187,11 +185,6 @@ class AudioManager {
     await this.createBeep(262, 0.25, 0.3); // C4
   }
 
-  setEnabled(enabled: boolean) {
-    this.isEnabled = enabled;
-    storageService.setSoundEnabled(enabled);
-  }
-
   setVolume(volume: number) {
     this.volume = Math.max(0, Math.min(100, volume));
     storageService.setVolume(this.volume);
@@ -202,11 +195,10 @@ class AudioManager {
   }
 
   isAudioEnabled() {
-    return this.isEnabled && this.audioContext !== null && this.volume > 0;
+    return this.audioContext !== null && this.volume > 0;
   }
 
   refreshFromStorage() {
-    this.isEnabled = storageService.isSoundEnabled();
     this.volume = storageService.getVolume();
   }
 }
