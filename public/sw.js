@@ -1,6 +1,6 @@
-const CACHE_NAME = 'tempo-v1.6.0';
-const STATIC_CACHE = 'tempo-static-v1.6.0';
-const DYNAMIC_CACHE = 'tempo-dynamic-v1.6.0';
+const CACHE_NAME = 'tempo-v1.6.1';
+const STATIC_CACHE = 'tempo-static-v1.6.1';
+const DYNAMIC_CACHE = 'tempo-dynamic-v1.6.1';
 
 // Static assets that should be cached immediately
 const STATIC_ASSETS = [

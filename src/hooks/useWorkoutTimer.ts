@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import React from 'react';
 import { WorkoutHistoryEntry, Phase } from '../types';
 import { useWorkoutState } from './useWorkoutState';
 import { useWorkoutStatistics } from './useWorkoutStatistics';
@@ -42,27 +42,27 @@ export const useWorkoutTimer = () => {
   } = useWorkoutPhase(workout, updateWorkout);
 
   // Local state for UI
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
-  const [workoutHistory, setWorkoutHistory] = useState<WorkoutHistoryEntry[]>(() =>
+  const [isTransitioning, setIsTransitioning] = React.useState(false);
+  const [isResetting, setIsResetting] = React.useState(false);
+  const [workoutHistory, setWorkoutHistory] = React.useState<WorkoutHistoryEntry[]>(() =>
     loadWorkoutHistory()
   );
 
   // Ref for transition timeout
-  const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const transitionTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Use optimized timer logic
   useTimerLogic(workout, updateWorkout);
 
   // Update workout history when workout completes
-  useEffect(() => {
+  React.useEffect(() => {
     if (workout.phase === 'complete') {
       setWorkoutHistory(loadWorkoutHistory());
     }
   }, [workout.phase]);
 
   // Public methods
-  const startWorkout = useCallback(() => {
+  const startWorkout = React.useCallback(() => {
     setIsTransitioning(true);
     startWorkoutTracking();
     audioManager.playStartSound(); // Play start sound when workout begins
@@ -73,7 +73,7 @@ export const useWorkoutTimer = () => {
     }, TIME.TRANSITION_DELAY);
   }, [startWorkoutTracking, transitionToPhase]);
 
-  const continueToStretch = useCallback(() => {
+  const continueToStretch = React.useCallback(() => {
     setIsTransitioning(true);
 
     setTimeout(() => {
@@ -82,11 +82,11 @@ export const useWorkoutTimer = () => {
     }, TIME.TRANSITION_DELAY);
   }, [transitionToPhase]);
 
-  const togglePause = useCallback(() => {
+  const togglePause = React.useCallback(() => {
     updateWorkout(prev => ({ ...prev, isPaused: !prev.isPaused }));
   }, [updateWorkout]);
 
-  const skipPhase = useCallback(() => {
+  const skipPhase = React.useCallback(() => {
     if (workout.phase === 'rest' && audioManager.isSoundEnabled()) {
       // Don't allow skipping rest when sound is on
       return;
@@ -94,7 +94,7 @@ export const useWorkoutTimer = () => {
     skipPhaseBase();
   }, [workout.phase, skipPhaseBase]);
 
-  const resetWorkout = useCallback(() => {
+  const resetWorkout = React.useCallback(() => {
     setIsResetting(true);
 
     // Play sad sound only if giving up (not when workout is complete)

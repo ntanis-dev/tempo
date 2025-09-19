@@ -1,15 +1,15 @@
-import { useCallback, useRef, useEffect } from 'react';
+import React from 'react';
 import { WorkoutState } from '../types';
 
 export const useWorkoutStatistics = (
   workout: WorkoutState,
   updateWorkout: (updater: (prev: WorkoutState) => WorkoutState) => void
 ) => {
-  const pauseStartTimeRef = useRef<number | null>(null);
-  const lastPhaseChangeRef = useRef<number>(Date.now());
+  const pauseStartTimeRef = React.useRef<number | null>(null);
+  const lastPhaseChangeRef = React.useRef<number>(Date.now());
 
   // Update statistics based on phase
-  const updateStatistics = useCallback((phase: string, timeElapsed: number) => {
+  const updateStatistics = React.useCallback((phase: string, timeElapsed: number) => {
     updateWorkout(prev => {
       const stats = { ...prev.statistics };
 
@@ -31,7 +31,7 @@ export const useWorkoutStatistics = (
   }, [updateWorkout]);
 
   // Track pause time
-  useEffect(() => {
+  React.useEffect(() => {
     if (workout.isPaused && !pauseStartTimeRef.current) {
       pauseStartTimeRef.current = Date.now();
     } else if (!workout.isPaused && pauseStartTimeRef.current) {
@@ -50,11 +50,11 @@ export const useWorkoutStatistics = (
   }, [workout.isPaused, updateWorkout]);
 
   // Track phase changes - removed statistics update since timer handles it now
-  useEffect(() => {
+  React.useEffect(() => {
     lastPhaseChangeRef.current = Date.now();
   }, [workout.phase]);
 
-  const startWorkoutTracking = useCallback(() => {
+  const startWorkoutTracking = React.useCallback(() => {
     updateWorkout(prev => ({
       ...prev,
       statistics: {

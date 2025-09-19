@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React from 'react';
 import { WorkoutState, TimerSettings } from '../types';
 import {
   saveWorkoutState,
@@ -15,7 +15,7 @@ import { useDebugMode } from '../contexts/DebugContext';
 export const useWorkoutState = () => {
   const [isDebugMode] = useDebugMode();
 
-  const [workout, setWorkout] = useState<WorkoutState>(() => {
+  const [workout, setWorkout] = React.useState<WorkoutState>(() => {
     const savedState = loadWorkoutState();
     if (savedState && savedState.phase !== 'setup' && savedState.phase !== 'transition') {
       return {
@@ -53,7 +53,7 @@ export const useWorkoutState = () => {
     };
   });
 
-  const updateWorkout = useCallback((updater: (prev: WorkoutState) => WorkoutState) => {
+  const updateWorkout = React.useCallback((updater: (prev: WorkoutState) => WorkoutState) => {
     setWorkout(prev => {
       const newState = updater(prev);
       // Save to storage when phase changes or important state changes
@@ -64,7 +64,7 @@ export const useWorkoutState = () => {
     });
   }, []);
 
-  const adjustSets = useCallback((delta: number) => {
+  const adjustSets = React.useCallback((delta: number) => {
     setWorkout(prev => {
       const newSets = validateSets(prev.totalSets + delta);
       // Total sets is stored as part of the workout state, not settings
@@ -72,7 +72,7 @@ export const useWorkoutState = () => {
     });
   }, []);
 
-  const adjustTime = useCallback((type: keyof TimerSettings, delta: number) => {
+  const adjustTime = React.useCallback((type: keyof TimerSettings, delta: number) => {
     setWorkout(prev => {
       let newValue = prev.settings[type] + delta;
 
@@ -98,7 +98,7 @@ export const useWorkoutState = () => {
     });
   }, [isDebugMode]);
 
-  const refreshFromStorage = useCallback(() => {
+  const refreshFromStorage = React.useCallback(() => {
     const savedState = loadWorkoutState();
     const settings = loadSettings();
     const workoutSettings = storageService.getWorkoutSettings();

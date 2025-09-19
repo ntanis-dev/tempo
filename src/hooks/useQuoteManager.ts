@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import React from 'react';
 import { WorkoutState } from '../types';
 import { getRandomQuote, getRandomCalmingQuote, getRandomPreExerciseQuote, getRandomPostWorkoutQuote } from '../utils/quotes';
 
@@ -7,7 +7,7 @@ export const useQuoteManager = (
   updateWorkout: (updater: (prev: WorkoutState) => WorkoutState) => void
 ) => {
   // Update quotes based on phase
-  const updateQuoteForPhase = useCallback((phase: string) => {
+  const updateQuoteForPhase = React.useCallback((phase: string) => {
     switch (phase) {
       case 'work':
         updateWorkout(prev => {
@@ -57,12 +57,12 @@ export const useQuoteManager = (
   }, [updateWorkout]);
 
   // Update quotes when phase changes
-  useEffect(() => {
+  React.useEffect(() => {
     updateQuoteForPhase(workout.phase);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workout.phase]); // Only depend on phase to avoid infinite loops
 
-  const resetQuotes = useCallback(() => {
+  const resetQuotes = React.useCallback(() => {
     updateWorkout(prev => ({
       ...prev,
       usedQuotes: [],
