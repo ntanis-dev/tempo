@@ -32,15 +32,30 @@ export const WorkoutAppContent: React.FC = () => {
   // Muted mode state for re-rendering backgrounds - initialize from storage
   const [mutedMode, setMutedMode] = React.useState(() => storageService.isMutedMode());
 
-  // Listen for muted mode changes
+  // Listen for muted mode changes and storage events
   React.useEffect(() => {
     const handleMutedModeChange = (event: CustomEvent) => {
       setMutedMode(event.detail);
     };
 
+    const handleStorageChange = () => {
+      // When storage is cleared or changes, re-read the muted mode
+      setMutedMode(storageService.isMutedMode());
+    };
+
+    const handleStorageRefresh = () => {
+      // When storage is explicitly refreshed (like after clearing)
+      setMutedMode(storageService.isMutedMode());
+    };
+
     window.addEventListener('mutedModeChanged' as any, handleMutedModeChange);
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('storageRefresh' as any, handleStorageRefresh);
+
     return () => {
       window.removeEventListener('mutedModeChanged' as any, handleMutedModeChange);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('storageRefresh' as any, handleStorageRefresh);
     };
   }, []);
 
