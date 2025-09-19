@@ -38,6 +38,7 @@ class StorageService {
     VOLUME: 'tempo-volume',
     WHATS_NEW_READ: 'tempo-whats-new-read',
     PWA_DETECTED: 'tempo-pwa-detected',
+    MUTED_MODE: 'tempo-muted-mode',
 
     // App related
     INSTALL_PROMPT_SHOWN: 'tempo-install-prompt-shown',
@@ -229,6 +230,15 @@ class StorageService {
 
   setDebugMode(enabled: boolean): void {
     this.setItem(this.KEYS.DEBUG_MODE, enabled);
+  }
+
+  // Muted mode methods
+  isMutedMode(): boolean {
+    return this.getItem(this.KEYS.MUTED_MODE, false);
+  }
+
+  setMutedMode(enabled: boolean): void {
+    this.setItem(this.KEYS.MUTED_MODE, enabled);
   }
 
   // Export/Import methods

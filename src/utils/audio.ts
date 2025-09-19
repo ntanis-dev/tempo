@@ -6,6 +6,7 @@ class AudioManager {
   private audioContext: AudioContext | null = null;
   private isEnabled: boolean = true;
   private volume: number = 1.0;
+  private hasUserInteracted: boolean = false;
 
   constructor() {
     // Initialize audio context on first user interaction
@@ -13,6 +14,23 @@ class AudioManager {
     // Load saved sound preference
     this.isEnabled = storageService.isSoundEnabled();
     this.volume = storageService.getVolume();
+
+    // Track user interaction
+    this.setupUserInteractionTracking();
+  }
+
+  private setupUserInteractionTracking() {
+    const handleInteraction = () => {
+      this.hasUserInteracted = true;
+      // Remove listeners after first interaction
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+    };
+
+    document.addEventListener('click', handleInteraction, { once: true });
+    document.addEventListener('touchstart', handleInteraction, { once: true });
+    document.addEventListener('keydown', handleInteraction, { once: true });
   }
 
   private initializeAudioContext() {
@@ -25,8 +43,11 @@ class AudioManager {
   }
 
   private async ensureAudioContext() {
+    // Don't play sounds if user hasn't interacted with the document yet
+    if (!this.hasUserInteracted) return null;
+
     if (!this.audioContext || !this.isEnabled) return null;
-    
+
     if (this.audioContext.state === 'suspended') {
       try {
         await this.audioContext.resume();
@@ -35,7 +56,7 @@ class AudioManager {
         return null;
       }
     }
-    
+
     return this.audioContext;
   }
 
