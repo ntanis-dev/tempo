@@ -3,6 +3,7 @@ import { WorkoutState } from '../types';
 import { TIME } from '../constants';
 import { getPhases } from '../utils/timer';
 import { SoundToggle } from './common/SoundToggle';
+import { MusicToggle } from './common/MusicToggle';
 import { MutedToggle } from './common/MutedToggle';
 import { ProgressBar } from './ui/ProgressBar';
 import { WorkoutProgress } from './workout/WorkoutHeader';
@@ -104,9 +105,10 @@ export const WorkoutScreen: React.FC<WorkoutScreenProps> = ({
 
   return (
     <div className={`min-height h-screen flex flex-col items-center justify-center p-4 text-white w-full ${getFadeClasses(isVisible, isResetting)} ${hideUI ? 'cursor-none' : ''}`}>
-      {/* Sound and Muted Toggles */}
+      {/* Sound, Music and Muted Toggles */}
       <div className={`fixed top-4 right-4 z-10 flex items-center space-x-2 transition-opacity duration-300 ${hideUI ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <MutedToggle />
+        <MusicToggle />
         <SoundToggle />
       </div>
 

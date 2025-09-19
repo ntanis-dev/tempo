@@ -35,6 +35,7 @@ class StorageService {
 
     // UI related
     VOLUME: 'tempo-volume',
+    MUSIC_VOLUME: 'tempo-music-volume',
     WHATS_NEW_READ: 'tempo-whats-new-read',
     PWA_DETECTED: 'tempo-pwa-detected',
     MUTED_MODE: 'tempo-muted-mode',
@@ -201,6 +202,14 @@ class StorageService {
     this.setItem(this.KEYS.VOLUME, volume);
   }
 
+  getMusicVolume(): number {
+    return this.getItem(this.KEYS.MUSIC_VOLUME, 20); // Default to 20% for subtle ambient
+  }
+
+  setMusicVolume(volume: number): void {
+    this.setItem(this.KEYS.MUSIC_VOLUME, volume);
+  }
+
   // App state methods
   getLastProcessedWorkout(): string | null {
     return this.getItem(this.KEYS.LAST_PROCESSED_WORKOUT, null);
@@ -251,6 +260,7 @@ class StorageService {
       experience: this.getExperience(),
       preferences: {
         volume: this.getVolume(),
+        musicVolume: this.getMusicVolume(),
         mutedMode: this.isMutedMode(),
         debugMode: this.isDebugMode()
       }
@@ -303,6 +313,9 @@ class StorageService {
       if (typeof data.preferences.soundEnabled === 'boolean' && !('volume' in data.preferences)) {
         // If old format with soundEnabled but no volume, convert to volume
         this.setVolume(data.preferences.soundEnabled ? 50 : 0);
+      }
+      if (typeof data.preferences.musicVolume === 'number') {
+        this.setMusicVolume(data.preferences.musicVolume);
       }
       if (typeof data.preferences.mutedMode === 'boolean') {
         this.setMutedMode(data.preferences.mutedMode);

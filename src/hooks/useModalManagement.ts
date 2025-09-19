@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useUIStore } from '../store/uiStore';
 import { audioManager } from '../utils/audio';
+import { musicManager } from '../utils/music';
 import { achievementProcessor } from '../utils/achievementProcessor';
 import { experienceProcessor } from '../utils/experienceProcessor';
 import { clearWorkoutHistory } from '../utils/storage';
@@ -89,8 +90,9 @@ export const useModalManagement = (
     experienceProcessor.resetExperience();
     refreshWorkoutFromStorage();
 
-    // Refresh audio settings
+    // Refresh audio and music settings
     audioManager.refreshFromStorage();
+    musicManager.refreshFromStorage();
 
     // Force level display refresh
     incrementStorageRefreshKey();
@@ -113,8 +115,9 @@ export const useModalManagement = (
     experienceProcessor.refreshFromStorage();
     refreshWorkoutFromStorage();
 
-    // Refresh audio settings
+    // Refresh audio and music settings
     audioManager.refreshFromStorage();
+    musicManager.refreshFromStorage();
 
     // Force level display refresh
     incrementStorageRefreshKey();
