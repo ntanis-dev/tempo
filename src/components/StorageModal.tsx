@@ -70,6 +70,9 @@ export const StorageModal: React.FC<StorageModalProps> = ({
         storageArea: localStorage
       }));
 
+      // Also dispatch custom event for components that listen to it
+      window.dispatchEvent(new CustomEvent('storageRefresh'));
+
       // Show success message and refresh all storage-dependent state
       onClearSuccess();
     } catch (error) {

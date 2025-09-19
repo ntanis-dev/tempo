@@ -1,9 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Contrast } from 'lucide-react';
 import { storageService } from '../../services/StorageService';
 
 export const MutedToggle: React.FC = () => {
   const [isMuted, setIsMuted] = useState(storageService.isMutedMode());
+
+  // Listen for storage changes
+  useEffect(() => {
+    // Check for storage changes periodically (for when storage is cleared)
+    const handleStorageChange = () => {
+      const currentMuted = storageService.isMutedMode();
+      if (currentMuted !== isMuted) {
+        setIsMuted(currentMuted);
+      }
+    };
+
+    // Listen for storage events
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom refresh event
+    const handleRefresh = () => {
+      setIsMuted(storageService.isMutedMode());
+    };
+    window.addEventListener('storageRefresh', handleRefresh as any);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('storageRefresh', handleRefresh as any);
+    };
+  }, [isMuted]);
 
   const toggleMuted = () => {
     const newValue = !isMuted;
