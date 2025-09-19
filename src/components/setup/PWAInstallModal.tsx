@@ -99,7 +99,7 @@ export const PWAInstallModal: React.FC = () => {
         browser = 'Chrome';
         instructions = [
           'Look for the install icon (⬇️).',
-          'Or click menu → "Install Tempo".',
+          'Or click menu → "Install App".',
           'Click "Install".'
         ];
       } else if (isFirefox) {
@@ -171,7 +171,7 @@ export const PWAInstallModal: React.FC = () => {
         
       <div className="text-center mb-6">
         <Download className="w-12 h-12 mx-auto mb-3 text-orange-500" />
-        <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Install Tempo</h3>
+        <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Install <sup className="text-xs opacity-80">PWA</sup></h3>
         <p className="text-white/80 text-xs sm:text-sm">
           Add it to your home screen for quick access.
         </p>
