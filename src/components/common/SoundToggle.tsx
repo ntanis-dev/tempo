@@ -83,7 +83,7 @@ export const SoundToggle: React.FC = () => {
       } cursor-pointer`}
     >
       {/* Icon Section */}
-      <div className="flex items-center space-x-2 px-3 py-2 flex-shrink-0">
+      <div className="flex items-center space-x-1.5 px-2.5 py-1.5 flex-shrink-0">
           <VolumeIcon className="w-4 h-4" />
           <span className="text-xs font-medium">
             {volume === 0 ? 'Muted' : `${Math.round(volume)}%`}
