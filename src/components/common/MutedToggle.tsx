@@ -16,18 +16,23 @@ export const MutedToggle: React.FC = () => {
   return (
     <button
       onClick={toggleMuted}
-      className={`p-2 rounded-full transition-all duration-200 backdrop-blur-sm border ${
+      className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-full transition-all duration-200 backdrop-blur-sm border ${
         isMuted
           ? 'bg-purple-500/20 border-purple-400/30 hover:bg-purple-500/30'
           : 'bg-white/10 border-white/20 hover:bg-white/20'
       }`}
-      title={isMuted ? 'Vibrant colors' : 'Muted colors'}
+      title={isMuted ? 'Switch to vibrant colors' : 'Switch to muted colors'}
     >
       <Contrast
-        className={`w-5 h-5 transition-colors ${
+        className={`w-4 h-4 transition-colors ${
           isMuted ? 'text-purple-400' : 'text-white/70'
         }`}
       />
+      <span className={`text-xs font-medium transition-colors ${
+        isMuted ? 'text-purple-400' : 'text-white/70'
+      }`}>
+        {isMuted ? 'Muted' : 'Vibrant'}
+      </span>
     </button>
   );
 };

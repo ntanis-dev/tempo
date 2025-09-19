@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, History, Trophy, X, Heart, Database, Bug, Star, Sparkles, Download, Palette } from 'lucide-react';
+import { Menu, History, Trophy, X, Heart, Database, Bug, Star, Sparkles, Download } from 'lucide-react';
 import { useDebugMode } from '../../contexts/DebugContext';
 import { whatsNewTracker } from '../../utils/whatsNewTracker';
-import { storageService } from '../../services/StorageService';
 
 interface SetupMenuProps {
   onShowHistory: () => void;
@@ -24,7 +23,6 @@ export const SetupMenu: React.FC<SetupMenuProps> = ({
   const [hasUnreadUpdates, setHasUnreadUpdates] = useState(whatsNewTracker.hasUnreadUpdates());
   const [showInstallButton, setShowInstallButton] = useState(false);
   const [detectionComplete, setDetectionComplete] = useState(false);
-  const [isMutedMode, setMutedMode] = useState(storageService.isMutedMode());
 
   // Close menu when clicking outside
   React.useEffect(() => {
@@ -72,14 +70,6 @@ export const SetupMenu: React.FC<SetupMenuProps> = ({
 
   const handleDebugToggle = () => {
     setDebugMode(!isDebugMode);
-  };
-
-  const handleMutedToggle = () => {
-    const newValue = !isMutedMode;
-    setMutedMode(newValue);
-    storageService.setMutedMode(newValue);
-    // Dispatch event to update backgrounds
-    window.dispatchEvent(new CustomEvent('mutedModeChanged', { detail: newValue }));
   };
 
   // Update unread status when component mounts (key prop change will remount component)
@@ -245,22 +235,6 @@ export const SetupMenu: React.FC<SetupMenuProps> = ({
               </div>
               
               <div className="border-t border-white/10 mt-2 pt-2">
-                <button
-                  onClick={handleMutedToggle}
-                  className="w-full px-4 py-2 flex items-center justify-between hover:bg-white/10 transition-colors"
-                >
-                  <div className="flex items-center space-x-2">
-                    <Palette className="w-4 h-4 text-purple-400" />
-                    <span className="text-white text-sm">Muted Colors</span>
-                  </div>
-                  <div className={`w-8 h-4 rounded-full transition-colors ${
-                    isMutedMode ? 'bg-purple-500' : 'bg-white/20'
-                  } relative`}>
-                    <div className={`w-3 h-3 bg-white rounded-full absolute top-0.5 transition-transform ${
-                      isMutedMode ? 'translate-x-4' : 'translate-x-0.5'
-                    }`} />
-                  </div>
-                </button>
                 <button
                   onClick={handleDebugToggle}
                   className="w-full px-4 py-2 flex items-center justify-between hover:bg-white/10 transition-colors"
