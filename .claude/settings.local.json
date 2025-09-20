@@ -22,7 +22,8 @@
       "Bash(xargs:*)",
       "Bash(powershell:*)",
       "WebSearch",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

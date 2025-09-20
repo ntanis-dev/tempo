@@ -13,6 +13,10 @@ export default defineConfig({
   server: {
     hmr: {
       overlay: false,
+      protocol: 'ws',
+      host: 'localhost',
+      port: 5173,
+      timeout: 60000,
     },
     headers: {
       // Prevent caching in development

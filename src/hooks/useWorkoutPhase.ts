@@ -1,7 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { WorkoutState, Phase } from '../types';
 import { audioManager } from '../utils/audio';
-import { musicManager } from '../utils/music';
 import { clearWorkoutState, saveWorkoutToHistory } from '../utils/storage';
 import { TIME } from '../constants';
 
@@ -15,14 +14,13 @@ export const useWorkoutPhase = (
     updateWorkout(prev => {
       let updates: Partial<WorkoutState> = { phase: newPhase };
 
-      // Handle phase-specific logic and music transitions
+      // Handle phase-specific logic
       switch (newPhase) {
         case 'prepare':
           updates = {
             ...updates,
             timeRemaining: 0  // Prepare phase is static, no countdown
           };
-          musicManager.startMusic('prepare');
           break;
 
         case 'countdown':
@@ -33,7 +31,6 @@ export const useWorkoutPhase = (
             currentRep: 1
           };
           audioManager.playPreparePhase();
-          musicManager.startMusic('countdown');
           break;
 
         case 'work':
@@ -43,7 +40,6 @@ export const useWorkoutPhase = (
             currentRep: 1
           };
           audioManager.playWorkStart();
-          musicManager.startMusic('work');
           break;
 
         case 'rest': {
@@ -60,17 +56,14 @@ export const useWorkoutPhase = (
             currentRep: 1
           };
           audioManager.playRestStart();
-          musicManager.startMusic('rest');
           break;
         }
 
         case 'complete':
-          musicManager.startMusic('complete');
           return transitionToComplete(prev);
 
         case 'setup':
           clearWorkoutState();
-          musicManager.startMusic('setup');
           updates = {
             ...updates,
             currentSet: 0,
@@ -150,8 +143,6 @@ export const useWorkoutPhase = (
       clearTimeout(resetTimeoutRef.current);
     }
 
-    // Stop music during transition
-    musicManager.stopMusic();
 
     // Transition to setup with animation
     updateWorkout(prev => ({

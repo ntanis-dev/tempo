@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { SoundToggle } from './common/SoundToggle';
-import { MusicToggle } from './common/MusicToggle';
 import { MutedToggle } from './common/MutedToggle';
 import { useFadeIn } from '../hooks/useFadeIn';
 import { useDebugMode } from '../contexts/DebugContext';
@@ -119,7 +118,6 @@ export const PrepareScreen: React.FC<PrepareScreenProps> = ({
       {/* Sound, Music and Muted Toggles */}
       <div className="fixed top-4 right-4 z-10 flex items-center space-x-2">
         <MutedToggle />
-        <MusicToggle />
         <SoundToggle />
       </div>
       

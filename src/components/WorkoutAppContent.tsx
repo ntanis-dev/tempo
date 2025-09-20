@@ -9,7 +9,6 @@ import { useWakeLock } from '../hooks/useWakeLock';
 import { useUIStore } from '../store/uiStore';
 import { getBackgroundClass } from '../utils/backgroundClasses';
 import { storageService } from '../services/StorageService';
-import { musicManager } from '../utils/music';
 import { SetupScreen } from './SetupScreen';
 import { PrepareScreen } from './PrepareScreen';
 import { CompleteScreen } from './CompleteScreen';
@@ -122,12 +121,6 @@ export const WorkoutAppContent: React.FC = () => {
     });
   }, [setShowUpdateButton]);
 
-  // Start ambient music for setup phase when app loads
-  React.useEffect(() => {
-    if (workout.phase === 'setup') {
-      musicManager.startMusic('setup');
-    }
-  }, []);
 
   return (
     <div

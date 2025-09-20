@@ -72,7 +72,7 @@ function handleTimerTick(state: WorkoutState): WorkoutState {
 function handleCountdown(state: WorkoutState, now: number): WorkoutState {
   let updatedStats = { ...state.statistics, lastActiveTime: now };
 
-  // Play countdown sound for last 5 seconds of stretch (countdown) and rest phases
+  // Play countdown sound and preparation beat for last 5 seconds of stretch (countdown) and rest phases
   // When timeRemaining is 6, it becomes 5 after decrement (visual shows 5)
   // When timeRemaining is 2, it becomes 1 after decrement (visual shows 1)
   if ((state.phase === 'countdown' || state.phase === 'rest') &&
@@ -84,6 +84,7 @@ function handleCountdown(state: WorkoutState, now: number): WorkoutState {
     } else {
       audioManager.playCountdownTick();
     }
+
   }
 
   // Update phase-specific statistics

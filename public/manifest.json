@@ -2,7 +2,7 @@
   "name": "Tempo",
   "short_name": "Tempo",
   "description": "Hold the pace. Break the limits.",
-  "version": "1.6.0",
+  "version": "1.8.0",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1F2937",

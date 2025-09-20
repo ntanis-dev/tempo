@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useUIStore } from '../store/uiStore';
 import { audioManager } from '../utils/audio';
-import { musicManager } from '../utils/music';
 import { achievementProcessor } from '../utils/achievementProcessor';
 import { experienceProcessor } from '../utils/experienceProcessor';
 import { clearWorkoutHistory } from '../utils/storage';
@@ -90,15 +89,17 @@ export const useModalManagement = (
     experienceProcessor.resetExperience();
     refreshWorkoutFromStorage();
 
-    // Refresh audio and music settings
+    // Refresh audio settings
     audioManager.refreshFromStorage();
-    musicManager.refreshFromStorage();
 
     // Force level display refresh
     incrementStorageRefreshKey();
 
     // Force debug mode to false
     setDebugMode(false);
+
+    // Dispatch custom event for components to refresh
+    window.dispatchEvent(new Event('storageRefresh'));
 
     showSuccess('Storage Cleared', 'All your data have been cleared.');
   }, [refreshWorkoutFromStorage, incrementStorageRefreshKey, showSuccess, setDebugMode, setShowStorage]);
@@ -115,12 +116,14 @@ export const useModalManagement = (
     experienceProcessor.refreshFromStorage();
     refreshWorkoutFromStorage();
 
-    // Refresh audio and music settings
+    // Refresh audio settings
     audioManager.refreshFromStorage();
-    musicManager.refreshFromStorage();
 
     // Force level display refresh
     incrementStorageRefreshKey();
+
+    // Dispatch custom event for components to refresh
+    window.dispatchEvent(new Event('storageRefresh'));
 
     showSuccess('Import Successful', 'Your backup has been restored successfully.');
   }, [setShowStorage, refreshWorkoutFromStorage, incrementStorageRefreshKey, showSuccess]);

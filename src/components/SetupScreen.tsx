@@ -1,7 +1,6 @@
 import React from 'react';
 import { WorkoutState, TimerSettings } from '../types';
 import { SoundToggle } from './common/SoundToggle';
-import { MusicToggle } from './common/MusicToggle';
 import { MutedToggle } from './common/MutedToggle';
 import { SetupHeader } from './setup/SetupHeader';
 import { WorkoutSettings } from './setup/WorkoutSettings';
@@ -58,10 +57,9 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
 
   return (
     <div className={`min-height h-screen flex items-center justify-center p-4 ${getFadeClasses(isVisible && !waitingForAchievements, isResetting, isTransitioning)}`}>
-      {/* Sound, Music and Muted Toggles */}
+      {/* Sound and Muted Toggles */}
       <div className="fixed top-4 right-4 z-10 flex items-center space-x-2">
         <MutedToggle />
-        <MusicToggle />
         <SoundToggle />
       </div>
       
