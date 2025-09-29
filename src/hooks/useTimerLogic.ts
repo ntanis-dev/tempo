@@ -18,7 +18,7 @@ export const useTimerLogic = (
     // Only run timer for active phases (not prepare which is static)
     const isActivePhase = ['work', 'rest', 'countdown'].includes(workout.phase);
 
-    if (!isActivePhase || workout.isPaused || workout.timeRemaining <= 0) {
+    if (!isActivePhase || workout.isPaused) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -36,7 +36,7 @@ export const useTimerLogic = (
         intervalRef.current = null;
       }
     };
-  }, [workout.phase, workout.isPaused, workout.timeRemaining, updateWorkout]);
+  }, [workout.phase, workout.isPaused, updateWorkout]);
 
   // Countdown audio effects - removed for stretch phase
   // The countdown phase is actually the stretch phase now, so no countdown sounds needed
