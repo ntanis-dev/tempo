@@ -125,7 +125,7 @@ export const useWorkoutState = () => {
       setWorkout(prev => ({
         ...prev,
         phase: 'setup',
-        currentSet: 1,
+        currentSet: 0,
         timeRemaining: 0,
         isPaused: false,
         currentRep: 1,

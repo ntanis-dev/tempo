@@ -69,7 +69,18 @@ export const useWorkoutPhase = (
             currentSet: 0,
             timeRemaining: 0,
             isPaused: false,
-            currentRep: 1
+            currentRep: 1,
+            statistics: {
+              totalTimeExercised: 0,
+              totalTimePaused: 0,
+              totalTimeRested: 0,
+              totalTimeStretched: 0,
+              totalRepsCompleted: 0,
+              workoutStartTime: null,
+              workoutEndTime: null,
+              lastActiveTime: Date.now(),
+              pauseStartTime: null
+            }
           };
           break;
       }
