@@ -20,6 +20,7 @@ interface SetupScreenProps {
   onShowAchievements: () => void;
   onShowStorage: () => void;
   onShowLevels: () => void;
+  onShowPrivacy: () => void;
   isTransitioning: boolean;
   isResetting: boolean;
   waitingForAchievements: boolean;
@@ -36,6 +37,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
   onShowAchievements,
   onShowStorage,
   onShowLevels,
+  onShowPrivacy,
   isTransitioning,
   isResetting,
   waitingForAchievements,
@@ -75,6 +77,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({
           onShowAchievements={onShowAchievements}
           onShowStorage={onShowStorage}
           onShowLevels={onShowLevels}
+          onShowPrivacy={onShowPrivacy}
           key={menuKey}
         />
       </div>

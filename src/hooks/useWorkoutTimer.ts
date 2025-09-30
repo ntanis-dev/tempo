@@ -10,6 +10,7 @@ import {
   loadWorkoutHistory
 } from '../utils/storage';
 import { audioManager } from '../utils/audio';
+import { analyticsService } from '../services/AnalyticsService';
 import { TIME } from '../constants';
 
 /**
@@ -58,6 +59,8 @@ export const useWorkoutTimer = () => {
   React.useEffect(() => {
     if (workout.phase === 'complete') {
       setWorkoutHistory(loadWorkoutHistory());
+      // Track workout completion
+      analyticsService.trackWorkoutComplete(workout);
     }
   }, [workout.phase]);
 
@@ -66,12 +69,14 @@ export const useWorkoutTimer = () => {
     setIsTransitioning(true);
     startWorkoutTracking();
     audioManager.playStartSound(); // Play start sound when workout begins
+    // Track workout start
+    analyticsService.trackWorkoutStart(workout);
 
     setTimeout(() => {
       transitionToPhase('prepare');
       setIsTransitioning(false);
     }, TIME.TRANSITION_DELAY);
-  }, [startWorkoutTracking, transitionToPhase]);
+  }, [startWorkoutTracking, transitionToPhase, workout]);
 
   const continueToStretch = React.useCallback(() => {
     setIsTransitioning(true);

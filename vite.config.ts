@@ -22,6 +22,16 @@ export default defineConfig({
       // Prevent caching in development
       'Cache-Control': 'no-store',
     },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+      '/dashboard': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
   },
   resolve: {
     dedupe: ['react', 'react-dom'],

@@ -22,10 +22,12 @@ export const useModalManagement = (
     showAchievements,
     showStorage,
     showLevels,
+    showPrivacy,
     setShowHistory,
     setShowAchievements,
     setShowStorage,
     setShowLevels,
+    setShowPrivacy,
     setAchievementModalData,
     incrementStorageRefreshKey,
   } = useUIStore();
@@ -145,12 +147,22 @@ export const useModalManagement = (
     setShowLevels(false);
   }, [setShowLevels]);
 
+  // Privacy Modal
+  const showPrivacyModal = useCallback(() => {
+    setShowPrivacy(true);
+  }, [setShowPrivacy]);
+
+  const hidePrivacyModal = useCallback(() => {
+    setShowPrivacy(false);
+  }, [setShowPrivacy]);
+
   return {
     // Modal states
     showHistory,
     showAchievements,
     showStorage,
     showLevels,
+    showPrivacy,
 
     // History modal actions
     showWorkoutHistory,
@@ -174,5 +186,9 @@ export const useModalManagement = (
     // Levels modal actions
     showLevelsModal,
     hideLevelsModal,
+
+    // Privacy modal actions
+    showPrivacyModal,
+    hidePrivacyModal,
   };
 };

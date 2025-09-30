@@ -1,6 +1,6 @@
-const CACHE_NAME = 'tempo-v1.6.1';
-const STATIC_CACHE = 'tempo-static-v1.6.1';
-const DYNAMIC_CACHE = 'tempo-dynamic-v1.6.1';
+const CACHE_NAME = 'tempo-v1.6.2';
+const STATIC_CACHE = 'tempo-static-v1.6.2';
+const DYNAMIC_CACHE = 'tempo-dynamic-v1.6.2';
 
 // Static assets that should be cached immediately
 const STATIC_ASSETS = [
@@ -63,9 +63,16 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') {
     return;
   }
-  
+
   // Skip external requests
   if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  // Skip dashboard and API routes - don't cache them
+  if (url.pathname.startsWith('/dashboard') ||
+      url.pathname.startsWith('/api/') ||
+      url.pathname === '/dashboard.html') {
     return;
   }
   

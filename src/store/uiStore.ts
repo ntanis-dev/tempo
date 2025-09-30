@@ -16,6 +16,7 @@ interface UIStore {
   showAchievements: boolean;
   showStorage: boolean;
   showLevels: boolean;
+  showPrivacy: boolean;
   showUpdateButton: boolean;
   waitingForAchievements: boolean;
   achievementModalData: AchievementModalData | null;
@@ -31,6 +32,7 @@ interface UIStore {
   setShowAchievements: (show: boolean) => void;
   setShowStorage: (show: boolean) => void;
   setShowLevels: (show: boolean) => void;
+  setShowPrivacy: (show: boolean) => void;
   setShowUpdateButton: (show: boolean) => void;
   setWaitingForAchievements: (waiting: boolean) => void;
   setAchievementModalData: (data: AchievementModalData | null) => void;
@@ -54,6 +56,7 @@ export const useUIStore = create<UIStore>((set) => ({
   showAchievements: false,
   showStorage: false,
   showLevels: false,
+  showPrivacy: false,
   showUpdateButton: false,
   waitingForAchievements: false,
   achievementModalData: null,
@@ -65,6 +68,7 @@ export const useUIStore = create<UIStore>((set) => ({
   setShowAchievements: (show) => set({ showAchievements: show }),
   setShowStorage: (show) => set({ showStorage: show }),
   setShowLevels: (show) => set({ showLevels: show }),
+  setShowPrivacy: (show) => set({ showPrivacy: show }),
   setShowUpdateButton: (show) => set({ showUpdateButton: show }),
   setWaitingForAchievements: (waiting) => set({ waitingForAchievements: waiting }),
   setAchievementModalData: (data) => set({ achievementModalData: data }),

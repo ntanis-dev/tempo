@@ -242,8 +242,12 @@ class StorageService {
       };
     });
 
+    // Get user ID from localStorage for analytics tracking continuity
+    const userId = localStorage.getItem('tempo-user-id');
+
     const data = {
       exportDate: new Date().toISOString(),
+      userId: userId, // Include user ID for cross-device tracking
       workout: {
         settings: this.getWorkoutSettings(), // This includes totalSets
         history: cleanHistory
@@ -262,6 +266,15 @@ class StorageService {
 
   importData(jsonString: string): void {
     const data = JSON.parse(jsonString);
+
+    // Restore user ID if present (for analytics continuity across devices)
+    if (data.userId) {
+      localStorage.setItem('tempo-user-id', data.userId);
+      // Notify analytics service to reload the user ID
+      import('./AnalyticsService').then(module => {
+        module.analyticsService.reloadUserId();
+      });
+    }
 
     // Import workout data
     if (data.workout) {

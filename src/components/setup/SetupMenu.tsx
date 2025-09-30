@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, History, Trophy, X, Heart, Database, Bug, Star, Download } from 'lucide-react';
+import { Menu, History, Trophy, X, Heart, Database, Bug, Star, Download, Shield } from 'lucide-react';
 import { useDebugMode } from '../../contexts/DebugContext';
 
 interface SetupMenuProps {
@@ -7,13 +7,15 @@ interface SetupMenuProps {
   onShowAchievements: () => void;
   onShowStorage: () => void;
   onShowLevels: () => void;
+  onShowPrivacy: () => void;
 }
 
 export const SetupMenu: React.FC<SetupMenuProps> = ({
   onShowHistory,
   onShowAchievements,
   onShowStorage,
-  onShowLevels
+  onShowLevels,
+  onShowPrivacy
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugMode, setDebugMode] = useDebugMode();
@@ -56,6 +58,11 @@ export const SetupMenu: React.FC<SetupMenuProps> = ({
 
   const handleLevelsClick = () => {
     onShowLevels();
+    setIsOpen(false);
+  };
+
+  const handlePrivacyClick = () => {
+    onShowPrivacy();
     setIsOpen(false);
   };
 
@@ -219,8 +226,16 @@ export const SetupMenu: React.FC<SetupMenuProps> = ({
                     }`} />
                   </div>
                 </button>
+
+                <button
+                  onClick={handlePrivacyClick}
+                  className="w-full px-4 py-2 text-left text-white hover:bg-white/20 transition-colors flex items-center space-x-2"
+                >
+                  <Shield className="w-4 h-4" />
+                  <span>Privacy</span>
+                </button>
               </div>
-              
+
               <div className="border-t border-white/10 mt-2 pt-2 px-4 pb-2">
                 <div className="text-white/60 text-xs flex items-center justify-center space-x-1">
                   <span>Made with</span>

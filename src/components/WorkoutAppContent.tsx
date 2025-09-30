@@ -24,6 +24,7 @@ const WorkoutHistory = React.lazy(() => import('./history/WorkoutHistory').then(
 const AchievementsModal = React.lazy(() => import('./achievements/AchievementsModal').then(module => ({ default: module.AchievementsModal })));
 const StorageModal = React.lazy(() => import('./StorageModal').then(module => ({ default: module.StorageModal })));
 const ExperienceModal = React.lazy(() => import('./levels/ExperienceModal').then(module => ({ default: module.ExperienceModal })));
+const PrivacyModal = React.lazy(() => import('./privacy/PrivacyModal').then(module => ({ default: module.PrivacyModal })));
 
 // No loading fallback - modals load instantly
 const ModalLoadingFallback = () => null;
@@ -182,6 +183,15 @@ export const WorkoutAppContent: React.FC = () => {
         </Suspense>
       )}
 
+      {modalHandlers.showPrivacy && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <PrivacyModal
+            isOpen={modalHandlers.showPrivacy}
+            onClose={modalHandlers.hidePrivacyModal}
+          />
+        </Suspense>
+      )}
+
 
       <PWAInstallModal />
 
@@ -213,10 +223,11 @@ export const WorkoutAppContent: React.FC = () => {
             onShowAchievements={modalHandlers.showAchievementsModal}
             onShowStorage={modalHandlers.showStorageModal}
             onShowLevels={modalHandlers.showLevelsModal}
-            onShowSuccess={showSuccess}
+            onShowPrivacy={modalHandlers.showPrivacyModal}
             isTransitioning={isTransitioning}
             isResetting={isResetting}
             waitingForAchievements={waitingForAchievements}
+            menuKey={storageRefreshKey}
             storageRefreshKey={storageRefreshKey}
           />
         )}

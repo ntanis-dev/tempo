@@ -23,7 +23,9 @@
       "Bash(powershell:*)",
       "WebSearch",
       "Bash(git commit:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(dir:*)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []
