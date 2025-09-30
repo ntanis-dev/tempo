@@ -38,8 +38,8 @@ export const CompleteScreen: React.FC<CompleteScreenProps> = ({
         <div className="rounded-3xl p-4 text-center text-white font-sans w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
 
           <WorkoutStats workout={workout} />
-          
-          <div className="mb-8 sm:mb-12" />
+
+          <div className="mb-3" />
 
             <CompletionActions
               onResetWorkout={onResetWorkout}

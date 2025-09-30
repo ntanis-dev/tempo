@@ -48,11 +48,11 @@ export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout }
     </div>
     
     {/* Level Progress Display - Just above workout session box */}
-    <div className="mb-4">
+    <div className="mb-2">
       <LevelDisplay levelInfo={levelInfo} variant="full" />
     </div>
-    
-    <div id="workout-statistics" className="mb-4 mt-6 sm:mt-8 bg-white/70 backdrop-blur-xl rounded-2xl p-6 border border-white/80 font-sans w-full relative">
+
+    <div id="workout-statistics" className="mb-2 bg-white/70 backdrop-blur-xl rounded-2xl p-6 border border-white/80 font-sans w-full relative">
       <h2 className="text-xl font-bold mb-2 text-center text-black font-sans tracking-tight">Workout Session</h2>
       
       <div className="mb-3 text-sm text-black text-center font-sans">
