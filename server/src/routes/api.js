@@ -1,6 +1,7 @@
 import express from 'express';
 import { getPool } from '../database.js';
 import { authenticateAdmin, verifyToken } from '../auth.js';
+import { getLocationFromIP } from '../geoip.js';
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.get('/auth/verify', verifyToken, (req, res) => {
 router.post('/track/ping', async (req, res) => {
   const { userId, userAgent } = req.body;
   const ipAddress = req.ip || req.connection.remoteAddress;
+  const location = getLocationFromIP(ipAddress);
 
   if (!userId) {
     return res.status(400).json({ error: 'User ID required' });
@@ -41,15 +43,16 @@ router.post('/track/ping', async (req, res) => {
   try {
     conn = await getPool().getConnection();
 
-    // Upsert user
+    // Upsert user with location
     await conn.query(
-      `INSERT INTO users (user_id, user_agent, ip_address)
-       VALUES (?, ?, ?)
+      `INSERT INTO users (user_id, user_agent, ip_address, location)
+       VALUES (?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE
        last_seen = NOW(),
        user_agent = VALUES(user_agent),
-       ip_address = VALUES(ip_address)`,
-      [userId, userAgent || 'Unknown', ipAddress || 'Unknown']
+       ip_address = VALUES(ip_address),
+       location = VALUES(location)`,
+      [userId, userAgent || 'Unknown', ipAddress || 'Unknown', location]
     );
 
     // Update or create active session
@@ -99,9 +102,18 @@ router.post('/track/workout', async (req, res) => {
       [userId]
     );
 
-    // Convert dates to MySQL format
-    const startDate = new Date(workoutStart).toISOString().slice(0, 19).replace('T', ' ');
-    const endDate = workoutEnd ? new Date(workoutEnd).toISOString().slice(0, 19).replace('T', ' ') : null;
+    // Convert dates to MySQL format preserving local timezone
+    // The client sends ISO strings which are already in UTC, so we need to parse them correctly
+    const startDate = new Date(workoutStart);
+    const endDate = workoutEnd ? new Date(workoutEnd) : null;
+
+    // Format for MySQL DATETIME (in UTC to match the ISO input)
+    const formatMySQLDateTime = (date) => {
+      return date.toISOString().slice(0, 19).replace('T', ' ');
+    };
+
+    const startDateStr = formatMySQLDateTime(startDate);
+    const endDateStr = endDate ? formatMySQLDateTime(endDate) : null;
 
     // Insert workout
     await conn.query(
@@ -109,7 +121,7 @@ router.post('/track/workout', async (req, res) => {
        (user_id, workout_start, workout_end, total_sets, reps_per_set,
         time_stretched, time_exercised, time_rested, time_paused, completed)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, startDate, endDate, totalSets || 0, repsPerSet || 0,
+      [userId, startDateStr, endDateStr, totalSets || 0, repsPerSet || 0,
        timeStretched || 0, timeExercised || 0, timeRested || 0, timePaused || 0, completed || false]
     );
 
@@ -154,10 +166,10 @@ router.get('/dashboard/stats', verifyToken, async (req, res) => {
     const totalWorkouts = totalWorkoutsResult[0] || { count: 0 };
     const onlineUsers = onlineUsersResult[0] || { count: 0 };
 
-    // Get recent users with user agent and IP
+    // Get recent users with user agent and location
     const recentUsersRaw = await conn.query(`
       SELECT user_id, first_seen, last_seen, total_workouts, total_time_exercised,
-             user_agent, ip_address
+             user_agent, location
       FROM users
       ORDER BY last_seen DESC
       LIMIT 10
@@ -196,11 +208,23 @@ router.get('/dashboard/stats', verifyToken, async (req, res) => {
       ORDER BY hour DESC
     `);
 
-    // Convert BigInt values to numbers in all arrays
+    // Helper to convert MySQL DATETIME (stored as UTC) to ISO string
+    const mysqlToISO = (mysqlDatetime) => {
+      if (!mysqlDatetime) return null;
+      // MySQL DATETIME format: "YYYY-MM-DD HH:MM:SS"
+      // We stored UTC times, so append 'Z' to indicate UTC when parsing
+      const isoStr = mysqlDatetime.replace(' ', 'T') + 'Z';
+      return new Date(isoStr).toISOString();
+    };
+
+    // Convert BigInt values to numbers and dates to ISO strings in all arrays
     const recentUsers = recentUsersRaw.map(user => ({
       ...user,
       total_workouts: Number(user.total_workouts || 0),
-      total_time_exercised: Number(user.total_time_exercised || 0)
+      total_time_exercised: Number(user.total_time_exercised || 0),
+      // Convert DATETIME to ISO string (MySQL stores as UTC)
+      first_seen: mysqlToISO(user.first_seen),
+      last_seen: mysqlToISO(user.last_seen)
     }));
 
     const recentWorkouts = recentWorkoutsRaw.map(workout => ({
@@ -208,13 +232,20 @@ router.get('/dashboard/stats', verifyToken, async (req, res) => {
       total_sets: Number(workout.total_sets || 0),
       time_exercised: Number(workout.time_exercised || 0),
       time_rested: Number(workout.time_rested || 0),
-      time_stretched: Number(workout.time_stretched || 0)
+      time_stretched: Number(workout.time_stretched || 0),
+      // Convert DATETIME to ISO string (MySQL stores as UTC)
+      workout_start: mysqlToISO(workout.workout_start),
+      workout_end: mysqlToISO(workout.workout_end)
     }));
 
     const activeSessions = activeSessionsRaw.map(session => ({
       ...session,
       total_workouts: Number(session.total_workouts || 0),
-      is_active: Boolean(session.is_active)
+      is_active: Boolean(session.is_active),
+      // Convert DATETIME to ISO string (MySQL stores as UTC)
+      last_ping: mysqlToISO(session.last_ping),
+      session_start: mysqlToISO(session.session_start),
+      first_seen: mysqlToISO(session.first_seen)
     }));
 
     const hourlyActivity = hourlyActivityRaw.map(activity => ({
@@ -238,6 +269,52 @@ router.get('/dashboard/stats', verifyToken, async (req, res) => {
   } catch (err) {
     console.error('Dashboard stats error:', err);
     res.status(500).json({ error: 'Failed to fetch dashboard stats' });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+router.get('/dashboard/user/:userId/workouts', verifyToken, async (req, res) => {
+  const { userId } = req.params;
+
+  let conn;
+  try {
+    conn = await getPool().getConnection();
+
+    // Get user's workouts
+    const workouts = await conn.query(`
+      SELECT * FROM workouts
+      WHERE user_id = ?
+      ORDER BY workout_start DESC
+      LIMIT 100
+    `, [userId]);
+
+    // Helper to convert MySQL DATETIME (stored as UTC) to ISO string
+    const mysqlToISO = (mysqlDatetime) => {
+      if (!mysqlDatetime) return null;
+      // MySQL DATETIME format: "YYYY-MM-DD HH:MM:SS"
+      // We stored UTC times, so append 'Z' to indicate UTC when parsing
+      const isoStr = mysqlDatetime.replace(' ', 'T') + 'Z';
+      return new Date(isoStr).toISOString();
+    };
+
+    // Convert BigInt values and dates to ISO strings
+    const convertedWorkouts = workouts.map(workout => ({
+      ...workout,
+      total_sets: Number(workout.total_sets || 0),
+      reps_per_set: Number(workout.reps_per_set || 0),
+      time_exercised: Number(workout.time_exercised || 0),
+      time_rested: Number(workout.time_rested || 0),
+      time_stretched: Number(workout.time_stretched || 0),
+      // Convert DATETIME to ISO string (MySQL stores as UTC)
+      workout_start: mysqlToISO(workout.workout_start),
+      workout_end: mysqlToISO(workout.workout_end)
+    }));
+
+    res.json({ workouts: convertedWorkouts });
+  } catch (err) {
+    console.error('User workouts error:', err);
+    res.status(500).json({ error: 'Failed to fetch user workouts' });
   } finally {
     if (conn) conn.release();
   }
