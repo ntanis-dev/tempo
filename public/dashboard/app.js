@@ -477,7 +477,9 @@ function renderModalWorkouts() {
       paginationDiv.classList.add('hidden');
     }
   } else {
-    modalWorkoutsTable.innerHTML = '<tr><td colspan="7" class="text-center text-gray-500 py-4">No workouts found</td></tr>';
+    modalWorkoutsTable.innerHTML = '<tr><td colspan="7" class="text-center text-gray-500 py-4">No Workouts</td></tr>';
+    // Hide pagination when no workouts
+    document.getElementById('modalPagination').classList.add('hidden');
   }
 }
 
