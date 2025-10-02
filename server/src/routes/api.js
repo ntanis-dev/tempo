@@ -282,9 +282,9 @@ router.get('/dashboard/user/:userId/workouts', verifyToken, async (req, res) => 
     conn = await getPool().getConnection();
 
     // Get user's workouts
-    const workouts = await conn.query(`
+    const workoutsResult = await conn.query(`
       SELECT * FROM workouts
-      WHERE user_id = ?
+      WHERE user_id = ? AND completed = TRUE
       ORDER BY workout_start DESC
       LIMIT 100
     `, [userId]);
@@ -299,7 +299,7 @@ router.get('/dashboard/user/:userId/workouts', verifyToken, async (req, res) => 
     };
 
     // Convert BigInt values and dates to ISO strings
-    const convertedWorkouts = workouts.map(workout => ({
+    const convertedWorkouts = workoutsResult.map(workout => ({
       ...workout,
       total_sets: Number(workout.total_sets || 0),
       reps_per_set: Number(workout.reps_per_set || 0),
