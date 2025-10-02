@@ -79,7 +79,7 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     // For HTML documents (pages), check if it's root or a 404
-    (request.destination === 'document' || request.url.endsWith('.html'))
+    (request.destination === 'document' || request.url.endsWith('.html') || request.mode === 'navigate')
       ? url.pathname === '/'
         // Root path: use cache-first strategy
         ? caches.match(request)
@@ -127,7 +127,7 @@ self.addEventListener('fetch', (event) => {
             if (cachedResponse) {
 
               // For HTML files (like root), also check for updates in the background
-              if (request.destination === 'document' || request.url.endsWith('.html')) {
+              if (request.destination === 'document' || request.url.endsWith('.html') || request.mode === 'navigate') {
                 // Background update check
                 fetch(request)
                   .then((networkResponse) => {
