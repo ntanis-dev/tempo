@@ -64,14 +64,12 @@ export function getLocationFromIP(ip) {
       parts.push(result.city.names.en);
     }
 
-    // Country or State
-    if (result.subdivisions && result.subdivisions[0] && result.subdivisions[0].iso_code) {
-      parts.push(result.subdivisions[0].iso_code);
-    } else if (result.country && result.country.iso_code) {
+    // Country
+    if (result.country && result.country.iso_code) {
       parts.push(result.country.iso_code);
     }
 
-    // Return formatted location
+    // Return formatted location (show if at least one is available)
     return parts.length > 0 ? parts.join(', ') : 'Unknown';
 
   } catch (error) {
