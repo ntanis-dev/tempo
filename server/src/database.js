@@ -70,7 +70,6 @@ async function createTables(conn) {
       total_time_exercised INT DEFAULT 0,
       total_sets_completed INT DEFAULT 0,
       user_agent TEXT,
-      ip_address VARCHAR(45),
       location VARCHAR(100),
       INDEX idx_user_id (user_id),
       INDEX idx_last_seen (last_seen)
@@ -83,8 +82,19 @@ async function createTables(conn) {
     WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'location'
   `).then(async (result) => {
     if (result.length === 0) {
-      await conn.query(`ALTER TABLE users ADD COLUMN location VARCHAR(100) AFTER ip_address`);
+      await conn.query(`ALTER TABLE users ADD COLUMN location VARCHAR(100) AFTER user_agent`);
       console.log('Added location column to users table');
+    }
+  }).catch(() => {});
+
+  // Remove ip_address column if it exists (migration to privacy-friendly approach)
+  await conn.query(`
+    SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'ip_address'
+  `).then(async (result) => {
+    if (result.length > 0) {
+      await conn.query(`ALTER TABLE users DROP COLUMN ip_address`);
+      console.log('Removed ip_address column from users table (privacy improvement)');
     }
   }).catch(() => {});
 

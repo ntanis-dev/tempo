@@ -43,16 +43,15 @@ router.post('/track/ping', async (req, res) => {
   try {
     conn = await getPool().getConnection();
 
-    // Upsert user with location
+    // Upsert user with location (IP address is not stored for privacy)
     await conn.query(
-      `INSERT INTO users (user_id, user_agent, ip_address, location)
-       VALUES (?, ?, ?, ?)
+      `INSERT INTO users (user_id, user_agent, location)
+       VALUES (?, ?, ?)
        ON DUPLICATE KEY UPDATE
        last_seen = NOW(),
        user_agent = VALUES(user_agent),
-       ip_address = VALUES(ip_address),
        location = VALUES(location)`,
-      [userId, userAgent || 'Unknown', ipAddress || 'Unknown', location]
+      [userId, userAgent || 'Unknown', location]
     );
 
     // Update or create active session
