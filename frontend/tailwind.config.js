@@ -13,6 +13,13 @@ export default {
       },
       animation: {
         'gradient-shift': 'gradientShift 8s ease infinite',
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
       },
       backgroundSize: {
         '200': '200% 200%',

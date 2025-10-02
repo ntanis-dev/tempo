@@ -25,7 +25,7 @@ export const NotFoundScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden animate-fade-in">
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-orange-950 to-red-950 bg-200 animate-gradient-shift"></div>
 
