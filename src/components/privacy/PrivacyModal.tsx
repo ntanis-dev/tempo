@@ -68,8 +68,9 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
                 <div>
                   <p className="text-sm text-white font-semibold mb-1">We Respect Your Privacy</p>
                   <p className="text-sm text-white/70 leading-relaxed">
+                    All workout data is stored locally on your device.<br />
                     You can export, import, or completely clear your data at any time.<br />
-                    Once cleared, your data stored in our servers cannot be linked back to you.
+                    Once cleared, you cannot be linked to any previous workout data on our servers.
                   </p>
                 </div>
               </div>
@@ -83,6 +84,10 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
               </div>
               <div className="bg-black/20 rounded-lg p-4">
                 <ul className="space-y-2 text-sm text-white/70">
+                  <li className="flex items-start space-x-2">
+                    <span className="text-blue-400 mt-0.5">•</span>
+                    <span><strong className="text-white/90">Anonymous ID:</strong> Randomly generated and stored locally on your device.</span>
+                  </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-blue-400 mt-0.5">•</span>
                     <span><strong className="text-white/90">Workouts:</strong> Sets, reps, and time-related information.</span>
@@ -114,6 +119,10 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
                   <li className="flex items-start space-x-2">
                     <span className="text-green-400 mt-0.5">✓</span>
                     <span>Account or login credentials.</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-green-400 mt-0.5">✓</span>
+                    <span>IP addresses (only used for location lookup, never stored).</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-green-400 mt-0.5">✓</span>
