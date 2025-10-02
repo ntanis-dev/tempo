@@ -20,6 +20,9 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const isDevelopment = process.env.NODE_ENV === 'development';
 
+// Trust proxy - required when behind nginx/reverse proxy
+app.set('trust proxy', 1);
+
 // Middleware Setup (ORDER MATTERS!)
 
 // 1. Security headers (but allow embedding for dashboard)
