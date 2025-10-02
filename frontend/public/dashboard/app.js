@@ -395,14 +395,16 @@ async function showUserWorkouts(userId) {
     await loadUserWorkouts(userId);
   }
 
-  // Render content first
+  // Render content COMPLETELY first while modal is still hidden
   renderModalWorkouts();
 
-  // Show modal with fade-in
-  userWorkoutsModal.classList.remove('hidden');
-  requestAnimationFrame(() => {
-    userWorkoutsModal.classList.remove('opacity-0');
-  });
+  // Wait a tiny bit to ensure rendering is done, then show
+  setTimeout(() => {
+    userWorkoutsModal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      userWorkoutsModal.classList.remove('opacity-0');
+    });
+  }, 10);
 }
 
 // Load user workouts
@@ -450,7 +452,8 @@ function renderModalWorkouts() {
   const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, workouts.length);
   const pageWorkouts = workouts.slice(startIndex, endIndex);
 
-  modalWorkoutsTable.innerHTML = '';
+  // Build content in memory first using DocumentFragment
+  const fragment = document.createDocumentFragment();
 
   if (pageWorkouts.length > 0) {
     pageWorkouts.forEach(workout => {
@@ -466,8 +469,12 @@ function renderModalWorkouts() {
         <td class="py-2 font-semibold">${formatDuration(total)}</td>
         <td class="py-2">${formatDateAndTime(workout.workout_start)}</td>
       `;
-      modalWorkoutsTable.appendChild(row);
+      fragment.appendChild(row);
     });
+
+    // Update DOM all at once
+    modalWorkoutsTable.innerHTML = '';
+    modalWorkoutsTable.appendChild(fragment);
 
     // Show pagination info
     const paginationDiv = document.getElementById('modalPagination');
