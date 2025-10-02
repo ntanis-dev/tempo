@@ -72,46 +72,84 @@ self.addEventListener('fetch', (event) => {
   // Skip dashboard and API routes - don't cache them
   if (url.pathname.startsWith('/dashboard') ||
       url.pathname.startsWith('/api/') ||
+      url.pathname.startsWith('/health') ||
       url.pathname === '/dashboard.html') {
     return;
   }
-  
+
   event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
-        // If we have a cached version, serve it immediately
-        if (cachedResponse) {
-          
-          // For HTML files, also check for updates in the background
-          if (request.destination === 'document' || request.url.endsWith('.html')) {
-            // Background update check
-            fetch(request)
-              .then((networkResponse) => {
-                if (networkResponse && networkResponse.status === 200) {
-                  // Update cache with new version
-                  const responseClone = networkResponse.clone();
-                  caches.open(STATIC_CACHE).then((cache) => {
-                    cache.put(request, responseClone);
+    // For HTML documents (pages), check if it's root or a 404
+    (request.destination === 'document' || request.url.endsWith('.html'))
+      ? url.pathname === '/'
+        // Root path: use cache-first strategy
+        ? caches.match(request)
+            .then((cachedResponse) => {
+              if (cachedResponse) {
+                // Background update check for root
+                fetch(request)
+                  .then((networkResponse) => {
+                    if (networkResponse && networkResponse.status === 200) {
+                      const responseClone = networkResponse.clone();
+                      caches.open(STATIC_CACHE).then((cache) => {
+                        cache.put(request, responseClone);
+                      });
+                    }
+                  })
+                  .catch(() => {});
+
+                return cachedResponse;
+              }
+
+              // Not cached, fetch from network
+              return fetch(request)
+                .then((networkResponse) => {
+                  if (networkResponse && networkResponse.status === 200) {
+                    const responseClone = networkResponse.clone();
+                    caches.open(STATIC_CACHE).then((cache) => {
+                      cache.put(request, responseClone);
+                    });
+                  }
+                  return networkResponse;
+                })
+                .catch(() => {
+                  throw new Error('Network failed and no cache available');
+                });
+            })
+        // Non-root path: always fetch from network to get 404 response
+        : fetch(request)
+            .catch(() => {
+              // If offline, serve cached index.html with 404 detection in the app
+              return caches.match('/index.html');
+            })
+      : caches.match(request)
+          .then((cachedResponse) => {
+            // If we have a cached version, serve it immediately
+            if (cachedResponse) {
+
+              // For HTML files (like root), also check for updates in the background
+              if (request.destination === 'document' || request.url.endsWith('.html')) {
+                // Background update check
+                fetch(request)
+                  .then((networkResponse) => {
+                    if (networkResponse && networkResponse.status === 200) {
+                      // Update cache with new version
+                      const responseClone = networkResponse.clone();
+                      caches.open(STATIC_CACHE).then((cache) => {
+                        cache.put(request, responseClone);
+                      });
+                    }
+                  })
+                  .catch(() => {
+                    // Network failed, but we have cache - that's fine
                   });
-                }
-              })
-              .catch(() => {
-                // Network failed, but we have cache - that's fine
-              });
-          }
-          
-          return cachedResponse;
-        }
+              }
+
+              return cachedResponse;
+            }
         
         // No cached version, fetch from network
         return fetch(request)
           .then((networkResponse) => {
-            // Check if this is a 404 response for HTML documents
-            if (networkResponse.status === 404 && request.destination === 'document') {
-              // Don't cache 404s, just return the response
-              return networkResponse;
-            }
-
             // Check if we received a valid response
             if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
               return networkResponse;
