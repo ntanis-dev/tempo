@@ -1,0 +1,711 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  }
+}
+
+/* Root stays normal for background animations */
+#root {
+  width: 100vw;
+  height: 100vh;
+  background-color: #35303f;
+  overflow: hidden;
+}
+
+.min-height {
+  min-height: 720px;
+}
+
+#main-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+}
+
+/* App container for scaling content */
+#app-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+@layer base {
+  button:focus {
+    outline: none;
+  }
+
+  * {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  html, body {
+    overflow: hidden;
+    -webkit-appearance: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    background-color: #35303f;
+  }
+
+  /* iOS PWA specific fixes */
+  @supports (-webkit-touch-callout: none) {
+    html, body {
+      height: 100vh;
+      height: -webkit-fill-available;
+      background-color: #35303f;
+    }
+  }
+
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Allow scrollbars in workout history modal */
+  .workout-history-scrollable {
+    scrollbar-width: auto;
+    -ms-overflow-style: auto;
+  }
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+width: 12px; /* Width of the scrollbar */
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1; /* Background of the scrollbar track */
+}
+::-webkit-scrollbar-thumb {
+background: #888; /* Color of the scrollbar thumb */
+border-radius: 6px; /* Rounded corners for the thumb */
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555; /* Color of the thumb on hover */
+}
+
+  .workout-history-scrollable::-webkit-scrollbar {
+    display: block;
+    width: 8px;
+  }
+
+  .workout-history-scrollable::-webkit-scrollbar-track {
+    background: #374151;
+    border-radius: 4px;
+  }
+
+  .workout-history-scrollable::-webkit-scrollbar-thumb {
+    background: #6b7280;
+    border-radius: 4px;
+  }
+
+  .workout-history-scrollable::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+
+  #main-container {
+    transition: background 700ms ease-in-out;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+#main-container.background-setup,
+#main-container.background-transition,
+#main-container.background-transitioning {
+  background: #1F2937;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 75% 25%, rgba(34, 197, 94, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 25% 75%, rgba(249, 115, 22, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
+  background-size: 800px 800px, 600px 600px, 700px 700px, 650px 650px, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  animation: patternFloat 20s ease-in-out infinite;
+}
+
+@keyframes patternFloat {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  }
+  25% {
+    background-position: 10% 10%, 90% 90%, 90% 10%, 10% 90%, 0% 0%;
+  }
+  50% {
+    background-position: 20% 5%, 80% 95%, 85% 15%, 15% 85%, 0% 0%;
+  }
+  75% {
+    background-position: 5% 15%, 95% 85%, 80% 20%, 20% 80%, 0% 0%;
+  }
+}
+
+@keyframes preparePattern {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  }
+  20% {
+    background-position: 15% 10%, 85% 90%, 90% 15%, 10% 85%, 0% 0%;
+  }
+  40% {
+    background-position: 25% 20%, 75% 80%, 80% 25%, 20% 75%, 0% 0%;
+  }
+  60% {
+    background-position: 30% 35%, 70% 65%, 75% 30%, 25% 70%, 0% 0%;
+  }
+  80% {
+    background-position: 20% 25%, 80% 75%, 85% 20%, 15% 80%, 0% 0%;
+  }
+}
+
+@keyframes workPattern {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  }
+  20% {
+    background-position: 25% 20%, 75% 80%, 80% 25%, 20% 75%, 0% 0%;
+  }
+  40% {
+    background-position: 40% 30%, 60% 70%, 70% 40%, 30% 60%, 0% 0%;
+  }
+  60% {
+    background-position: 30% 45%, 70% 55%, 65% 35%, 35% 65%, 0% 0%;
+  }
+  80% {
+    background-position: 15% 25%, 85% 75%, 75% 20%, 25% 80%, 0% 0%;
+  }
+}
+
+@keyframes restPattern {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  }
+  33% {
+    background-position: 10% 15%, 90% 85%, 85% 10%, 15% 90%, 0% 0%;
+  }
+  66% {
+    background-position: 20% 25%, 80% 75%, 75% 20%, 25% 80%, 0% 0%;
+  }
+}
+
+@keyframes completePattern {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 50% 50%, 0% 0%;
+  }
+  20% {
+    background-position: 15% 10%, 85% 90%, 90% 15%, 10% 85%, 45% 55%, 0% 0%;
+  }
+  40% {
+    background-position: 25% 20%, 75% 80%, 80% 25%, 20% 75%, 55% 45%, 0% 0%;
+  }
+  60% {
+    background-position: 30% 35%, 70% 65%, 75% 30%, 25% 70%, 60% 40%, 0% 0%;
+  }
+  80% {
+    background-position: 20% 25%, 80% 75%, 85% 20%, 15% 80%, 40% 60%, 0% 0%;
+  }
+}
+
+#main-container.background-complete {
+  background: #059669;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(5, 150, 105, 0.25) 0%, transparent 55%),
+    radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.2) 0%, transparent 45%),
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.18) 0%, transparent 60%),
+    linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 30%, transparent 70%);
+  background-size: 800px 800px, 750px 750px, 650px 650px, 550px 550px, 900px 900px, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 50% 50%, 0% 0%;
+  animation: completePattern 25s ease-in-out infinite;
+}
+
+#main-container.background-countdown {
+  background: #F59E0B;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(251, 191, 36, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 20%, rgba(245, 158, 11, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.12) 0%, transparent 35%),
+    linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.08) 30%, transparent 70%);
+  background-size: 600px 600px, 500px 500px, 700px 700px, 450px 450px, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  animation: stretchPattern 15s ease-in-out infinite;
+}
+
+#main-container.background-countdown-prepare {
+  background: #8B5CF6;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 20%, rgba(168, 85, 247, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.12) 0%, transparent 35%),
+    linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.08) 30%, transparent 70%);
+  background-size: 600px 600px, 500px 500px, 700px 700px, 450px 450px, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  animation: preparePattern 10s ease-in-out infinite;
+}
+
+#main-container.background-work {
+  background: #EF4444;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.18) 0%, transparent 40%),
+    radial-gradient(circle at 75% 75%, rgba(239, 68, 68, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(220, 38, 38, 0.25) 0%, transparent 45%),
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 35%),
+    linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.12) 40%, transparent 80%);
+  background-size: 550px 550px, 600px 600px, 500px 500px, 400px 400px, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  animation: workPattern 12s ease-in-out infinite;
+}
+
+#main-container.background-rest {
+  background: #3B82F6;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 20%, rgba(37, 99, 235, 0.18) 0%, transparent 40%),
+    radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 35%),
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+  background-size: 700px 700px, 650px 650px, 600px 600px, 500px 500px, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  animation: restPattern 18s ease-in-out infinite;
+}
+
+#main-container.background-rest-prepare {
+  background: #8B5CF6;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 20%, rgba(168, 85, 247, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.12) 0%, transparent 35%),
+    linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.08) 30%, transparent 70%);
+  background-size: 600px 600px, 500px 500px, 700px 700px, 450px 450px, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  animation: preparePattern 10s ease-in-out infinite;
+}
+
+#main-container.background-resetting {
+  background: #1F2937;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 75% 25%, rgba(34, 197, 94, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 25% 75%, rgba(249, 115, 22, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
+  background-size: 800px 800px, 600px 600px, 700px 700px, 650px 650px, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  animation: patternFloat 20s ease-in-out infinite;
+}
+
+#main-container.background-prepare {
+  background: #14B8A6;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 75% 75%, rgba(20, 184, 166, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(13, 148, 136, 0.2) 0%, transparent 45%),
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(45, 212, 191, 0.18) 0%, transparent 55%),
+    linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 35%, transparent 70%);
+  background-size: 750px 750px, 650px 650px, 700px 700px, 550px 550px, 800px 800px, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 50% 50%, 0% 0%;
+  animation: preparePattern 16s ease-in-out infinite;
+}
+
+@keyframes preparePattern {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 50% 50%, 0% 0%;
+  }
+  25% {
+    background-position: 15% 20%, 85% 80%, 90% 15%, 10% 85%, 45% 55%, 0% 0%;
+  }
+  50% {
+    background-position: 25% 15%, 75% 85%, 80% 25%, 20% 75%, 55% 45%, 0% 0%;
+  }
+  75% {
+    background-position: 10% 30%, 90% 70%, 85% 20%, 15% 80%, 40% 60%, 0% 0%;
+  }
+}
+
+@keyframes stretchPattern {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 0% 0%;
+  }
+  25% {
+    background-position: 15% 20%, 85% 80%, 90% 15%, 10% 85%, 0% 0%;
+  }
+  50% {
+    background-position: 25% 10%, 75% 90%, 80% 25%, 20% 75%, 0% 0%;
+  }
+  75% {
+    background-position: 10% 25%, 90% 75%, 85% 20%, 15% 80%, 0% 0%;
+  }
+}
+
+/* Firework Animations */
+@keyframes firework1 {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translate(0, 0);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.5) translate(-10px, -15px);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(2) translate(-20px, -30px);
+  }
+  70% {
+    opacity: 0.8;
+    transform: scale(1.2) translate(-15px, -25px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) translate(-5px, -10px);
+  }
+}
+
+@keyframes firework2 {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) translate(0, 0);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.8) translate(15px, -20px);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(2.2) translate(25px, -35px);
+  }
+  75% {
+    opacity: 0.7;
+    transform: scale(1.3) translate(20px, -30px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.4) translate(10px, -15px);
+  }
+}
+
+@keyframes firework3 {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) translate(0, 0);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1.6) translate(-25px, 10px);
+  }
+  32% {
+    opacity: 1;
+    transform: scale(2.4) translate(-40px, 20px);
+  }
+  72% {
+    opacity: 0.9;
+    transform: scale(1.4) translate(-35px, 15px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.6) translate(-20px, 8px);
+  }
+}
+
+@keyframes firework4 {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translate(0, 0);
+  }
+  8% {
+    opacity: 1;
+    transform: scale(1.4) translate(20px, -10px);
+  }
+  28% {
+    opacity: 1;
+    transform: scale(1.9) translate(35px, -18px);
+  }
+  68% {
+    opacity: 0.8;
+    transform: scale(1.1) translate(30px, -15px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3) translate(15px, -8px);
+  }
+}
+
+@keyframes firework5 {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) translate(0, 0);
+  }
+  14% {
+    opacity: 1;
+    transform: scale(1.7) translate(10px, 25px);
+  }
+  34% {
+    opacity: 1;
+    transform: scale(2.1) translate(18px, 40px);
+  }
+  74% {
+    opacity: 0.7;
+    transform: scale(1.2) translate(15px, 35px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.4) translate(8px, 20px);
+  }
+}
+
+@keyframes firework6 {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translate(0, 0);
+  }
+  11% {
+    opacity: 1;
+    transform: scale(1.5) translate(-15px, -25px);
+  }
+  31% {
+    opacity: 1;
+    transform: scale(2.3) translate(-30px, -45px);
+  }
+  71% {
+    opacity: 0.8;
+    transform: scale(1.3) translate(-25px, -40px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) translate(-12px, -22px);
+  }
+}
+
+@keyframes firework7 {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) translate(0, 0);
+  }
+  9% {
+    opacity: 1;
+    transform: scale(1.3) translate(-30px, 15px);
+  }
+  29% {
+    opacity: 1;
+    transform: scale(1.8) translate(-50px, 25px);
+  }
+  69% {
+    opacity: 0.9;
+    transform: scale(1.1) translate(-45px, 20px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3) translate(-25px, 12px);
+  }
+}
+
+@keyframes firework8 {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) translate(0, 0);
+  }
+  13% {
+    opacity: 1;
+    transform: scale(1.9) translate(25px, -5px);
+  }
+  33% {
+    opacity: 1;
+    transform: scale(2.5) translate(45px, -10px);
+  }
+  73% {
+    opacity: 0.7;
+    transform: scale(1.4) translate(40px, -8px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.6) translate(22px, -4px);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-3px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(3px);
+  }
+}
+/* Scale up .scalable elements for 2K+ displays */
+@media (min-width: 1920px) and (min-height: 1080px) {
+  .scalable {
+    transform: scale(1.25);
+    transform-origin: center;
+  }
+}
+
+/* Scale up .scalable elements for fullscreen displays */
+@media (display-mode: fullscreen) {
+  .scalable {
+    transform: scale(1.5);
+    transform-origin: center;
+  }
+}
+/* Volume slider styles */
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f97316;
+  cursor: grab;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.volume-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f97316;
+  cursor: grab;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.volume-slider::-moz-range-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+
+/* Muted Mode Background Classes - Less vibrant, more dark versions */
+#main-container.background-setup-muted,
+#main-container.background-transition-muted,
+#main-container.background-transitioning-muted,
+#main-container.background-resetting-muted {
+  background: #0f1419;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 75% 25%, rgba(34, 197, 94, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 25% 75%, rgba(249, 115, 22, 0.03) 0%, transparent 50%);
+  background-size: 800px 800px, 600px 600px, 700px 700px, 650px 650px;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%;
+  animation: patternFloat 25s ease-in-out infinite;
+}
+
+#main-container.background-prepare-muted {
+  background: #0a4a44;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 75% 75%, rgba(20, 184, 166, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(13, 148, 136, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 35%);
+  background-size: 800px 800px, 700px 700px, 600px 600px, 500px 500px;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%;
+  animation: stretchPattern 20s ease-in-out infinite;
+}
+
+#main-container.background-countdown-muted {
+  background: #4a3806;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(251, 191, 36, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 20%, rgba(245, 158, 11, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 35%);
+  background-size: 600px 600px, 500px 500px, 700px 700px, 450px 450px;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%;
+  animation: stretchPattern 18s ease-in-out infinite;
+}
+
+#main-container.background-countdown-prepare-muted {
+  background: #2e1f4a;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 20%, rgba(168, 85, 247, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 35%);
+  background-size: 600px 600px, 500px 500px, 700px 700px, 450px 450px;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%;
+  animation: preparePattern 12s ease-in-out infinite;
+}
+
+#main-container.background-work-muted {
+  background: #4a1515;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.07) 0%, transparent 40%),
+    radial-gradient(circle at 75% 75%, rgba(239, 68, 68, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(220, 38, 38, 0.1) 0%, transparent 45%),
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.06) 0%, transparent 35%);
+  background-size: 550px 550px, 600px 600px, 500px 500px, 400px 400px;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%;
+  animation: workPattern 15s ease-in-out infinite;
+}
+
+#main-container.background-rest-muted {
+  background: #15294a;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 20%, rgba(37, 99, 235, 0.07) 0%, transparent 40%),
+    radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.04) 0%, transparent 35%);
+  background-size: 700px 700px, 650px 650px, 600px 600px, 500px 500px;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%;
+  animation: restPattern 22s ease-in-out infinite;
+}
+
+#main-container.background-rest-prepare-muted {
+  background: #2e1f4a;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 20%, rgba(168, 85, 247, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 35%);
+  background-size: 600px 600px, 500px 500px, 700px 700px, 450px 450px;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%;
+  animation: preparePattern 12s ease-in-out infinite;
+}
+
+#main-container.background-complete-muted {
+  background: #023a28;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(5, 150, 105, 0.1) 0%, transparent 55%),
+    radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.07) 0%, transparent 60%);
+  background-size: 800px 800px, 750px 750px, 650px 650px, 550px 550px, 900px 900px;
+  background-position: 0% 0%, 100% 100%, 100% 0%, 0% 100%, 50% 50%;
+  animation: completePattern 30s ease-in-out infinite;
+}

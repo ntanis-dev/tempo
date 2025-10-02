@@ -8,8 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
-dist-ssr
+frontend/dist
+frontend/dist-ssr
+backend/dist
 *.local
 
 # Editor directories and files
@@ -24,5 +25,5 @@ dist-ssr
 *.sw?
 .env
 
-# Claude Code settings
-.claude/settings.local.json
+# Claude Code
+.claude

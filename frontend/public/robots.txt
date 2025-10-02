@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://tempo.ntanis.dev/sitemap.xml
+
+# Block access to service worker and manifest (not needed for SEO)
+User-agent: *
+Disallow: /sw.js
+Disallow: /manifest.json
