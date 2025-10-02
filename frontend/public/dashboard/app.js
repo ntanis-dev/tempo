@@ -398,9 +398,10 @@ async function showUserWorkouts(userId) {
   // Render content first
   renderModalWorkouts();
 
-  // Show modal after rendering is complete
+  // Show modal with fade-in
+  userWorkoutsModal.classList.remove('hidden');
   requestAnimationFrame(() => {
-    userWorkoutsModal.classList.remove('hidden');
+    userWorkoutsModal.classList.remove('opacity-0');
   });
 }
 
@@ -490,7 +491,10 @@ function renderModalWorkouts() {
 
 // Close modal
 function closeModal() {
-  userWorkoutsModal.classList.add('hidden');
+  userWorkoutsModal.classList.add('opacity-0');
+  setTimeout(() => {
+    userWorkoutsModal.classList.add('hidden');
+  }, 200);
   currentModalUserId = null;
 }
 
