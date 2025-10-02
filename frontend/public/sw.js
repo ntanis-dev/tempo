@@ -106,24 +106,30 @@ self.addEventListener('fetch', (event) => {
         // No cached version, fetch from network
         return fetch(request)
           .then((networkResponse) => {
+            // Check if this is a 404 response for HTML documents
+            if (networkResponse.status === 404 && request.destination === 'document') {
+              // Don't cache 404s, just return the response
+              return networkResponse;
+            }
+
             // Check if we received a valid response
             if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
               return networkResponse;
             }
-            
+
             // Clone the response before caching
             const responseToCache = networkResponse.clone();
-            
+
             // Determine which cache to use
-            const cacheToUse = STATIC_ASSETS.some(asset => 
+            const cacheToUse = STATIC_ASSETS.some(asset =>
               request.url.endsWith(asset) || request.url === self.location.origin + asset
             ) ? STATIC_CACHE : DYNAMIC_CACHE;
-            
+
             // Cache the response
             caches.open(cacheToUse).then((cache) => {
               cache.put(request, responseToCache);
             });
-            
+
             return networkResponse;
           })
           .catch(() => {

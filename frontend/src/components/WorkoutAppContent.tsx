@@ -13,6 +13,7 @@ import { SetupScreen } from './SetupScreen';
 import { PrepareScreen } from './PrepareScreen';
 import { CompleteScreen } from './CompleteScreen';
 import { WorkoutScreen } from './WorkoutScreen';
+import { NotFoundScreen } from './NotFoundScreen';
 import { AchievementProgressModal } from './achievements/AchievementProgressModal';
 import { PauseOverlay } from './workout/PauseOverlay';
 import { PWAInstallModal } from './setup/PWAInstallModal';
@@ -30,6 +31,14 @@ const PrivacyModal = React.lazy(() => import('./privacy/PrivacyModal').then(modu
 const ModalLoadingFallback = () => null;
 
 export const WorkoutAppContent: React.FC = () => {
+  // Check if we're on a 404 page - must be before any early returns
+  const [is404] = React.useState(() => window.location.pathname !== '/');
+
+  // If 404, show the NotFound screen (early return is OK now since we already called the hook)
+  if (is404) {
+    return <NotFoundScreen />;
+  }
+
   // Muted mode state for re-rendering backgrounds - initialize from storage
   const [mutedMode, setMutedMode] = React.useState(() => storageService.isMutedMode());
 

@@ -11,6 +11,12 @@ export default {
       },
       screens: {
       },
+      animation: {
+        'gradient-shift': 'gradientShift 8s ease infinite',
+      },
+      backgroundSize: {
+        '200': '200% 200%',
+      },
     },
   },
   plugins: [],
