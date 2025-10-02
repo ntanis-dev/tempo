@@ -418,10 +418,15 @@ async function loadUserWorkouts(userId) {
 
     if (response.ok) {
       const data = await response.json();
-      cachedUserWorkouts[userId] = data.workouts;
+      cachedUserWorkouts[userId] = data.workouts || [];
+    } else {
+      // Set empty array on error to prevent undefined
+      cachedUserWorkouts[userId] = [];
     }
   } catch (error) {
     console.error('Failed to load user workouts:', error);
+    // Set empty array on error to prevent undefined
+    cachedUserWorkouts[userId] = [];
   }
 }
 
@@ -444,55 +449,50 @@ function formatDateAndTime(dateString) {
 
 // Render modal workouts
 function renderModalWorkouts() {
-  const workouts = cachedUserWorkouts[currentModalUserId];
-  if (!workouts) return;
+  const workouts = cachedUserWorkouts[currentModalUserId] || [];
 
   const totalPages = Math.ceil(workouts.length / ITEMS_PER_PAGE);
   const startIndex = (modalPage - 1) * ITEMS_PER_PAGE;
   const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, workouts.length);
   const pageWorkouts = workouts.slice(startIndex, endIndex);
 
-  // Build content in memory first using DocumentFragment
-  const fragment = document.createDocumentFragment();
+  // Build ALL content as HTML string first, then insert once
+  let tableHTML = '';
 
   if (pageWorkouts.length > 0) {
     pageWorkouts.forEach(workout => {
-      const row = document.createElement('tr');
-      row.className = 'text-sm text-gray-300';
       const total = workout.time_exercised + workout.time_rested + workout.time_stretched;
-      row.innerHTML = `
-        <td class="py-2">${workout.total_sets}</td>
-        <td class="py-2">${workout.reps_per_set}</td>
-        <td class="py-2">${formatDuration(workout.time_exercised)}</td>
-        <td class="py-2">${formatDuration(workout.time_rested)}</td>
-        <td class="py-2">${formatDuration(workout.time_stretched)}</td>
-        <td class="py-2 font-semibold">${formatDuration(total)}</td>
-        <td class="py-2">${formatDateAndTime(workout.workout_start)}</td>
+      tableHTML += `
+        <tr class="text-sm text-gray-300">
+          <td class="py-2">${workout.total_sets}</td>
+          <td class="py-2">${workout.reps_per_set}</td>
+          <td class="py-2">${formatDuration(workout.time_exercised)}</td>
+          <td class="py-2">${formatDuration(workout.time_rested)}</td>
+          <td class="py-2">${formatDuration(workout.time_stretched)}</td>
+          <td class="py-2 font-semibold">${formatDuration(total)}</td>
+          <td class="py-2">${formatDateAndTime(workout.workout_start)}</td>
+        </tr>
       `;
-      fragment.appendChild(row);
     });
-
-    // Update DOM all at once
-    modalWorkoutsTable.innerHTML = '';
-    modalWorkoutsTable.appendChild(fragment);
-
-    // Show pagination info
-    const paginationDiv = document.getElementById('modalPagination');
-    if (workouts.length > 0 && totalPages > 1) {
-      paginationDiv.classList.remove('hidden');
-      document.getElementById('modalCurrentPage').textContent = modalPage;
-      document.getElementById('modalTotalPages').textContent = totalPages;
-
-      // Enable/disable buttons
-      modalPrevBtn.disabled = modalPage === 1;
-      modalNextBtn.disabled = modalPage >= totalPages;
-    } else {
-      paginationDiv.classList.add('hidden');
-    }
   } else {
-    modalWorkoutsTable.innerHTML = '<tr><td colspan="7" class="text-center text-gray-500 py-4">No Workouts Found</td></tr>';
-    // Hide pagination when no workouts
-    document.getElementById('modalPagination').classList.add('hidden');
+    tableHTML = '<tr><td colspan="7" class="text-center text-gray-500 py-4">No Workouts</td></tr>';
+  }
+
+  // Update DOM once with complete content
+  modalWorkoutsTable.innerHTML = tableHTML;
+
+  // Show pagination info
+  const paginationDiv = document.getElementById('modalPagination');
+  if (pageWorkouts.length > 0 && workouts.length > 0 && totalPages > 1) {
+    paginationDiv.classList.remove('hidden');
+    document.getElementById('modalCurrentPage').textContent = modalPage;
+    document.getElementById('modalTotalPages').textContent = totalPages;
+
+    // Enable/disable buttons
+    modalPrevBtn.disabled = modalPage === 1;
+    modalNextBtn.disabled = modalPage >= totalPages;
+  } else {
+    paginationDiv.classList.add('hidden');
   }
 }
 
