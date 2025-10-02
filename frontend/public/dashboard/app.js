@@ -389,14 +389,19 @@ async function showUserWorkouts(userId) {
   currentModalUserId = userId;
   modalPage = 1;
   modalUserId.textContent = userId;
-  userWorkoutsModal.classList.remove('hidden');
 
   // Load user workouts if not cached
   if (!cachedUserWorkouts[userId]) {
     await loadUserWorkouts(userId);
   }
 
+  // Render content first
   renderModalWorkouts();
+
+  // Show modal after rendering is complete
+  requestAnimationFrame(() => {
+    userWorkoutsModal.classList.remove('hidden');
+  });
 }
 
 // Load user workouts
