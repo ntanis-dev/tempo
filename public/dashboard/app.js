@@ -317,24 +317,14 @@ function renderUsers() {
 
     // Show pagination info
     const paginationDiv = document.getElementById('usersPagination');
-    if (users.length > 0) {
+    if (users.length > 0 && totalPages > 1) {
       paginationDiv.classList.remove('hidden');
-      document.getElementById('usersShowingFrom').textContent = startIndex + 1;
-      document.getElementById('usersShowingTo').textContent = endIndex;
-      document.getElementById('usersTotalCount').textContent = users.length;
+      document.getElementById('usersCurrentPage').textContent = usersPage;
+      document.getElementById('usersTotalPages').textContent = totalPages;
 
-      // Only enable/disable buttons if there are multiple pages
+      // Enable/disable buttons
       usersPrevBtn.disabled = usersPage === 1;
       usersNextBtn.disabled = usersPage >= totalPages;
-
-      // Hide buttons if only one page
-      if (users.length <= ITEMS_PER_PAGE) {
-        usersPrevBtn.style.visibility = 'hidden';
-        usersNextBtn.style.visibility = 'hidden';
-      } else {
-        usersPrevBtn.style.visibility = 'visible';
-        usersNextBtn.style.visibility = 'visible';
-      }
     } else {
       paginationDiv.classList.add('hidden');
     }
@@ -360,13 +350,17 @@ function renderWorkouts() {
     pageWorkouts.forEach(workout => {
       const row = document.createElement('tr');
       row.className = 'text-sm text-gray-300';
-      const duration = workout.time_exercised + workout.time_rested + workout.time_stretched;
+      const total = workout.time_exercised + workout.time_rested + workout.time_stretched;
       row.innerHTML = `
         <td class="py-2">
           <span class="font-mono text-xs text-gray-200">${truncateUserId(workout.username)}</span>
         </td>
         <td class="py-2">${workout.total_sets}</td>
-        <td class="py-2">${formatDuration(duration)}</td>
+        <td class="py-2">${workout.reps_per_set || 0}</td>
+        <td class="py-2">${formatDuration(workout.time_exercised)}</td>
+        <td class="py-2">${formatDuration(workout.time_rested)}</td>
+        <td class="py-2">${formatDuration(workout.time_stretched)}</td>
+        <td class="py-2 font-semibold">${formatDuration(total)}</td>
         <td class="py-2 text-gray-400">${getRelativeTime(workout.workout_end)}</td>
       `;
       recentWorkoutsTable.appendChild(row);
@@ -374,29 +368,19 @@ function renderWorkouts() {
 
     // Show pagination info
     const paginationDiv = document.getElementById('workoutsPagination');
-    if (workouts.length > 0) {
+    if (workouts.length > 0 && totalPages > 1) {
       paginationDiv.classList.remove('hidden');
-      document.getElementById('workoutsShowingFrom').textContent = startIndex + 1;
-      document.getElementById('workoutsShowingTo').textContent = endIndex;
-      document.getElementById('workoutsTotalCount').textContent = workouts.length;
+      document.getElementById('workoutsCurrentPage').textContent = workoutsPage;
+      document.getElementById('workoutsTotalPages').textContent = totalPages;
 
-      // Only enable/disable buttons if there are multiple pages
+      // Enable/disable buttons
       workoutsPrevBtn.disabled = workoutsPage === 1;
       workoutsNextBtn.disabled = workoutsPage >= totalPages;
-
-      // Hide buttons if only one page
-      if (workouts.length <= ITEMS_PER_PAGE) {
-        workoutsPrevBtn.style.visibility = 'hidden';
-        workoutsNextBtn.style.visibility = 'hidden';
-      } else {
-        workoutsPrevBtn.style.visibility = 'visible';
-        workoutsNextBtn.style.visibility = 'visible';
-      }
     } else {
       paginationDiv.classList.add('hidden');
     }
   } else {
-    recentWorkoutsTable.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-4">No Recent Workouts</td></tr>';
+    recentWorkoutsTable.innerHTML = '<tr><td colspan="8" class="text-center text-gray-500 py-4">No Recent Workouts</td></tr>';
   }
 }
 
@@ -468,36 +452,27 @@ function renderModalWorkouts() {
       row.className = 'text-sm text-gray-300';
       const total = workout.time_exercised + workout.time_rested + workout.time_stretched;
       row.innerHTML = `
-        <td class="py-2">${formatDateAndTime(workout.workout_start)}</td>
         <td class="py-2">${workout.total_sets}</td>
         <td class="py-2">${workout.reps_per_set}</td>
         <td class="py-2">${formatDuration(workout.time_exercised)}</td>
         <td class="py-2">${formatDuration(workout.time_rested)}</td>
         <td class="py-2">${formatDuration(workout.time_stretched)}</td>
         <td class="py-2 font-semibold">${formatDuration(total)}</td>
+        <td class="py-2">${formatDateAndTime(workout.workout_start)}</td>
       `;
       modalWorkoutsTable.appendChild(row);
     });
 
     // Show pagination info
     const paginationDiv = document.getElementById('modalPagination');
-    const paginationButtons = document.getElementById('modalPaginationButtons');
-    if (workouts.length > 0) {
+    if (workouts.length > 0 && totalPages > 1) {
       paginationDiv.classList.remove('hidden');
-      document.getElementById('modalShowingFrom').textContent = startIndex + 1;
-      document.getElementById('modalShowingTo').textContent = endIndex;
-      document.getElementById('modalTotalCount').textContent = workouts.length;
+      document.getElementById('modalCurrentPage').textContent = modalPage;
+      document.getElementById('modalTotalPages').textContent = totalPages;
 
-      // Only enable/disable buttons if there are multiple pages
+      // Enable/disable buttons
       modalPrevBtn.disabled = modalPage === 1;
       modalNextBtn.disabled = modalPage >= totalPages;
-
-      // Hide buttons if only one page
-      if (workouts.length <= ITEMS_PER_PAGE) {
-        paginationButtons.classList.add('hidden');
-      } else {
-        paginationButtons.classList.remove('hidden');
-      }
     } else {
       paginationDiv.classList.add('hidden');
     }
