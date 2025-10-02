@@ -71,10 +71,22 @@ async function createTables(conn) {
       total_sets_completed INT DEFAULT 0,
       user_agent TEXT,
       ip_address VARCHAR(45),
+      location VARCHAR(100),
       INDEX idx_user_id (user_id),
       INDEX idx_last_seen (last_seen)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
+
+  // Add location column if it doesn't exist (for migration)
+  await conn.query(`
+    SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'location'
+  `).then(async (result) => {
+    if (result.length === 0) {
+      await conn.query(`ALTER TABLE users ADD COLUMN location VARCHAR(100) AFTER ip_address`);
+      console.log('Added location column to users table');
+    }
+  }).catch(() => {});
 
   // Workouts table
   await conn.query(`

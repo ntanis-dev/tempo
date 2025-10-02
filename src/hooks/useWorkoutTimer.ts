@@ -55,14 +55,22 @@ export const useWorkoutTimer = () => {
   // Use optimized timer logic
   useTimerLogic(workout, updateWorkout);
 
+  // Track if we've already sent analytics for the current workout
+  const [lastTrackedWorkoutId, setLastTrackedWorkoutId] = React.useState<string | null>(null);
+
   // Update workout history when workout completes
   React.useEffect(() => {
     if (workout.phase === 'complete') {
       setWorkoutHistory(loadWorkoutHistory());
-      // Track workout completion
-      analyticsService.trackWorkoutComplete(workout);
+
+      // Only track workout completion once per workout
+      const workoutId = workout.statistics.workoutStartTime?.toString();
+      if (workoutId && workoutId !== lastTrackedWorkoutId) {
+        analyticsService.trackWorkoutComplete(workout);
+        setLastTrackedWorkoutId(workoutId);
+      }
     }
-  }, [workout.phase]);
+  }, [workout.phase, workout.statistics.workoutStartTime, lastTrackedWorkoutId]);
 
   // Public methods
   const startWorkout = React.useCallback(() => {
@@ -71,6 +79,8 @@ export const useWorkoutTimer = () => {
     audioManager.playStartSound(); // Play start sound when workout begins
     // Track workout start
     analyticsService.trackWorkoutStart(workout);
+    // Reset the tracked workout ID for the new workout
+    setLastTrackedWorkoutId(null);
 
     setTimeout(() => {
       transitionToPhase('prepare');
@@ -121,6 +131,8 @@ export const useWorkoutTimer = () => {
       clearWorkoutState();
       setIsResetting(false);
       setWorkoutHistory(loadWorkoutHistory());
+      // Clear the tracked workout ID when resetting
+      setLastTrackedWorkoutId(null);
       transitionTimeoutRef.current = null;
     }, TIME.RESET_DELAY);
   }, [workout.phase, updateWorkout, resetWorkoutBase, resetQuotes]);

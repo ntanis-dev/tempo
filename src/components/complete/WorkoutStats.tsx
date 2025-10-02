@@ -22,13 +22,17 @@ export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout }
     [workout.statistics]
   );
 
-  const [levelInfo, setLevelInfo] = React.useState(experienceProcessor.getCurrentLevelInfo());
-
-  // Update level info when component mounts and refresh from storage
-  React.useEffect(() => {
-    // Refresh the experience processor from storage to get latest data
+  // Refresh experience data immediately before getting level info
+  const [levelInfo, setLevelInfo] = React.useState(() => {
     experienceProcessor.refreshFromStorage();
-    setLevelInfo(experienceProcessor.getCurrentLevelInfo());
+    return experienceProcessor.getCurrentLevelInfo();
+  });
+
+  // Also update on mount in case of any delayed updates
+  React.useEffect(() => {
+    experienceProcessor.refreshFromStorage();
+    const updated = experienceProcessor.getCurrentLevelInfo();
+    setLevelInfo(updated);
   }, []);
 
   return (
