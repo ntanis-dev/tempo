@@ -44,6 +44,10 @@ export interface WorkoutStatistics {
 
 export interface WorkoutHistoryEntry {
   id: string;
+  uniqueId?: string; // Unique identifier for deduplication (added in v2.1+)
+  serverSynced?: boolean; // Whether this workout has been successfully sent to server
+  lastSyncAttempt?: number; // Timestamp of last sync attempt
+  syncAttempts?: number; // Number of times we've tried to sync
   date: number;
   totalSets: number;
   repsPerSet: number;
@@ -51,4 +55,5 @@ export interface WorkoutHistoryEntry {
   restTime: number;
   stretchTime: number;
   statistics: WorkoutStatistics;
+  notes?: string; // Workout notes (for export/import)
 }

@@ -23,6 +23,7 @@ class StorageService {
     WORKOUT_STATE: 'tempo-workout-state',
     WORKOUT_SETTINGS: 'tempo-workout-settings',
     WORKOUT_HISTORY: 'tempo-workout-history',
+    WORKOUT_NOTES: 'tempo-workout-notes',
     LAST_PROCESSED_WORKOUT: 'tempo-last-processed-workout',
 
     // Achievement related
@@ -98,17 +99,29 @@ class StorageService {
     return this.getItem(this.KEYS.WORKOUT_HISTORY, []);
   }
 
+  // Generate a unique ID for workout deduplication
+  private generateUniqueWorkoutId(workout: WorkoutState): string {
+    const startTime = workout.statistics.workoutStartTime || Date.now();
+    const totalTime = workout.statistics.totalTimeStretched +
+                     workout.statistics.totalTimeExercised +
+                     workout.statistics.totalTimeRested;
+    const random = Math.random().toString(36).substring(2, 8);
+    return `${startTime}_${totalTime}_${workout.totalSets}_${random}`;
+  }
+
   saveWorkoutToHistory(workout: WorkoutState): void {
     if (!workout.statistics.workoutStartTime) return;
 
     const history = this.getWorkoutHistory();
+    const uniqueId = this.generateUniqueWorkoutId(workout);
 
     // Check if this workout was already saved (prevent duplicates on refresh)
-    // Use workoutStartTime as unique identifier since it's set when workout begins
+    // Check both old method (for backwards compatibility) and new uniqueId
     const isDuplicate = history.some(entry =>
-      entry.date === workout.statistics.workoutStartTime &&
-      entry.totalSets === workout.totalSets &&
-      entry.repsPerSet === workout.settings.repsPerSet
+      entry.uniqueId === uniqueId ||
+      (entry.date === workout.statistics.workoutStartTime &&
+       entry.totalSets === workout.totalSets &&
+       entry.repsPerSet === workout.settings.repsPerSet)
     );
 
     if (isDuplicate) {
@@ -121,6 +134,9 @@ class StorageService {
 
     const entry: WorkoutHistoryEntry = {
       id: workout.statistics.workoutStartTime.toString(), // Use start time as ID for consistency
+      uniqueId: uniqueId, // Unique identifier for server deduplication
+      serverSynced: false, // Will be set to true when successfully sent to server
+      syncAttempts: 0, // Track number of sync attempts
       date: workout.statistics.workoutStartTime,
       totalSets: workout.totalSets,
       repsPerSet: workout.settings.repsPerSet,
@@ -130,12 +146,58 @@ class StorageService {
       statistics: cleanedStats
     };
 
-    const updatedHistory = [entry, ...history].slice(0, 50); // Keep last 50 workouts
+    const updatedHistory = [entry, ...history].slice(0, 2048); // Keep last 2048 workouts (~5+ years of daily workouts)
     this.setItem(this.KEYS.WORKOUT_HISTORY, updatedHistory);
   }
 
   clearWorkoutHistory(): void {
     this.removeItem(this.KEYS.WORKOUT_HISTORY);
+  }
+
+  // Update sync status for a workout
+  updateWorkoutSyncStatus(workoutId: string, synced: boolean, attemptTime?: number): void {
+    const history = this.getWorkoutHistory();
+    const index = history.findIndex(entry => entry.id === workoutId || entry.uniqueId === workoutId);
+
+    if (index !== -1) {
+      history[index].serverSynced = synced;
+      if (attemptTime) {
+        history[index].lastSyncAttempt = attemptTime;
+        history[index].syncAttempts = (history[index].syncAttempts || 0) + 1;
+      }
+      this.setItem(this.KEYS.WORKOUT_HISTORY, history);
+    }
+  }
+
+  // Get all unsynced workouts
+  getUnsyncedWorkouts(): WorkoutHistoryEntry[] {
+    const history = this.getWorkoutHistory();
+    return history.filter(entry => !entry.serverSynced);
+  }
+
+  // Workout notes methods
+  getWorkoutNotes(workoutId: string): string {
+    const allNotes = this.getItem<Record<string, string>>(this.KEYS.WORKOUT_NOTES, {});
+    return allNotes[workoutId] || '';
+  }
+
+  getAllWorkoutNotes(): Record<string, string> {
+    return this.getItem<Record<string, string>>(this.KEYS.WORKOUT_NOTES, {});
+  }
+
+  saveWorkoutNotes(workoutId: string, notes: string): void {
+    const allNotes = this.getItem<Record<string, string>>(this.KEYS.WORKOUT_NOTES, {});
+    if (notes.trim()) {
+      allNotes[workoutId] = notes;
+    } else {
+      // Remove empty notes to save space
+      delete allNotes[workoutId];
+    }
+    this.setItem(this.KEYS.WORKOUT_NOTES, allNotes);
+  }
+
+  clearAllWorkoutNotes(): void {
+    this.removeItem(this.KEYS.WORKOUT_NOTES);
   }
 
   // Achievement methods
@@ -231,15 +293,25 @@ class StorageService {
 
   // Export/Import methods
   exportAllData(): string {
-    // Clean up history entries to remove runtime-only fields
+    const allNotes = this.getAllWorkoutNotes();
+
+    // Clean up history entries and include notes with each workout
     const cleanHistory = this.getWorkoutHistory().map(entry => {
       const cleanedStats = { ...entry.statistics };
       // Remove runtime-only field that shouldn't be persisted
       delete cleanedStats.pauseStartTime;
-      return {
+
+      // Include notes if they exist for this workout
+      const workoutWithNotes = {
         ...entry,
         statistics: cleanedStats
       };
+
+      if (allNotes[entry.id]) {
+        workoutWithNotes.notes = allNotes[entry.id];
+      }
+
+      return workoutWithNotes;
     });
 
     // Get user ID from localStorage for analytics tracking continuity
@@ -250,7 +322,7 @@ class StorageService {
       userId: userId, // Include user ID for cross-device tracking
       workout: {
         settings: this.getWorkoutSettings(), // This includes totalSets
-        history: cleanHistory
+        history: cleanHistory // Now includes notes within each workout
       },
       achievements: this.getAchievements(),
       experience: this.getExperience(),
@@ -285,16 +357,40 @@ class StorageService {
 
       // Import history
       if (data.workout.history) {
-        // Clean up history entries in case they have pauseStartTime
+        const notesMap: Record<string, string> = {};
+
+        // Clean up history entries and extract notes
         const cleanedHistory = data.workout.history.map((entry: any) => {
+          const cleanedEntry = { ...entry };
+
+          // Clean up statistics if needed
           if (entry.statistics && entry.statistics.pauseStartTime !== undefined) {
             const cleanedStats = { ...entry.statistics };
             delete cleanedStats.pauseStartTime;
-            return { ...entry, statistics: cleanedStats };
+            cleanedEntry.statistics = cleanedStats;
           }
-          return entry;
+
+          // Extract notes from the workout entry
+          if (entry.notes) {
+            notesMap[entry.id] = entry.notes;
+            // Remove notes from the history entry (they're stored separately)
+            delete cleanedEntry.notes;
+          }
+
+          // Preserve sync status from backup
+          // If these fields don't exist, they'll be undefined (backward compatible)
+          return cleanedEntry;
         });
+
         this.setItem(this.KEYS.WORKOUT_HISTORY, cleanedHistory);
+
+        // Import extracted notes or legacy notes format
+        if (Object.keys(notesMap).length > 0) {
+          this.setItem(this.KEYS.WORKOUT_NOTES, notesMap);
+        } else if (data.workout.notes) {
+          // Support legacy format where notes were separate
+          this.setItem(this.KEYS.WORKOUT_NOTES, data.workout.notes);
+        }
       }
     }
 

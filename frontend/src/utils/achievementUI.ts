@@ -1,5 +1,5 @@
 // Single source of truth for achievement UI logic
-import { Achievement } from '../types/achievements';
+import { Achievement, isAchievementUnlocked } from '../types/achievements';
 
 // Rarity utilities
 export const getRarityColor = (rarity: Achievement['rarity']) => {
@@ -40,7 +40,7 @@ export const getAchievementDisplay = (
   achievement: Achievement, 
   isDebugMode: boolean = false
 ) => {
-  const shouldShow = achievement.isUnlocked || achievement.maxProgress || isDebugMode;
+  const shouldShow = isAchievementUnlocked(achievement) || achievement.maxProgress !== undefined || isDebugMode;
   
   return {
     title: shouldShow ? achievement.title : "???",

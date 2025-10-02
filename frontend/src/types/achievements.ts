@@ -6,8 +6,7 @@ export interface Achievement {
   description: string;
   icon: string;
   category: 'consistency' | 'endurance' | 'milestone' | 'dedication' | 'special';
-  isUnlocked: boolean;
-  unlockedAt?: number;
+  unlockedAt?: number; // If this exists, achievement is unlocked
   progress?: number;
   maxProgress?: number;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
@@ -17,6 +16,22 @@ export interface Achievement {
   calculateProgress?: (data: AchievementData) => number;
   getSessionProgress?: (workoutData: WorkoutSessionData) => string;
   hasSessionProgress?: (workoutData: WorkoutSessionData) => boolean;
+}
+
+// Helper to check if achievement is unlocked
+export function isAchievementUnlocked(achievement: Achievement): boolean {
+  // If it has an unlock timestamp, it's unlocked
+  if (achievement.unlockedAt) {
+    return true;
+  }
+
+  // For progress-based achievements, check if progress reached max
+  if (achievement.maxProgress !== undefined && achievement.progress !== undefined) {
+    return achievement.progress >= achievement.maxProgress;
+  }
+
+  // Otherwise, not unlocked
+  return false;
 }
 
 export interface AchievementCategory {

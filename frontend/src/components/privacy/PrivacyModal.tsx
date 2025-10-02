@@ -128,6 +128,10 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
                     <span className="text-green-400 mt-0.5">✓</span>
                     <span>Cookies or third-party data.</span>
                   </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-green-400 mt-0.5">✓</span>
+                    <span>Workout session notes (stored only on your device).</span>
+                  </li>
                 </ul>
               </div>
             </div>

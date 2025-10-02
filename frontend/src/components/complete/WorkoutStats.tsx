@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe } from 'lucide-react';
+import { Globe, Edit3 } from 'lucide-react';
 import { WorkoutState } from '../../types';
 import { formatDuration, getTotalWorkoutTime, formatWorkoutDateTime } from '../../utils/formatters';
 import { LevelDisplay } from '../ui/LevelDisplay';
@@ -8,9 +8,10 @@ import { experienceProcessor } from '../../utils/experienceProcessor';
 interface WorkoutStatsProps {
   workout: WorkoutState;
   storageRefreshKey?: number;
+  onEditNotes?: () => void;
 }
 
-export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout, storageRefreshKey }) => {
+export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout, storageRefreshKey, onEditNotes }) => {
   // Memoize expensive date/time formatting
   const { date, time } = React.useMemo(() =>
     formatWorkoutDateTime(workout.statistics.workoutStartTime),
@@ -58,6 +59,18 @@ export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout, 
     </div>
 
     <div id="workout-statistics" className="mb-2 bg-white/70 backdrop-blur-xl rounded-2xl p-6 border border-white/80 font-sans w-full relative">
+      {/* Edit Notes Button */}
+      {onEditNotes && (
+        <button
+          onClick={onEditNotes}
+          className="absolute top-4 right-4 p-2 text-gray-600 hover:text-teal-600
+                     hover:bg-gray-100 rounded-lg transition-all duration-200"
+          aria-label="Edit workout notes"
+        >
+          <Edit3 className="w-4 h-4" />
+        </button>
+      )}
+
       <h2 className="text-xl font-bold mb-2 text-center text-black font-sans tracking-tight">Workout Session</h2>
       
       <div className="mb-3 text-sm text-black text-center font-sans">
@@ -109,7 +122,7 @@ export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout, 
       <div className="absolute top-2 left-1/2 transform -translate-x-1/2 sm:top-1/2 sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:-translate-y-1/2 opacity-30 pointer-events-none">
         <div className="flex items-center justify-center">
           <Globe className="w-3 h-3 text-gray-600" />
-          <span className="text-black text-xs font-mono">tempo.ntanis.dev</span>
+          <span className="text-black text-xs font-mono ml-1">tempo.ntanis.dev</span>
         </div>
       </div>
     </div>

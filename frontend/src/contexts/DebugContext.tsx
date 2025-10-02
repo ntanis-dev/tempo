@@ -6,7 +6,7 @@ interface DebugContextType {
   setDebugMode: (enabled: boolean) => void;
 }
 
-const DebugContext = createContext<DebugContextType | undefined>(undefined);
+export const DebugContext = createContext<DebugContextType | undefined>(undefined);
 
 export const DebugProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Initialize with false, then load from storage after mount

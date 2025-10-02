@@ -1,4 +1,4 @@
-import { Achievement } from '../types/achievements';
+import { Achievement, isAchievementUnlocked } from '../types/achievements';
 import { WorkoutState } from '../types';
 import { ALL_ACHIEVEMENTS } from '../achievements';
 import { saveAchievements, loadAchievements } from './storage';
@@ -59,22 +59,22 @@ export class AchievementProcessor {
         icon: achievementDef.icon,
         category: achievementDef.category,
         rarity: achievementDef.rarity,
-        isUnlocked: false,
         maxProgress: achievementDef.maxProgress,
         progress: achievementDef.maxProgress ? 0 : undefined
       };
-      
+
       // Merge saved data but ALWAYS preserve maxProgress from definition
       if (savedAchievement) {
-        const merged = {
+        const merged: Achievement = {
           ...baseAchievement,
-          ...savedAchievement,
           maxProgress: achievementDef.maxProgress, // Always use definition's maxProgress
-          progress: savedAchievement.progress !== undefined ? savedAchievement.progress : (achievementDef.maxProgress ? 0 : undefined)
+          progress: savedAchievement.progress !== undefined ? savedAchievement.progress : (achievementDef.maxProgress ? 0 : undefined),
+          unlockedAt: savedAchievement.unlockedAt
         };
+
         return merged;
       }
-      
+
       return baseAchievement;
     });
   }
@@ -82,7 +82,6 @@ export class AchievementProcessor {
   private saveAchievements() {
     const achievementsToSave = this.achievements.map(achievement => ({
       id: achievement.id,
-      isUnlocked: achievement.isUnlocked,
       unlockedAt: achievement.unlockedAt,
       progress: achievement.progress
     }));
@@ -108,12 +107,12 @@ export class AchievementProcessor {
     const achievement = this.achievements.find(a => a.id === id);
     if (!achievement) return false;
 
-    const wasUnlocked = achievement.isUnlocked;
+    const wasUnlocked = isAchievementUnlocked(achievement);
     Object.assign(achievement, updates);
 
-    // Check if achievement should be unlocked
-    if (!wasUnlocked && achievement.maxProgress && achievement.progress && achievement.progress >= achievement.maxProgress) {
-      achievement.isUnlocked = true;
+    // Check if achievement just got unlocked (for progress-based)
+    const isNowUnlocked = isAchievementUnlocked(achievement);
+    if (!wasUnlocked && isNowUnlocked && achievement.maxProgress) {
       achievement.unlockedAt = Date.now();
       return true;
     }
@@ -214,24 +213,23 @@ export class AchievementProcessor {
     // FIRST: Find achievements that SHOULD show progress based on workout data (BEFORE processing)
     const achievementsWithSessionProgress = this.achievements.filter(achievement => {
       // Skip already unlocked
-      if (achievement.isUnlocked) return false;
-      
+      if (isAchievementUnlocked(achievement)) return false;
+
       // Must have progress tracking
       if (!achievement.maxProgress) return false;
-      
+
       // Check if this achievement has session progress
       const achievementDef = ALL_ACHIEVEMENTS.find(def => def.id === achievement.id);
       if (!achievementDef?.hasSessionProgress) return false;
-      
+
       return achievementDef.hasSessionProgress(workoutData);
     });
     // Process any pending rest skip attempts
     const restSkipAttempts = this.getRestSkipAttempts();
     if (restSkipAttempts > 0) {
       const achievement = this.achievements.find(a => a.id === 'rest_skipper');
-      if (achievement && !achievement.isUnlocked) {
-        achievement.isUnlocked = true;
-        achievement.unlockedAt = now;
+      if (achievement && !isAchievementUnlocked(achievement)) {
+        achievement.unlockedAt = now; // Setting this marks it as unlocked
         updates.push({ achievement: { ...achievement }, wasJustUnlocked: true });
       }
       this.clearRestSkipAttempts();
@@ -259,20 +257,19 @@ export class AchievementProcessor {
 
     // Process all achievements using their individual logic
     this.achievements.forEach(achievement => {
-      if (achievement.isUnlocked) return; // Skip already unlocked
-      
+      if (isAchievementUnlocked(achievement)) return; // Skip already unlocked
+
       const achievementDef = ALL_ACHIEVEMENTS.find(def => def.id === achievement.id);
-      const hasSessionProgress = achievementDef?.hasSessionProgress && 
+      const hasSessionProgress = achievementDef?.hasSessionProgress &&
                                 achievementDef.hasSessionProgress(workoutData);
-      
+
       // Check if this achievement should unlock
       if (achievementDef && achievementDef.checkUnlock(workout, this.data)) {
-        achievement.isUnlocked = true;
-        achievement.unlockedAt = now;
+        achievement.unlockedAt = now; // Setting this marks it as unlocked
         updates.push({ achievement: { ...achievement }, wasJustUnlocked: true });
         return;
       }
-      
+
       // If this achievement had session progress but didn't unlock, add to progressed list
       if (hasSessionProgress && achievement.maxProgress) {
         // progressedAchievements.push({ ...achievement });
@@ -280,11 +277,12 @@ export class AchievementProcessor {
       // Update progress if applicable
       if (achievementDef && achievementDef.calculateProgress && achievementDef.maxProgress) {
         const newProgress = achievementDef.calculateProgress(this.data);
+        const wasUnlocked = isAchievementUnlocked(achievement);
         achievement.progress = newProgress;
-        
+
         // Check if unlocked due to progress
-        if (newProgress >= achievementDef.maxProgress) {
-          achievement.isUnlocked = true;
+        if (!wasUnlocked && newProgress >= achievementDef.maxProgress) {
+          // Don't set isUnlocked for progress-based achievements
           achievement.unlockedAt = now;
           updates.push({ achievement: { ...achievement }, wasJustUnlocked: true });
         }
@@ -298,7 +296,7 @@ export class AchievementProcessor {
       // Reset perfectionist progress if workout had pauses
       this.data.consecutiveNoPauseWorkouts = 0;
       const achievement = this.achievements.find(a => a.id === 'perfectionist');
-      if (achievement && !achievement.isUnlocked) {
+      if (achievement && !isAchievementUnlocked(achievement)) {
         achievement.progress = 0;
       }
     }

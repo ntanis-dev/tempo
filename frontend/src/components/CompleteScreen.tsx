@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { WorkoutState } from '../types';
 import { SoundToggle } from './common/SoundToggle';
 import { MutedToggle } from './common/MutedToggle';
 import { FireworksAnimation } from './complete/FireworksAnimation';
 import { WorkoutStats } from './complete/WorkoutStats';
 import { CompletionActions } from './complete/CompletionActions';
+import { WorkoutNotesModal } from './complete/WorkoutNotesModal';
 import { useFadeIn } from '../hooks/useFadeIn';
 import { getFadeClasses } from '../utils/classNames';
+import { storageService } from '../services/StorageService';
 
 interface CompleteScreenProps {
   workout: WorkoutState;
@@ -22,6 +24,21 @@ export const CompleteScreen: React.FC<CompleteScreenProps> = ({
   storageRefreshKey
 }) => {
   const isVisible = useFadeIn();
+  const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
+
+  // Use workout start time as unique ID for notes
+  const workoutId = workout.statistics.workoutStartTime?.toString() || '';
+  const existingNotes = workoutId ? storageService.getWorkoutNotes(workoutId) : '';
+
+  const handleEditNotes = () => {
+    setIsNotesModalOpen(true);
+  };
+
+  const handleSaveNotes = (notes: string) => {
+    if (workoutId) {
+      storageService.saveWorkoutNotes(workoutId, notes);
+    }
+  };
 
 
   return (
@@ -37,7 +54,11 @@ export const CompleteScreen: React.FC<CompleteScreenProps> = ({
       <div className="scalable rounded-3xl p-4 text-center text-white font-sans w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto">
         <div className="rounded-3xl p-4 text-center text-white font-sans w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
 
-          <WorkoutStats workout={workout} storageRefreshKey={storageRefreshKey} />
+          <WorkoutStats
+            workout={workout}
+            storageRefreshKey={storageRefreshKey}
+            onEditNotes={handleEditNotes}
+          />
 
           <div className="mb-3" />
 
@@ -46,6 +67,15 @@ export const CompleteScreen: React.FC<CompleteScreenProps> = ({
             />
         </div>
       </div>
+
+      {/* Workout Notes Modal */}
+      <WorkoutNotesModal
+        isOpen={isNotesModalOpen}
+        onClose={() => setIsNotesModalOpen(false)}
+        workoutId={workoutId}
+        initialNotes={existingNotes}
+        onSave={handleSaveNotes}
+      />
     </div>
   );
 };

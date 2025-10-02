@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Trophy, CheckCircle, Star, RotateCcw } from 'lucide-react';
-import { Achievement } from '../../types/achievements';
+import { Achievement, isAchievementUnlocked } from '../../types/achievements';
 import { achievementProcessor } from '../../utils/achievementProcessor';
 import { Modal } from '../ui/Modal';
 import { ModalHeader } from '../ui/ModalHeader';
 import { MODAL_STYLES } from '../../constants/styles';
-import { useDebugMode } from '../../contexts/DebugContext';
+import { DebugContext } from '../../contexts/DebugContext';
 import { getRarityColor, getRarityText, getRarityBadgeClasses, sortAchievementsByRarity, getAchievementDisplay, calculateProgressPercent } from '../../utils/achievementUI';
 
 interface AchievementsModalProps {
@@ -15,7 +15,10 @@ interface AchievementsModalProps {
 }
 
 export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, onClose, onShowSuccess }) => {
-  const [isDebugMode] = useDebugMode();
+  // Safely check for debug mode - defaults to false if no provider
+  const debugContext = useContext(DebugContext);
+  const isDebugMode = debugContext?.isDebugMode || false;
+
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [isVisible, setIsVisible] = useState(false);
@@ -66,9 +69,9 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
   // Sort achievements by rarity 
   const sortedAchievements = sortAchievementsByRarity(achievements);
 
-  const unlockedCount = achievements.filter(a => a.isUnlocked).length;
+  const unlockedCount = achievements.filter(a => isAchievementUnlocked(a)).length;
   const totalCount = achievements.length;
-  const hasAnyProgress = achievements.some(a => a.isUnlocked || (a.progress && a.progress > 0));
+  const hasAnyProgress = achievements.some(a => isAchievementUnlocked(a) || (a.progress && a.progress > 0));
 
   return (
     <div 
@@ -110,8 +113,8 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
                 <div
                 key={achievement.id}
                className={`relative rounded-lg p-3 border-2 transition-all min-h-[140px] flex flex-col ${
-                  achievement.isUnlocked 
-                    ? getRarityColor(achievement.rarity) + ' opacity-100' 
+                  isAchievementUnlocked(achievement)
+                    ? getRarityColor(achievement.rarity) + ' opacity-100'
                     : 'border-gray-700/30 bg-gray-700/10 opacity-60'
                 }`}
               >
@@ -129,14 +132,14 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className={`font-bold text-sm leading-tight ${achievement.isUnlocked ? 'text-white' : 'text-white/60'}`}>
+                      <h3 className={`font-bold text-sm leading-tight ${isAchievementUnlocked(achievement) ? 'text-white' : 'text-white/60'}`}>
                         {display.title}
                       </h3>
-                      {achievement.isUnlocked && (
+                      {isAchievementUnlocked(achievement) && (
                         <CheckCircle className="w-3 h-3 text-green-400 flex-shrink-0" />
                       )}
                     </div>
-                    <p className={`text-xs leading-snug mb-2 ${achievement.isUnlocked ? 'text-white/80' : 'text-white/50'} ${
+                    <p className={`text-xs leading-snug mb-2 ${isAchievementUnlocked(achievement) ? 'text-white/80' : 'text-white/50'} ${
                       display.description === "???" ? 'italic font-medium' : ''
                     }`}>
                       {display.description}
@@ -147,7 +150,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
                {/* Bottom section for unlock date and progress */}
                <div className="mt-auto">
                  {/* Unlock Date */}
-                 {achievement.isUnlocked && achievement.unlockedAt && (
+                 {isAchievementUnlocked(achievement) && achievement.unlockedAt && (
                    <div className="mt-2 pl-11 text-xs text-white/50 flex items-center space-x-1">
                      <Star className="w-3 h-3 text-yellow-400 flex-shrink-0" />
                      <span>{new Date(achievement.unlockedAt).toLocaleDateString()}, {new Date(achievement.unlockedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
@@ -171,7 +174,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
                      <div className="w-full bg-white/20 rounded-full h-1.5">
                        <div 
                          className={`h-1.5 rounded-full transition-all ${
-                           achievement.isUnlocked ? 'bg-green-400' : 'bg-white/40'
+                           isAchievementUnlocked(achievement) ? 'bg-green-400' : 'bg-white/40'
                          }`}
                          style={{ 
                             width: `${Math.min(100, progressPercent)}%` 
