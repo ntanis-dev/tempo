@@ -25,7 +25,7 @@ export const NotFoundScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden animate-fade-in">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-gray-950 via-orange-950 to-red-950">
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-orange-950 to-red-950 bg-200 animate-gradient-shift"></div>
 
@@ -34,7 +34,7 @@ export const NotFoundScreen: React.FC = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)] animate-pulse"></div>
       </div>
 
-      <div className="text-center max-w-5xl relative z-10">
+      <div className="text-center max-w-5xl relative z-10 animate-fade-in">
         {/* Tempo branding outside box */}
         <div className="mb-6">
           <Timer className="w-16 h-16 mx-auto mb-4 text-orange-400" />
