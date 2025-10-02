@@ -130,7 +130,11 @@ if (fs.existsSync(distPath)) {
     }
 
     // Return 404 for unknown paths
-    res.status(404).sendFile(path.join(distPath, 'index.html'));
+    res.status(404)
+      .set('Cache-Control', 'no-cache, no-store, must-revalidate')
+      .set('Pragma', 'no-cache')
+      .set('Expires', '0')
+      .sendFile(path.join(distPath, 'index.html'));
   });
 } else {
   // No build available
