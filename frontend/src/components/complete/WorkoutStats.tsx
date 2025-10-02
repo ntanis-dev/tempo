@@ -7,9 +7,10 @@ import { experienceProcessor } from '../../utils/experienceProcessor';
 
 interface WorkoutStatsProps {
   workout: WorkoutState;
+  storageRefreshKey?: number;
 }
 
-export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout }) => {
+export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout, storageRefreshKey }) => {
   // Memoize expensive date/time formatting
   const { date, time } = React.useMemo(() =>
     formatWorkoutDateTime(workout.statistics.workoutStartTime),
@@ -28,12 +29,12 @@ export const WorkoutStats: React.FC<WorkoutStatsProps> = React.memo(({ workout }
     return experienceProcessor.getCurrentLevelInfo();
   });
 
-  // Also update on mount in case of any delayed updates
+  // Update when storageRefreshKey changes or on mount
   React.useEffect(() => {
     experienceProcessor.refreshFromStorage();
     const updated = experienceProcessor.getCurrentLevelInfo();
     setLevelInfo(updated);
-  }, []);
+  }, [storageRefreshKey]);
 
   return (
     <>

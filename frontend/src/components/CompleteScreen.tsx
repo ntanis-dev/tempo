@@ -12,12 +12,14 @@ interface CompleteScreenProps {
   workout: WorkoutState;
   onResetWorkout: () => void;
   isResetting?: boolean;
+  storageRefreshKey?: number;
 }
 
 export const CompleteScreen: React.FC<CompleteScreenProps> = ({
   workout,
   onResetWorkout,
-  isResetting = false
+  isResetting = false,
+  storageRefreshKey
 }) => {
   const isVisible = useFadeIn();
 
@@ -25,11 +27,9 @@ export const CompleteScreen: React.FC<CompleteScreenProps> = ({
   return (
     <div className={`min-height h-screen flex items-center justify-center p-4 w-full ${getFadeClasses(isVisible, isResetting)}`}>
       {/* Sound and Muted Toggles */}
-      <div className="fixed top-4 right-4 z-10">
-        <div className="flex items-center space-x-2">
-          <MutedToggle />
-          <SoundToggle />
-        </div>
+      <div className="fixed top-4 right-4 z-10 flex flex-col-reverse sm:flex-row items-end sm:items-center space-y-reverse space-y-2 sm:space-y-0 sm:space-x-2">
+        <MutedToggle />
+        <SoundToggle />
       </div>
       
       <FireworksAnimation />
@@ -37,7 +37,7 @@ export const CompleteScreen: React.FC<CompleteScreenProps> = ({
       <div className="scalable rounded-3xl p-4 text-center text-white font-sans w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto">
         <div className="rounded-3xl p-4 text-center text-white font-sans w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
 
-          <WorkoutStats workout={workout} />
+          <WorkoutStats workout={workout} storageRefreshKey={storageRefreshKey} />
 
           <div className="mb-3" />
 

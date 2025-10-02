@@ -116,7 +116,7 @@ export const PrepareScreen: React.FC<PrepareScreenProps> = ({
   return (
     <div className={`min-height h-screen flex items-center justify-center p-4 ${getFadeClasses(isVisible, isResetting, isTransitioning)}`}>
       {/* Sound, Music and Muted Toggles */}
-      <div className="fixed top-4 right-4 z-10 flex items-center space-x-2">
+      <div className="fixed top-4 right-4 z-10 flex flex-col-reverse sm:flex-row items-end sm:items-center space-y-reverse space-y-2 sm:space-y-0 sm:space-x-2">
         <MutedToggle />
         <SoundToggle />
       </div>

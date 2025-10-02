@@ -105,7 +105,7 @@ export const WorkoutScreen: React.FC<WorkoutScreenProps> = ({
   return (
     <div className={`min-height h-screen flex flex-col items-center justify-center p-4 text-white w-full ${getFadeClasses(isVisible, isResetting)} ${hideUI ? 'cursor-none' : ''}`}>
       {/* Sound and Muted Toggles */}
-      <div className={`fixed top-4 right-4 z-10 flex items-center space-x-2 transition-opacity duration-300 ${hideUI ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+      <div className={`fixed top-4 right-4 z-10 flex flex-col-reverse sm:flex-row items-end sm:items-center space-y-reverse space-y-2 sm:space-y-0 sm:space-x-2 transition-opacity duration-300 ${hideUI ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <MutedToggle />
         <SoundToggle />
       </div>
