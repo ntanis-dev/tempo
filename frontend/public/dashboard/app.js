@@ -243,6 +243,8 @@ async function loadDashboardData() {
 
     const data = await response.json();
     cachedData = data;
+    // Clear user workouts cache on dashboard refresh to ensure freshness
+    cachedUserWorkouts = {};
     updateDashboard(data);
   } catch (error) {
     console.error('Failed to load dashboard data:', error);
@@ -310,7 +312,6 @@ function renderUsers() {
             ${user.total_workouts || 0}
           </button>
         </td>
-        <td class="py-3 text-gray-300">${formatDuration(user.total_time_exercised || 0)}</td>
       `;
       recentUsersTable.appendChild(row);
     });
@@ -329,7 +330,7 @@ function renderUsers() {
       paginationDiv.classList.add('hidden');
     }
   } else {
-    recentUsersTable.innerHTML = '<tr><td colspan="7" class="text-center text-gray-500 py-4">No Users Yet</td></tr>';
+    recentUsersTable.innerHTML = '<tr><td colspan="6" class="text-center text-gray-500 py-4">No Users Yet</td></tr>';
   }
 }
 
@@ -392,10 +393,8 @@ async function showUserWorkouts(userId) {
   modalPage = 1;
   modalUserId.textContent = userId;
 
-  // Load user workouts if not cached
-  if (!cachedUserWorkouts[userId]) {
-    await loadUserWorkouts(userId);
-  }
+  // Always load fresh user workouts to ensure we have latest data
+  await loadUserWorkouts(userId);
 
   // Render content COMPLETELY first while modal is still hidden
   renderModalWorkouts();
