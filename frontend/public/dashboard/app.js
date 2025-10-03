@@ -353,7 +353,9 @@ function renderWorkouts() {
       const total = workout.time_exercised + workout.time_rested + workout.time_stretched;
       row.innerHTML = `
         <td class="py-2">
-          <span class="font-mono text-xs text-gray-200">${truncateUserId(workout.username)}</span>
+          <button onclick="showUserWorkouts('${workout.username}')" class="font-mono text-xs text-indigo-400 hover:text-indigo-300 hover:underline transition-colors cursor-pointer">
+            ${truncateUserId(workout.username)}
+          </button>
         </td>
         <td class="py-2">${workout.total_sets}</td>
         <td class="py-2">${workout.reps_per_set || 0}</td>
