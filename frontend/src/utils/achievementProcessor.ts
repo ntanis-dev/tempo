@@ -46,6 +46,7 @@ export class AchievementProcessor {
   constructor() {
     this.loadAchievements();
     this.loadAchievementData();
+    this.recalculateProgress();
   }
 
   private loadAchievements() {
@@ -65,10 +66,17 @@ export class AchievementProcessor {
 
       // Merge saved data but ALWAYS preserve maxProgress from definition
       if (savedAchievement) {
+        // Calculate current progress based on cumulative data if applicable
+        let currentProgress = savedAchievement.progress;
+        if (achievementDef.calculateProgress && achievementDef.maxProgress) {
+          // Will be recalculated after data is loaded
+          currentProgress = savedAchievement.progress !== undefined ? savedAchievement.progress : 0;
+        }
+
         const merged: Achievement = {
           ...baseAchievement,
           maxProgress: achievementDef.maxProgress, // Always use definition's maxProgress
-          progress: savedAchievement.progress !== undefined ? savedAchievement.progress : (achievementDef.maxProgress ? 0 : undefined),
+          progress: currentProgress,
           unlockedAt: savedAchievement.unlockedAt
         };
 
@@ -101,6 +109,16 @@ export class AchievementProcessor {
 
   private saveAchievementData() {
     localStorage.setItem(STORAGE_KEYS.ACHIEVEMENT_DATA, JSON.stringify(this.data));
+  }
+
+  private recalculateProgress() {
+    // Recalculate progress for all achievements based on current cumulative data
+    this.achievements.forEach(achievement => {
+      const achievementDef = ALL_ACHIEVEMENTS.find(def => def.id === achievement.id);
+      if (achievementDef && achievementDef.calculateProgress && achievementDef.maxProgress) {
+        achievement.progress = achievementDef.calculateProgress(this.data);
+      }
+    });
   }
 
   private updateAchievement(id: string, updates: Partial<Achievement>): boolean {
@@ -257,11 +275,26 @@ export class AchievementProcessor {
 
     // Process all achievements using their individual logic
     this.achievements.forEach(achievement => {
-      if (isAchievementUnlocked(achievement)) return; // Skip already unlocked
-
+      const alreadyUnlocked = isAchievementUnlocked(achievement);
       const achievementDef = ALL_ACHIEVEMENTS.find(def => def.id === achievement.id);
       const hasSessionProgress = achievementDef?.hasSessionProgress &&
                                 achievementDef.hasSessionProgress(workoutData);
+
+      // Update progress if applicable (even for unlocked achievements)
+      if (achievementDef && achievementDef.calculateProgress && achievementDef.maxProgress) {
+        const newProgress = achievementDef.calculateProgress(this.data);
+        achievement.progress = newProgress;
+
+        // Check if unlocked due to progress (only if not already unlocked)
+        if (!alreadyUnlocked && newProgress >= achievementDef.maxProgress) {
+          achievement.unlockedAt = now;
+          updates.push({ achievement: { ...achievement }, wasJustUnlocked: true });
+          return;
+        }
+      }
+
+      // Skip unlock checks if already unlocked
+      if (alreadyUnlocked) return;
 
       // Check if this achievement should unlock
       if (achievementDef && achievementDef.checkUnlock(workout, this.data)) {
@@ -273,19 +306,6 @@ export class AchievementProcessor {
       // If this achievement had session progress but didn't unlock, add to progressed list
       if (hasSessionProgress && achievement.maxProgress) {
         // progressedAchievements.push({ ...achievement });
-      }
-      // Update progress if applicable
-      if (achievementDef && achievementDef.calculateProgress && achievementDef.maxProgress) {
-        const newProgress = achievementDef.calculateProgress(this.data);
-        const wasUnlocked = isAchievementUnlocked(achievement);
-        achievement.progress = newProgress;
-
-        // Check if unlocked due to progress
-        if (!wasUnlocked && newProgress >= achievementDef.maxProgress) {
-          // Don't set isUnlocked for progress-based achievements
-          achievement.unlockedAt = now;
-          updates.push({ achievement: { ...achievement }, wasJustUnlocked: true });
-        }
       }
     });
 
@@ -375,6 +395,7 @@ export class AchievementProcessor {
   refreshFromStorage() {
     this.loadAchievements();
     this.loadAchievementData();
+    this.recalculateProgress();
   }
 }
 
